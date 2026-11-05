@@ -156,7 +156,7 @@ details summary { cursor: pointer; color: var(--muted); }
   display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; background: var(--surface); color: var(--ink);
   border: 1px solid var(--line); border-radius: 18px 18px 0 0; box-shadow: 0 -8px 30px -12px rgba(30,10,80,.35);
   padding: 16px max(16px, env(safe-area-inset-right, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); font-size: .9rem; }
-.consent[hidden] { display: none; }
+[hidden], .consent[hidden] { display: none !important; }
 .consent p { flex: 1 1 18rem; }
 .consent-btns { display: flex; gap: 8px; }
 .consent .btn { padding: 9px 18px; font-size: .9rem; }
@@ -197,6 +197,34 @@ th .whatis-pop, .legend .whatis-pop { left: auto; right: -8px; }
 .shot img { width: 100%; height: auto; border-radius: 14px; border: 1px solid var(--line); background: #fff; }
 .shot figcaption { font-size: .86rem; color: var(--muted); }
 a.btn { display: inline-block; text-decoration: none; }
+.tone-mid { background: var(--violet-soft); color: var(--violet); }
+.note { background: var(--brass-soft); border-radius: 12px; padding: 10px 14px; font-size: .92rem; }
+.syn-actions { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; }
+.rel-tabs { display: flex; gap: 6px; padding: 5px; background: var(--chip); border-radius: 999px; width: fit-content; max-width: 100%; }
+.rel-tabs [role=tab] { font: 700 .95rem var(--body); color: var(--ink); background: transparent; border: 0; border-radius: 999px; padding: 10px 18px; cursor: pointer; }
+.rel-tabs [role=tab][aria-selected=true] { background: var(--violet); color: #fff; }
+.rel-tabs [role=tab]:focus-visible, .sel-btn:focus-visible, .chip-btn:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+.comp-grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 860px) { .comp-grid { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: start; } .comp-detail { position: sticky; top: 16px; } }
+.comp-detail { min-height: 220px; }
+.comp-detail h3 { font-size: 1.15rem; }
+.wheel-live .wpl { cursor: pointer; }
+.wheel-live .wpl-bg { fill: transparent; transition: fill .15s; }
+.wheel-live .wpl:hover .wpl-bg { fill: var(--violet-soft); }
+.wheel-live .wpl.is-sel .wpl-bg { fill: var(--sun); }
+.wheel-live .wasp { cursor: pointer; stroke-width: 1.4; transition: opacity .15s; }
+.wheel-live.has-sel .wasp { opacity: .15; }
+.wheel-live.has-sel .wasp.is-sel { opacity: 1; stroke-width: 2.6; }
+.wheel-live.has-sel .wpl:not(.is-sel) text { opacity: .45; }
+.sel-ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.sel-btn { width: 100%; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 10px; text-align: left; font: 500 .95rem var(--body); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; cursor: pointer; min-height: 44px; }
+.sel-btn:hover { border-color: var(--violet); }
+.sel-btn[aria-pressed=true] { border-color: var(--violet); background: var(--violet-soft); }
+.sel-name { font-weight: 600; }
+.sel-meta { color: var(--muted); font-size: .88rem; }
+.sel-meta .tone { margin-left: 0; }
+.chip-btn { font: 600 .85rem var(--body); color: var(--violet); background: var(--violet-soft); border: 0; border-radius: 999px; padding: 7px 12px; cursor: pointer; }
+.chip-btn:hover { background: var(--violet); color: #fff; }
 footer.site { border-top: 1px solid var(--line); padding-block: 20px 36px; font-size: .85rem; color: var(--muted); display: grid; gap: 8px; }
 @media (prefers-reduced-motion: no-preference) { .sign-card { transition: border-color .15s, transform .15s, box-shadow .15s; } }
 /* Νυχτερινό πάνελ της αρχικής: ο ουρανός της ημέρας σε βαθύ μπλε-μωβ με αστεράκια */

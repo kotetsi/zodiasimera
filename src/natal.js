@@ -43,16 +43,22 @@ function obliquity(date) {
 const raToLon = (ra, eps) => norm(atan2d(sind(ra), cosd(ra) * cosd(eps)));
 
 export function angles(date, lat, lon) {
-  const ramc = norm(gmst(date) + lon);
-  const eps = obliquity(date);
+  return anglesFromRamc(norm(gmst(date) + lon), obliquity(date), lat);
+}
+
+// Ωροσκόπος και μεσουράνημα από αστρικό χρόνο (RAMC), λόξωση και γεωγραφικό πλάτος
+export function anglesFromRamc(ramc, eps, lat) {
   const mc = raToLon(ramc, eps);
   const asc = norm(atan2d(cosd(ramc), -(sind(ramc) * cosd(eps) + tand(lat) * sind(eps))));
   return { ramc, eps, asc, mc };
 }
 
-// Οίκοι Placidus (επαναληπτικά, με τα ημι-τόξα κάθε σημείου). Πάνω από ~66° πλάτος δεν ορίζονται.
-export function placidus(date, lat, lon) {
-  const { ramc, eps, asc, mc } = angles(date, lat, lon);
+// Ορθή αναφορά σημείου της εκλειπτικής (αντίστροφο του raToLon)
+export const lonToRa = (lon, eps) => norm(atan2d(sind(lon) * cosd(eps), cosd(lon)));
+
+// Οίκοι Placidus από RAMC (επαναληπτικά, με τα ημι-τόξα κάθε σημείου). Πάνω από ~66° πλάτος δεν ορίζονται.
+export function placidusFromRamc(ramc, eps, lat) {
+  const { asc, mc } = anglesFromRamc(ramc, eps, lat);
   if (Math.abs(lat) > 66) return null;
   const cusp = (fraction, above) => {
     let ra = above ? ramc + fraction * 90 : ramc + 180 - fraction * 90;
@@ -73,6 +79,12 @@ export function placidus(date, lat, lon) {
   const cusps = [asc, c2, c3, norm(mc + 180), norm(c11 + 180), norm(c12 + 180), norm(asc + 180), norm(c2 + 180), norm(c3 + 180), mc, c11, c12];
   return { asc, mc, cusps, system: 'placidus' };
 }
+
+export function placidus(date, lat, lon) {
+  return placidusFromRamc(norm(gmst(date) + lon), obliquity(date), lat);
+}
+
+export const obliquityAt = obliquity;
 
 // Ίσοι οίκοι από τον ωροσκόπο (εφεδρικά για πολύ μεγάλα γεωγραφικά πλάτη)
 export function equalHouses(date, lat, lon) {
