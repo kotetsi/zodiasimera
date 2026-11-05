@@ -152,6 +152,13 @@ details summary { cursor: pointer; color: var(--muted); }
 .eph sup { font-size: .65em; font-weight: 600; margin-left: 1px; }
 .month-nav { display: flex; justify-content: space-between; gap: 12px; font-weight: 500; }
 .chip[aria-current] { background: var(--violet); color: #fff; }
+.consent { position: fixed; z-index: 20; left: 0; right: 0; bottom: 0; margin: 0 auto; max-width: 44rem;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; background: var(--surface); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 18px 18px 0 0; box-shadow: 0 -8px 30px -12px rgba(30,10,80,.35);
+  padding: 16px max(16px, env(safe-area-inset-right, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); font-size: .9rem; }
+.consent p { flex: 1 1 18rem; }
+.consent-btns { display: flex; gap: 8px; }
+.consent .btn { padding: 9px 18px; font-size: .9rem; }
 footer.site { border-top: 1px solid var(--line); padding-block: 20px 36px; font-size: .85rem; color: var(--muted); display: grid; gap: 8px; }
 @media (prefers-reduced-motion: no-preference) { .sign-card { transition: border-color .15s, transform .15s, box-shadow .15s; } }
 /* Νυχτερινό πάνελ της αρχικής: ο ουρανός της ημέρας σε βαθύ μπλε-μωβ με αστεράκια */
@@ -203,7 +210,11 @@ export function page({ path, title, description, content, jsonLd }) {
     '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>',
     '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;600;700&family=Commissioner:wght@400;500;600;700&family=Noto+Sans+Symbols&display=swap">',
     config.adsenseClient ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${esc(config.adsenseClient)}" crossorigin="anonymous"></script>` : '',
-    config.gaId ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${esc(config.gaId)}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${esc(config.gaId)}');</script>` : '',
+    // Google Analytics με Consent Mode: τίποτα δεν αποθηκεύεται πριν ο επισκέπτης πατήσει «Αποδοχή»
+    config.gaId ? `<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
+gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied'});
+try{if(localStorage.getItem('zs-consent')==='yes')gtag('consent','update',{analytics_storage:'granted'})}catch(e){}
+gtag('js',new Date());gtag('config','${esc(config.gaId)}');</script><script async src="https://www.googletagmanager.com/gtag/js?id=${esc(config.gaId)}"></script>` : '',
     jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>` : '',
     `<style>${CSS}</style>`,
   ].filter(Boolean).join('\n');
@@ -211,6 +222,8 @@ export function page({ path, title, description, content, jsonLd }) {
   const body = `<div class="wrap">
 <header class="site"><a class="brand" href="${root}index.html">${glyph('☉')}${esc(config.siteName)}</a><nav class="main" aria-label="Κύριο μενού">${nav}</nav></header>
 <main>${content}</main>
+${config.gaId ? `<div class="consent" id="zs-consent" hidden role="dialog" aria-label="Cookies"><p>Χρησιμοποιούμε cookies του Google Analytics για να μετράμε την επισκεψιμότητα. Τα στοιχεία γέννησης που βάζεις στα εργαλεία μας δεν στέλνονται πουθενά.</p><div class="consent-btns"><button type="button" class="btn-ghost" id="zs-no">Απόρριψη</button><button type="button" class="btn" id="zs-yes">Αποδοχή</button></div></div>
+<script>(function(){var b=document.getElementById('zs-consent'),v=null;try{v=localStorage.getItem('zs-consent')}catch(e){}if(!v)b.hidden=false;function set(x){try{localStorage.setItem('zs-consent',x)}catch(e){}b.hidden=true;if(x==='yes'&&window.gtag)gtag('consent','update',{analytics_storage:'granted'})}document.getElementById('zs-yes').onclick=function(){set('yes')};document.getElementById('zs-no').onclick=function(){set('no')};})();</script>` : ''}
 <footer class="site"><p>${esc(config.siteName)} · Οι θέσεις των πλανητών υπολογίζονται καθημερινά για ώρα Αθήνας. Οι προβλέψεις είναι για ψυχαγωγικούς σκοπούς.</p><p><a href="${root}sxetika/index.html">Σχετικά με τις προβλέψεις</a></p></footer>
 </div>`;
   return { head, body, root };

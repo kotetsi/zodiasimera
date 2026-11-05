@@ -7,7 +7,7 @@ export default {
   // Google AdSense publisher ID, π.χ. 'ca-pub-1234567890123456'. Κενό = καμία διαφήμιση.
   adsenseClient: '',
   // Google Analytics 4 measurement ID, π.χ. 'G-XXXXXXX'. Κενό = χωρίς analytics.
-  gaId: '',
+  gaId: 'G-NMC44TGESS',
   // Προϊόντα/affiliate ανά ζώδιο: { krios: [{ title, url, note }] , ... }. Κενό = δεν εμφανίζεται ενότητα.
   products: {},
 };
