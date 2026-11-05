@@ -1,6 +1,6 @@
 // Χτίζει όλο το site στον φάκελο dist/ για τη σημερινή ημέρα (ώρα Αθήνας).
 // Χρήση: node src/build.js [YYYY-MM-DD]
-import { mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { mkdirSync, writeFileSync, rmSync, cpSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { skyForDay, todayInAthens, addDays } from './horoscope.js';
@@ -28,6 +28,7 @@ const pages = [
   P.privacyPage(),
   P.termsPage(),
   P.contactPage(),
+  P.guideNatalPage(),
   P.natalPage(bundle(join(ROOT, 'src'), 'natal-ui.js', "__m['natal-ui'].startNatalPage('../');")),
   P.dailyPage(bundle(join(ROOT, 'src'), 'daily-ui.js', "__m['daily-ui'].startDailyPage('../');")),
   P.synastryPage(bundle(join(ROOT, 'src'), 'synastry-ui.js', "__m['synastry-ui'].startSynastryPage('../');")),
@@ -50,6 +51,8 @@ if (config.siteUrl) {
   writeFileSync(join(OUT, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${config.siteUrl}/sitemap.xml\n`);
 }
 writeFileSync(join(OUT, '.nojekyll'), '');
+// Στατικά αρχεία (εικόνες οδηγών κ.λπ.)
+if (existsSync(join(ROOT, 'static'))) cpSync(join(ROOT, 'static'), OUT, { recursive: true });
 if (config.siteUrl) writeFileSync(join(OUT, 'CNAME'), new URL(config.siteUrl).host + '\n');
 
 // Αρχική χωρίς πλαίσιο εγγράφου, για προεπισκόπηση ως artifact

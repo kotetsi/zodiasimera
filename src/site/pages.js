@@ -23,15 +23,83 @@ const pairSlug = (i, j) => (i <= j ? `${SIGNS[i].slug}-${SIGNS[j].slug}` : `${SI
 const fem = (b) => b === 'venus' || b === 'moon';
 
 
+// Γεγονότα ουρανού στο διάστημα, με κατηγορία και στοιχεία για κάρτες
+// cat: 'moon' (φάσεις Σελήνης), 'retro' (στάσεις: ανάδρομος/ορθός), 'ingress' (αλλαγή ζωδίου)
+const cap = (x) => x[0].toUpperCase() + x.slice(1);
 function upcomingEvents(from, days, allPhases = false) {
   const to = new Date(from.getTime() + days * 86400000);
   const ev = [];
   const phaseGlyph = { new: '●', first: '◐', full: '○', last: '◑' };
-  for (const p of E.lunarPhases(from, to)) if (allPhases && (p.kind === 'first' || p.kind === 'last')) ev.push({ date: p.date, text: `${glyph(phaseGlyph[p.kind])} ${PHASE_NAMES[p.kind]} ${SIGNS[p.sign].inSign}` });
-  for (const p of E.lunarPhases(from, to)) if (p.kind === 'new' || p.kind === 'full') ev.push({ date: p.date, text: `${glyph(p.kind === 'new' ? '●' : '○')} ${PHASE_NAMES[p.kind]} ${SIGNS[p.sign].inSign} (${fmtDeg(p.deg)})` });
-  for (const b of PLANETS) for (const s of E.stations(b, from, to)) ev.push({ date: s.date, text: `${glyph(BODY_NAMES[b].glyph)} ${BODY_NAMES[b].nom[0].toUpperCase() + BODY_NAMES[b].nom.slice(1)} γίνεται ${s.kind === 'retrograde' ? (fem(b) ? 'ανάδρομη' : 'ανάδρομος') : 'ορθός'.replace('ός', fem(b) ? 'ή' : 'ός')} ${SIGNS[s.sign].inSign}` });
-  for (const b of ['sun', ...PLANETS]) for (const i of E.ingresses(b, from, to)) ev.push({ date: i.date, text: `${glyph(BODY_NAMES[b].glyph)} ${BODY_NAMES[b].nom[0].toUpperCase() + BODY_NAMES[b].nom.slice(1)} μπαίνει ${SIGNS[i.sign].inSign}${i.retro ? ' (ανάδρομα)' : ''}` });
+  for (const p of E.lunarPhases(from, to)) {
+    const major = p.kind === 'new' || p.kind === 'full';
+    if (!major && !allPhases) continue;
+    ev.push({ date: p.date, cat: 'moon', kind: p.kind, sign: p.sign, deg: p.deg, glyph: phaseGlyph[p.kind],
+      title: `${PHASE_NAMES[p.kind]} ${SIGNS[p.sign].inSign}`,
+      text: `${glyph(phaseGlyph[p.kind])} ${PHASE_NAMES[p.kind]} ${SIGNS[p.sign].inSign}${major ? ` (${fmtDeg(p.deg)})` : ''}` });
+  }
+  for (const b of PLANETS) for (const st of E.stations(b, from, to)) {
+    const word = st.kind === 'retrograde' ? (fem(b) ? 'ανάδρομη' : 'ανάδρομος') : (fem(b) ? 'ορθή' : 'ορθός');
+    const t = `${cap(BODY_NAMES[b].nom)} γίνεται ${word} ${SIGNS[st.sign].inSign}`;
+    ev.push({ date: st.date, cat: 'retro', kind: st.kind, body: b, sign: st.sign, deg: st.deg, glyph: BODY_NAMES[b].glyph, title: t, text: `${glyph(BODY_NAMES[b].glyph)} ${t}` });
+  }
+  for (const b of ['sun', ...PLANETS]) for (const i of E.ingresses(b, from, to)) {
+    const t = `${cap(BODY_NAMES[b].nom)} μπαίνει ${SIGNS[i.sign].inSign}${i.retro ? ' (ανάδρομα)' : ''}`;
+    ev.push({ date: i.date, cat: 'ingress', body: b, sign: i.sign, from: i.from, retro: i.retro, glyph: BODY_NAMES[b].glyph, title: t, text: `${glyph(BODY_NAMES[b].glyph)} ${t}` });
+  }
   return ev.sort((a, b) => a.date - b.date);
+}
+
+// «Τι είναι» (υπολογισμός) και «Τι σημαίνει» (ερμηνεία) για κάθε κάρτα της Εφημερίδας
+const PLANET_THEME = {
+  sun: 'ταυτότητα και ζωτικότητα', mercury: 'επικοινωνία, συμβόλαια, ταξίδια και τεχνολογία', venus: 'σχέσεις, χρήματα και ομορφιά',
+  mars: 'ενέργεια, δράση και συγκρούσεις', jupiter: 'ανάπτυξη, ευκαιρίες και πεποιθήσεις', saturn: 'ευθύνες, όρια και δομές',
+  uranus: 'αλλαγές και ελευθερία', neptune: 'όνειρα, έμπνευση και ευαισθησία', pluto: 'βαθιές αλλαγές και δύναμη',
+};
+const PHASE_WHAT = {
+  new: 'Η Σελήνη βρίσκεται ανάμεσα στη Γη και τον Ήλιο, οπότε δεν φαίνεται στον ουρανό.',
+  first: 'Η Σελήνη έχει διανύσει το ένα τέταρτο του κύκλου της και φωτίζεται το μισό της δίσκου.',
+  full: 'Η Σελήνη βρίσκεται ακριβώς απέναντι από τον Ήλιο, οπότε φωτίζεται όλος ο δίσκος της.',
+  last: 'Η Σελήνη έχει διανύσει τα τρία τέταρτα του κύκλου της και φωτίζεται ξανά το μισό της δίσκου.',
+};
+const PHASE_MEANS = {
+  new: 'Ώρα για νέα ξεκινήματα και προθέσεις',
+  first: 'Ώρα για δράση και διορθώσεις σε ό,τι ξεκίνησε στη Νέα Σελήνη',
+  full: 'Ώρα ολοκλήρωσης και ξεκαθαρίσματος',
+  last: 'Ώρα να κλείσεις εκκρεμότητες πριν από τον επόμενο κύκλο',
+};
+const themeOf = (sign) => SIGNS[sign].keywords.slice(0, 3).join(', ');
+function eventCard(e, root) {
+  let what, means, links;
+  const signLink = `<a href="${root}zodia/${SIGNS[e.sign].slug}/index.html">${SIGNS[e.sign].name}: η πρόβλεψη της ημέρας →</a>`;
+  if (e.cat === 'moon') {
+    what = PHASE_WHAT[e.kind];
+    means = `${PHASE_MEANS[e.kind]}, με έμφαση στα θέματα ${SIGNS[e.sign].gen}: ${themeOf(e.sign)}.`;
+    links = `${signLink} · <a href="${root}prosopiko/index.html">Πώς επηρεάζει τον χάρτη μου →</a>`;
+  } else if (e.cat === 'retro') {
+    what = e.kind === 'retrograde'
+      ? `Από τη Γη, ${BODY_NAMES[e.body].nom} φαίνεται να σταματά και να αρχίζει να κινείται προς τα πίσω στον ζωδιακό. Είναι οπτικό φαινόμενο.`
+      : `${cap(BODY_NAMES[e.body].nom)} σταματά τη φαινομενική πορεία προς τα πίσω και ξαναρχίζει να κινείται προς τα εμπρός.`;
+    means = e.kind === 'retrograde'
+      ? `Περίοδος αναθεώρησης σε θέματα όπως ${PLANET_THEME[e.body]}.`
+      : `Όσα είχαν κολλήσει σε θέματα όπως ${PLANET_THEME[e.body]} αρχίζουν σιγά σιγά να κινούνται.`;
+    links = `<a href="${root}anadromoi/index.html">Όλοι οι ανάδρομοι πλανήτες →</a>`;
+  } else {
+    what = `${cap(BODY_NAMES[e.body].nom)} περνά από ${SIGNS[e.from].acc} ${SIGNS[e.sign].inSign}${e.retro ? ', κινούμενος φαινομενικά προς τα πίσω' : ''}.`;
+    means = e.body === 'sun'
+      ? `Ξεκινά η περίοδος ${SIGNS[e.sign].gen}, με θέματα: ${themeOf(e.sign)}.`
+      : `Τα θέματα του πλανήτη (${PLANET_THEME[e.body]}) χρωματίζονται από το ύφος ${SIGNS[e.sign].gen}: ${themeOf(e.sign)}.`;
+    links = signLink;
+  }
+  const catName = { moon: 'Φάσεις Σελήνης', retro: 'Ανάδρομοι', ingress: 'Αλλαγές ζωδίου' }[e.cat];
+  const degText = e.deg != null ? ` · ${fmtDeg(e.deg)} ${SIGNS[e.sign].gen}` : '';
+  return `<article class="ev-card cat-${e.cat}" data-cat="${e.cat}">
+  <p class="ev-when num">${fmtDate(e.date, { weekday: 'long', day: 'numeric', month: 'long' })} · ${fmtTime(e.date)}</p>
+  <p><span class="ev-tag">${catName}</span></p>
+  <h3>${glyph(e.glyph)} ${e.title}<span class="muted ev-deg">${degText}</span></h3>
+  <p><strong>Τι είναι:</strong> ${what}</p>
+  <p><strong>Τι σημαίνει αστρολογικά:</strong> ${means}</p>
+  <p class="ev-links">${links}</p>
+</article>`;
 }
 
 function moonFacts(sky) {
@@ -276,6 +344,7 @@ export function aboutPage() {
 <section class="reading">
 <p>Κάθε μέρα υπολογίζουμε τις πραγματικές θέσεις του Ήλιου, της Σελήνης και των πλανητών για την ώρα Αθήνας, με αστρονομικά μοντέλα του Jet Propulsion Laboratory της NASA για τους πλανήτες και του Jean Meeus για τη Σελήνη. Οι φάσεις της Σελήνης και οι ανάδρομοι πλανήτες βγαίνουν από τους ίδιους υπολογισμούς.</p>
 <p>Οι ημερήσιες προβλέψεις στηρίζονται στους ηλιακούς οίκους: το ζώδιό σου θεωρείται πρώτος οίκος και κάθε επόμενο ζώδιο ο επόμενος οίκος. Όταν η Σελήνη ή ένας πλανήτης περνά από έναν οίκο, ενεργοποιεί τον αντίστοιχο τομέα της ζωής. Οι βαθμολογίες για την αγάπη, τη δουλειά και τη διάθεση προκύπτουν από τις όψεις της Σελήνης προς την Αφροδίτη, τον Ερμή, τον Δία, τον Κρόνο και τον Άρη.</p>
+<p>Αν ανοίγεις γενέθλιο χάρτη πρώτη φορά, δες τον οδηγό <a href="../odigos/pos-diavazo-genethlio-xarti/index.html">Πώς διαβάζω τον γενέθλιο χάρτη μου;</a></p>
 <p>Η αστρολογία δεν είναι επιστήμη. Οι προβλέψεις του site έχουν ψυχαγωγικό χαρακτήρα και δεν υποκαθιστούν επαγγελματικές συμβουλές για υγεία, οικονομικά ή νομικά θέματα.</p>
 </section>`;
   return { path, ...page({ path, title: 'Σχετικά', description: 'Πώς υπολογίζονται οι θέσεις των πλανητών και οι ημερήσιες προβλέψεις.', content }) };
@@ -312,6 +381,7 @@ export function natalPage(script) {
 <section class="stack"><p class="eyebrow">Δωρεάν υπολογισμός</p><h1>Γενέθλιος χάρτης</h1>
 <p class="lede">Βάλε ημερομηνία, ώρα και τόπο γέννησης για να δεις πού βρίσκονταν ο Ήλιος, η Σελήνη και οι πλανήτες τη στιγμή που γεννήθηκες, τον ωροσκόπο και τους οίκους σου. Ο υπολογισμός γίνεται στη συσκευή σου· τα στοιχεία σου δεν στέλνονται πουθενά.</p></section>
 ${birthFormHtml('Υπολόγισε τον χάρτη')}
+<p class="muted">Πρώτη φορά; <a href="../odigos/pos-diavazo-genethlio-xarti/index.html">Πώς διαβάζω τον γενέθλιο χάρτη μου</a>: οδηγός βήμα βήμα με παράδειγμα.</p>
 ${adSlot()}
 <div id="nc-result" class="stack-lg"><noscript><p>Ο υπολογισμός του χάρτη χρειάζεται JavaScript.</p></noscript></div>
 <script>${script}</script>`;
@@ -384,10 +454,19 @@ export function ephemerisPage(months, k) {
 <div class="month-nav">${nav(k - 1, `‹ ${months[k - 1] ? MONTHS[months[k - 1].m - 1] : ''}`)}${nav(k + 1, `${months[k + 1] ? MONTHS[months[k + 1].m - 1] : ''} ›`)}</div></section>
 <section class="table-wrap eph"><table><thead><tr><th>Ημέρα</th>${ALL.map((b) => `<th title="${BODY_NAMES[b].short}">${glyph(BODY_NAMES[b].glyph)}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></section>
 ${adSlot()}
-<section class="stack-lg"><h2>Τα γεγονότα του μήνα</h2>
-<div class="table-wrap"><table><thead><tr><th>Πότε</th><th>Γεγονός</th></tr></thead><tbody>
-${events.map((e) => `<tr><td class="num" style="white-space:nowrap">${fmtWhen(e.date)}</td><td>${e.text}</td></tr>`).join('')}
-</tbody></table></div><p class="muted">Ώρες Ελλάδας.</p></section>
+<section class="stack-lg" id="events"><h2>Τα γεγονότα του μήνα</h2>
+<div class="ev-filters" role="group" aria-label="Φίλτρο γεγονότων">
+${[['all', 'Όλα', events.length], ['moon', 'Φάσεις Σελήνης', events.filter((e) => e.cat === 'moon').length], ['retro', 'Ανάδρομοι', events.filter((e) => e.cat === 'retro').length], ['ingress', 'Αλλαγές ζωδίου', events.filter((e) => e.cat === 'ingress').length]]
+  .map(([key, label, n]) => `<button type="button" class="ev-filter${key === 'all' ? ' is-on' : ''}" data-filter="${key}" aria-pressed="${key === 'all'}"${n === 0 && key !== 'all' ? ' disabled' : ''}>${label} <span class="num">${n}</span></button>`).join('')}
+</div>
+<div class="ev-list">${events.map((e) => eventCard(e, root)).join('')}</div>
+<p class="muted">Ώρες Ελλάδας. «Τι είναι» = ο αστρονομικός υπολογισμός, «Τι σημαίνει» = η αστρολογική ερμηνεία.</p>
+<script>(function(){var KEY='zs-eph-filter',btns=document.querySelectorAll('.ev-filter'),cards=document.querySelectorAll('.ev-card');
+function apply(f){btns.forEach(function(b){var on=b.dataset.filter===f;b.classList.toggle('is-on',on);b.setAttribute('aria-pressed',on)});cards.forEach(function(c){c.hidden=!(f==='all'||c.dataset.cat===f)})}
+var saved='all';try{saved=localStorage.getItem(KEY)||'all'}catch(e){}
+var ok=[].some.call(btns,function(b){return b.dataset.filter===saved&&!b.disabled});apply(ok?saved:'all');
+btns.forEach(function(b){b.addEventListener('click',function(){apply(b.dataset.filter);try{localStorage.setItem(KEY,b.dataset.filter)}catch(e){}})});})();</script>
+</section>
 <section class="stack"><h2>Άλλοι μήνες</h2><div class="chips">${months.map((x, j) => `<a class="chip"${j === k ? ' aria-current="page"' : ''} href="${root}${monthPath(x, j === 0)}">${MONTHS[x.m - 1]} ${x.y}</a>`).join('')}</div></section>`;
   return { path, ...page({ path, title: `Εφημερίδα πλανητών ${title}`, description: `Θέσεις πλανητών ${MONTHS_GEN[mo.m - 1]} ${mo.y}: Ήλιος, Σελήνη, Ερμής, Αφροδίτη, Άρης, Δίας, Κρόνος, Ουρανός, Ποσειδώνας, Πλούτωνας και Δεσμός για κάθε μέρα, με ανάδρομους, φάσεις Σελήνης και εισόδους σε ζώδια.`, content }) };
 }
@@ -453,4 +532,89 @@ export function contactPage() {
 </section>
 <p class="muted">Οι προβλέψεις υπολογίζονται αυτόματα από τις θέσεις των πλανητών, οπότε δεν μπορούμε να απαντάμε σε προσωπικές αστρολογικές ερωτήσεις. Για τον δικό σου χάρτη δοκίμασε τον <a href="../xartis/index.html">γενέθλιο χάρτη</a> και το <a href="../prosopiko/index.html">προσωπικό ωροσκόπιο</a>.</p>`;
   return { path, ...page({ path, title: 'Επικοινωνία', description: `Επικοινωνία με το ${config.siteName}.`, content }) };
+}
+
+// ── Οδηγός: Πώς διαβάζω τον γενέθλιο χάρτη μου; ──────────────────────────
+export function guideNatalPage() {
+  const path = 'odigos/pos-diavazo-genethlio-xarti/index.html';
+  const r = '../../';
+  const fig = (file, alt, cap) => `<figure class="shot"><img src="../${file}" alt="${esc(alt)}" loading="lazy" decoding="async"><figcaption>${cap}</figcaption></figure>`;
+  const row = (cells) => `<tr>${cells.map((c) => `<td>${c}</td>`).join('')}</tr>`;
+  const content = `
+<article class="guide stack-lg">
+<header class="stack"><p class="eyebrow">Οδηγός για αρχάριους</p><h1>Πώς διαβάζω τον γενέθλιο χάρτη μου;</h1>
+<p class="lede">Ο γενέθλιος χάρτης είναι μια φωτογραφία του ουρανού τη στιγμή που γεννήθηκες: πού βρίσκονταν ο Ήλιος, η Σελήνη και οι πλανήτες, όπως φαίνονταν από τον τόπο γέννησής σου. Εδώ ανοίγουμε μαζί έναν χάρτη στο <a href="${r}xartis/index.html">εργαλείο μας</a> και τον διαβάζουμε βήμα βήμα.</p></header>
+
+<div class="panel stack"><h2>Πριν ξεκινήσουμε: θέσεις και ερμηνείες</h2>
+<p><strong>Οι θέσεις είναι υπολογισμός.</strong> Ότι ο Ήλιος βρισκόταν στις 24° των Διδύμων είναι αστρονομικό δεδομένο, που το εργαλείο υπολογίζει με τα μοντέλα του JPL της NASA για τους πλανήτες και του Jean Meeus για τη Σελήνη.</p>
+<p><strong>Οι ερμηνείες είναι αστρολογία.</strong> Τι «σημαίνει» ο Ήλιος στους Διδύμους είναι παράδοση και ερμηνεία, με ψυχαγωγικό χαρακτήρα.</p>
+<p>Στο εργαλείο, οι πίνακες και ο τροχός δείχνουν τις θέσεις. Οι κάρτες με κείμενο («Τα τρία βασικά», «Οι πλανήτες σου») δείχνουν τις ερμηνείες.</p></div>
+
+<section class="stack"><h2>Το παράδειγμά μας</h2>
+<p>Χρησιμοποιούμε έναν φανταστικό χάρτη: γέννηση <strong>15 Ιουνίου 1985, 08:30, Θεσσαλονίκη</strong>. Βάλε τα ίδια στοιχεία στον <a href="${r}xartis/index.html">γενέθλιο χάρτη</a> για να βλέπεις ό,τι περιγράφουμε, ή βάλε κατευθείαν τα δικά σου.</p>
+${fig('1-forma.webp', 'Η φόρμα του γενέθλιου χάρτη συμπληρωμένη με 15/06/1985, 08:30, Θεσσαλονίκη', 'Η φόρμα με τα στοιχεία του παραδείγματος. Με ροζ: ο τόπος γέννησης και η επιλογή «Δεν ξέρω την ώρα».')}</section>
+
+<section class="stack"><h2>Βήμα 1: Έλεγξε τη γραμμή με τα στοιχεία</h2>
+<p>Κάτω από τον τίτλο του χάρτη υπάρχει μια γκρι γραμμή με την ημερομηνία, τον τόπο, τη διαφορά ώρας και τις συντεταγμένες. Κοίτα κυρίως το <strong>UTC+03:00</strong>: δείχνει πόσες ώρες μπροστά από την παγκόσμια ώρα ήταν τα ρολόγια στον τόπο και τη χρονιά γέννησης. Τον Ιούνιο του 1985 η Ελλάδα είχε θερινή ώρα, άρα +3. Το εργαλείο το βρίσκει μόνο του, αλλά αν δεις κάτι που δεν σου φαίνεται λογικό, εδώ θα το εντοπίσεις.</p>
+${fig('2-stoixeia.webp', 'Η γραμμή στοιχείων κάτω από τον τίτλο του χάρτη', 'Η γραμμή στοιχείων: ημερομηνία, τόπος, UTC+03:00, συντεταγμένες, σύστημα οίκων.')}</section>
+
+<section class="stack"><h2>Βήμα 2: Ο Ήλιος, το ζώδιό σου</h2>
+<p>Στον πίνακα δίπλα στον τροχό, η πρώτη γραμμή είναι:</p>
+<div class="table-wrap"><table><thead><tr><th>Σώμα</th><th>Ζώδιο</th><th>Μοίρες</th><th>Οίκος</th></tr></thead><tbody>${row(['Ήλιος', 'Δίδυμοι', '24°04′', '12'])}</tbody></table></div>
+<p><strong>Η θέση:</strong> τη στιγμή της γέννησης ο Ήλιος βρισκόταν 24 μοίρες και 4 πρώτα λεπτά μέσα στο ζώδιο των Διδύμων. Κάθε ζώδιο έχει 30 μοίρες και κάθε μοίρα 60 πρώτα λεπτά (′).</p>
+<p><strong>Η ερμηνεία:</strong> ο Ήλιος δείχνει το «ζώδιο» με την καθημερινή έννοια, τον βασικό σου χαρακτήρα και τι σε κινητοποιεί. Στην κάρτα «Ήλιος» της ενότητας «Τα τρία βασικά» διαβάζεις: «Εκφράζεις την ταυτότητά σου και κυνηγάς τους στόχους σου με περιέργεια, ευελιξία και πολλή κουβέντα, αλλάζοντας εύκολα κατεύθυνση.» Από την κάρτα πας και στη <a href="${r}zodia/didymoi/index.html">σημερινή πρόβλεψη των Διδύμων</a>.</p>
+${fig('3-ilios.webp', 'Οι κάρτες Ήλιος, Σελήνη και Ωροσκόπος του παραδείγματος', 'Τα τρία βασικά. Με ροζ: η κάρτα του Ήλιου.')}</section>
+
+<section class="stack"><h2>Βήμα 3: Η Σελήνη, τα συναισθήματά σου</h2>
+<div class="table-wrap"><table><thead><tr><th>Σώμα</th><th>Ζώδιο</th><th>Μοίρες</th><th>Οίκος</th></tr></thead><tbody>${row(['Σελήνη', 'Ταύρος', '17°24′', '11'])}</tbody></table></div>
+<p><strong>Η θέση:</strong> η Σελήνη ήταν στις 17°24′ του Ταύρου. Είναι το πιο γρήγορο σώμα του χάρτη: αλλάζει ζώδιο περίπου κάθε δυόμισι μέρες.</p>
+<p><strong>Η ερμηνεία:</strong> η Σελήνη μιλά για το τι χρειάζεσαι για να νιώσεις ασφάλεια και πώς αντιδράς συναισθηματικά. Πολλοί αναγνωρίζουν τον εαυτό τους περισσότερο στη Σελήνη παρά στον Ήλιο. Στην κάρτα «Σελήνη» διαβάζεις ότι βρίσκεις ηρεμία στη σταθερότητα, στο καλό φαγητό και στη σωματική επαφή.</p></section>
+
+<section class="stack"><h2>Βήμα 4: Ο ωροσκόπος, πώς σε βλέπουν</h2>
+<div class="table-wrap"><table><thead><tr><th>Σημείο</th><th>Ζώδιο</th><th>Μοίρες</th></tr></thead><tbody>${row(['Ωροσκόπος', 'Καρκίνος', '26°03′'])}${row(['Μεσουράνημα', 'Κριός', '9°40′'])}</tbody></table></div>
+<p><strong>Η θέση:</strong> ο ωροσκόπος είναι το σημείο του ζωδιακού που ανέτειλε στον ανατολικό ορίζοντα τη στιγμή της γέννησης. Στον τροχό είναι η χοντρή γραμμή αριστερά με την ένδειξη <strong>ΩΡ</strong>. Το μεσουράνημα είναι το ψηλότερο σημείο του ουρανού εκείνη τη στιγμή, η χοντρή γραμμή επάνω με την ένδειξη <strong>ΜΟ</strong>.</p>
+<p><strong>Η ερμηνεία:</strong> ο ωροσκόπος δείχνει την πρώτη εντύπωση που δίνεις και τον τρόπο που ξεκινάς κάτι νέο. Με ωροσκόπο Καρκίνο, η κάρτα γράφει ότι δίνεις αρχικά μια εικόνα συγκρατημένη και τρυφερή.</p>
+<p>Ο ωροσκόπος αλλάζει ζώδιο περίπου κάθε δύο ώρες, και μία μοίρα περίπου κάθε τέσσερα λεπτά. Γι’ αυτό η ακριβής ώρα γέννησης μετράει.</p>
+${fig('4-trochos.webp', 'Ο ζωδιακός τροχός του παραδείγματος με κυκλωμένες τις ενδείξεις ΩΡ και ΜΟ', 'Ο τροχός: ΩΡ = ωροσκόπος (αριστερά), ΜΟ = μεσουράνημα (επάνω). Οι αριθμοί 1–12 στο εσωτερικό είναι οι οίκοι.')}</section>
+
+<section class="stack"><h2>Βήμα 5: Οι οίκοι, σε ποιον τομέα της ζωής</h2>
+<p>Η στήλη <strong>Οίκος</strong> λέει σε ποιον από τους 12 οίκους πέφτει κάθε πλανήτης. Οι οίκοι χωρίζουν τον ουρανό σε 12 τομείς της ζωής, ξεκινώντας από τον ωροσκόπο: ο 1ος είναι ο εαυτός, ο 7ος οι σχέσεις, ο 10ος η καριέρα κ.λπ.</p>
+<p>Στο παράδειγμα ο Ήλιος είναι στον <strong>12ο οίκο</strong>. Στην ενότητα «Οι πλανήτες σου» διαβάζεις: «Η ζωτικότητα και η ανάγκη σου να ξεχωρίσεις στρέφονται στον τομέα της ξεκούρασης και του εσωτερικού σου κόσμου.» Κάθε κάρτα εκεί συνδυάζει το ζώδιο του πλανήτη (πώς εκφράζεται) με τον οίκο του (πού εκφράζεται). Για το πού ακριβώς ξεκινά κάθε οίκος, άνοιξε τις «Ακμές οίκων» κάτω από τον πίνακα.</p>
+${fig('5-planites.webp', 'Η ενότητα Οι πλανήτες σου με την κάρτα Ο Ήλιος στον 12ο οίκο', 'Οι πλανήτες σου. Με ροζ: ο Ήλιος στον 12ο οίκο.')}</section>
+
+<section class="stack"><h2>Βήμα 6: Ο τροχός με μια ματιά</h2>
+<ul class="plain">
+<li><strong>Εξωτερικός δακτύλιος:</strong> τα 12 ζώδια, με χρώμα ανά στοιχείο (φωτιά, γη, αέρας, νερό).</li>
+<li><strong>Σύμβολα στο εσωτερικό:</strong> οι πλανήτες. Μια μικρή γραμμή δείχνει την ακριβή τους μοίρα. Αν περάσεις το ποντίκι από πάνω, βλέπεις όνομα, μοίρες και ζώδιο.</li>
+<li><strong>Μικρό «R»:</strong> ο πλανήτης ήταν ανάδρομος (βήμα 8).</li>
+<li><strong>Γραμμές στο κέντρο:</strong> οι όψεις. Συνεχείς μωβ για τις αρμονικές, διακεκομμένες ροζ για τις τεταμένες.</li>
+</ul></section>
+
+<section class="stack"><h2>Βήμα 7: Οι όψεις, πώς «μιλάνε» οι πλανήτες μεταξύ τους</h2>
+<p>Όψη λέγεται μια συγκεκριμένη γωνία ανάμεσα σε δύο πλανήτες: 0° (σύνοδος), 60° (εξάγωνο), 90° (τετράγωνο), 120° (τρίγωνο), 180° (αντίθεση). Ο πίνακας «Όψεις» τις δείχνει με τη στενότερη πρώτη.</p>
+<p>Παράδειγμα από τον χάρτη μας: <strong>Σελήνη □ Δίας, απόκλιση 0°34′</strong>. Η απόκλιση λέει πόσο απέχει η γωνία από το ακριβές τετράγωνο: όσο μικρότερη, τόσο πιο έντονη θεωρείται η όψη. Η στήλη «Σημασία» δίνει τη γενική ερμηνεία του τύπου όψης.</p></section>
+
+<section class="stack"><h2>Βήμα 8: Τι σημαίνει το «R»</h2>
+<p>Στο παράδειγμα, Δίας, Κρόνος, Ουρανός, Ποσειδώνας και Πλούτωνας έχουν <strong>R</strong>: ήταν ανάδρομοι. Από τη Γη έμοιαζαν να κινούνται προς τα πίσω στον ζωδιακό. Είναι οπτικό φαινόμενο, όχι πραγματική αλλαγή πορείας. Αστρολογικά θεωρείται ότι η ενέργεια του πλανήτη στρέφεται περισσότερο προς τα μέσα. Δες και πότε είναι ανάδρομοι οι πλανήτες αυτή την περίοδο στη σελίδα <a href="${r}anadromoi/index.html">Ανάδρομοι πλανήτες</a>.</p></section>
+
+<section class="stack"><h2>Αν δεν ξέρεις την ώρα γέννησης</h2>
+<p>Τσέκαρε <strong>«Δεν ξέρω την ώρα»</strong>. Το εργαλείο υπολογίζει τότε τις θέσεις για το μεσημέρι (12:00) της ημέρας γέννησης και:</p>
+<ul class="plain">
+<li><strong>Δεν δείχνει ωροσκόπο, μεσουράνημα και οίκους.</strong> Η κάρτα «Ωροσκόπος» γράφει «Χρειάζεται ώρα», η στήλη «Οίκος» έχει παύλες και λείπουν οι «Ακμές οίκων».</li>
+<li><strong>Οι αργοί πλανήτες μένουν σχεδόν ίδιοι.</strong> Στο παράδειγμα ο Κρόνος είναι 22°41′ Σκορπιός στις 12:00 και 22°42′ στις 08:30.</li>
+<li><strong>Η Σελήνη μπορεί να διαφέρει αρκετά.</strong> Στο παράδειγμα είναι 19°08′ Ταύρος στις 12:00 αντί για 17°24′ στις 08:30. Μέσα σε μια μέρα κινείται έως και 15°, οπότε αν βρίσκεται κοντά στην αρχή ή στο τέλος ενός ζωδίου, το εργαλείο σε προειδοποιεί ότι μπορεί να ήταν στο διπλανό.</li>
+</ul>
+<p>Την ακριβή ώρα θα τη βρεις στη ληξιαρχική πράξη γέννησης.</p>
+${fig('6-xoris-ora.webp', 'Οι κάρτες του παραδείγματος χωρίς ώρα γέννησης, με την κάρτα Χρειάζεται ώρα', 'Χωρίς ώρα γέννησης: η κάρτα του ωροσκόπου γράφει «Χρειάζεται ώρα».')}</section>
+
+<section class="panel stack"><h2>Τι να κάνεις μετά</h2>
+<ul class="plain">
+<li>Δες πώς κινούνται σήμερα οι πλανήτες πάνω στον χάρτη σου στο <a href="${r}prosopiko/index.html">Προσωπικό ωροσκόπιο</a>. Αν τσέκαρες «Θυμήσου τα στοιχεία μου», ανοίγει κατευθείαν.</li>
+<li>Σύγκρινε τον χάρτη σου με κάποιον άλλο στη <a href="${r}synastria/index.html">Συναστρία</a>.</li>
+<li>Δες πού βρίσκονται οι πλανήτες κάθε μέρα του μήνα στην <a href="${r}efimerida/index.html">Εφημερίδα πλανητών</a>.</li>
+</ul>
+<p><a class="btn" href="${r}xartis/index.html">Φτιάξε τον χάρτη σου</a></p></section>
+</article>`;
+  const jsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: 'Πώς διαβάζω τον γενέθλιο χάρτη μου;', inLanguage: 'el', datePublished: '2026-11-05', author: { '@type': 'Organization', name: config.siteName }, publisher: { '@type': 'Organization', name: config.company.name } };
+  return { path, ...page({ path, title: 'Πώς διαβάζω τον γενέθλιο χάρτη μου; Οδηγός για αρχάριους', titleExact: true, description: 'Βήμα βήμα: Ήλιος, Σελήνη, ωροσκόπος, οίκοι και όψεις στον δωρεάν γενέθλιο χάρτη του Ζώδια Σήμερα, με παράδειγμα και τι αλλάζει αν δεν ξέρεις την ώρα.', content, jsonLd }) };
 }

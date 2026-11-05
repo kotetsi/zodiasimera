@@ -163,6 +163,40 @@ details summary { cursor: pointer; color: var(--muted); }
 .footer-links { display: flex; flex-wrap: wrap; gap: 6px 16px; }
 .linkish { font: inherit; color: inherit; background: none; border: 0; padding: 0; text-decoration: underline; text-decoration-color: var(--brass); text-underline-offset: 3px; cursor: pointer; }
 .legal h2 { font-size: var(--step-2); margin-top: 8px; }
+.whatis { display: inline-block; position: relative; vertical-align: middle; text-transform: none; letter-spacing: 0; font-weight: 400; }
+.whatis > summary { list-style: none; cursor: pointer; display: inline-grid; place-items: center; width: 1.25rem; height: 1.25rem; border-radius: 50%;
+  font: 700 .72rem/1 var(--body); color: var(--violet); background: var(--violet-soft); margin-left: 4px; }
+.whatis > summary::-webkit-details-marker { display: none; }
+.whatis[open] > summary { color: #fff; background: var(--violet); }
+.whatis-pop { display: block; position: absolute; z-index: 15; top: calc(100% + 6px); left: -8px; width: min(18rem, 80vw); padding: 12px 14px; border-radius: 14px;
+  background: var(--surface); color: var(--ink); border: 1px solid var(--line); box-shadow: 0 12px 30px -12px rgba(30,10,80,.4);
+  font: 400 .88rem/1.5 var(--body); text-align: left; white-space: normal; }
+.whatis-pop strong { display: block; margin-bottom: 2px; color: var(--violet); }
+th .whatis-pop, .legend .whatis-pop { left: auto; right: -8px; }
+.legend { font-size: .85rem; }
+.ev-filters { display: flex; flex-wrap: wrap; gap: 8px; }
+.ev-filter { font: 600 .9rem var(--body); color: var(--violet); background: var(--violet-soft); border: 0; border-radius: 999px; padding: 8px 14px; cursor: pointer; }
+.ev-filter .num { opacity: .7; margin-left: 2px; }
+.ev-filter.is-on { color: #fff; background: var(--violet); }
+.ev-filter:disabled { opacity: .4; cursor: default; }
+.ev-list { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 21rem), 1fr)); }
+.ev-card { display: grid; gap: 8px; align-content: start; padding: 18px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); }
+.ev-card[hidden] { display: none; }
+.ev-card h3 { font-size: var(--step-1); }
+.ev-deg { font: 400 .85rem var(--body); }
+.ev-when { color: var(--violet); font-weight: 600; font-size: .88rem; }
+.ev-tag { display: inline-block; font: 700 .72rem var(--body); letter-spacing: .05em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; }
+.cat-moon .ev-tag { background: var(--water-soft); color: var(--water); }
+.cat-retro .ev-tag { background: var(--brass-soft); color: var(--brass); }
+.cat-ingress .ev-tag { background: var(--earth-soft); color: var(--earth); }
+.ev-card p { font-size: .95rem; }
+.ev-links { font-size: .88rem; }
+.guide { max-width: 46rem; }
+.guide .panel { border-radius: 18px; }
+.shot { margin: 6px 0 0; display: grid; gap: 8px; }
+.shot img { width: 100%; height: auto; border-radius: 14px; border: 1px solid var(--line); background: #fff; }
+.shot figcaption { font-size: .86rem; color: var(--muted); }
+a.btn { display: inline-block; text-decoration: none; }
 footer.site { border-top: 1px solid var(--line); padding-block: 20px 36px; font-size: .85rem; color: var(--muted); display: grid; gap: 8px; }
 @media (prefers-reduced-motion: no-preference) { .sign-card { transition: border-color .15s, transform .15s, box-shadow .15s; } }
 /* Νυχτερινό πάνελ της αρχικής: ο ουρανός της ημέρας σε βαθύ μπλε-μωβ με αστεράκια */
@@ -198,10 +232,10 @@ export function adSlot() {
 }
 
 // Επιστρέφει { head, body } — η build τα τυλίγει σε πλήρες έγγραφο
-export function page({ path, title, description, content, jsonLd }) {
+export function page({ path, title, titleExact = false, description, content, jsonLd }) {
   const depth = path.split('/').length - 1;
   const root = depth ? '../'.repeat(depth) : '';
-  const fullTitle = title ? `${title} | ${config.siteName}` : `${config.siteName} | ${config.tagline}`;
+  const fullTitle = titleExact ? title : title ? `${title} | ${config.siteName}` : `${config.siteName} | ${config.tagline}`;
   const canonical = config.siteUrl ? `${config.siteUrl}/${path.replace(/index\.html$/, '')}` : '';
   const head = [
     `<title>${esc(fullTitle)}</title>`,
@@ -231,6 +265,7 @@ ${config.gaId ? `<div class="consent" id="zs-consent" hidden role="dialog" aria-
 <footer class="site"><p>${esc(config.siteName)} · Οι θέσεις των πλανητών υπολογίζονται καθημερινά για ώρα Αθήνας. Οι προβλέψεις είναι για ψυχαγωγικούς σκοπούς.</p>
 <p class="footer-links"><a href="${root}sxetika/index.html">Σχετικά</a><a href="${root}epikoinonia/index.html">Επικοινωνία</a><a href="${root}apporito/index.html">Πολιτική απορρήτου</a><a href="${root}oroi/index.html">Όροι χρήσης</a>${config.gaId ? '<button type="button" class="linkish" id="zs-reopen">Ρυθμίσεις cookies</button>' : ''}</p>
 <p>© ${new Date().getFullYear()} ${esc(config.company.name)}</p></footer>
+<script>document.addEventListener('click',function(e){document.querySelectorAll('details.whatis[open]').forEach(function(d){if(!d.contains(e.target))d.open=false})});document.addEventListener('keydown',function(e){if(e.key==='Escape')document.querySelectorAll('details.whatis[open]').forEach(function(d){d.open=false})});</script>
 </div>`;
   return { head, body, root };
 }
