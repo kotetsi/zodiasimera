@@ -5,6 +5,7 @@ import * as CT from './content/composite-texts.js';
 import { natalChart } from './natal.js';
 import { synastry } from './synastry.js';
 import { compositeChart, COMPOSITE_BODIES } from './composite.js';
+import { glance } from './composite-glance.js';
 import { initFields, fillFields, readFields, loadSavedBirth, toInput } from './birth-form.js';
 import { fmtDeg, wheelSvg } from './chart-svg.js';
 
@@ -119,7 +120,7 @@ ${a.uncertain ? '<p class="note">Χωρίς ώρα γέννησης αυτή η 
 <p class="muted">${pglyph(a.a)}${pname(a.a)} ${where(a.a)} · ${pglyph(a.b)}${pname(a.b)} ${where(a.b)}</p>`;
   }
 
-  function select(key) {
+  function select(key, scroll = true) {
     const box = $('comp-detail');
     const wheel = document.querySelector('#pane-comp .wheel');
     let html, hit = new Set(), lines = new Set();
@@ -138,7 +139,40 @@ ${a.uncertain ? '<p class="note">Χωρίς ώρα γέννησης αυτή η 
     wheel.querySelectorAll('.wasp').forEach((el) => el.classList.toggle('is-sel', lines.has(el.dataset.key)));
     document.querySelectorAll('#pane-comp .sel-list [data-sel]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.sel === key)));
     const r = box.getBoundingClientRect();
-    if (key && (r.top < 0 || r.top > innerHeight - 80)) box.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'nearest' });
+    if (scroll && key && (r.top < 0 || r.top > innerHeight - 80)) box.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'nearest' });
+  }
+
+  // ── «Η σχέση σας με μια ματιά» ──────────────────────────────────────
+  const kindOf = (a) => (a.aspect === 'conjunction' ? 'conj' : ASPECT_NAMES[a.aspect].harmony > 0 ? 'good' : 'hard');
+  function glanceHtml() {
+    const gl = glance(comp.aspects);
+    const card = (id, res) => {
+      const T = CT.GLANCE[id], a = res.pick;
+      let text, question;
+      if (!a) { text = T.none; question = T.noneQuestion; }
+      else if (id === 'friction') {
+        const dom = CT.FRICTION_DOMAIN.find(([b]) => b === a.a || b === a.b) || [null, 'αντιδράτε ο καθένας', CT.GLANCE.friction.noneQuestion];
+        text = T.text(dom[1]); question = dom[2];
+      } else { text = T.text[kindOf(a)]; question = T.question[kindOf(a)]; }
+      const why = a ? `
+  <button type="button" class="btn-ghost glance-why-btn" aria-expanded="false" aria-controls="why-${id}" data-why="${aspId(a)}">Δες γιατί</button>
+  <div id="why-${id}" class="glance-why stack" hidden>
+    <p><strong>${pglyph(a.a)}${esc(aspTitle(a))} ${pglyph(a.b).trim()}</strong> <span class="tone ${aspToneCls(a)}">${aspTone(a)}</span></p>
+    <p>${esc(aspText(a))}</p>
+    ${a.uncertain ? '<p class="muted">Ενδεικτική όψη: χωρίς ώρα γέννησης η θέση της Σελήνης είναι κατά προσέγγιση.</p>' : ''}
+    <p class="muted">${res.count > 1 ? `Υπολογίστηκαν ${res.count} σχετικές όψεις. Επιλέγουμε πρώτα το ζεύγος πλανητών που αφορά πιο άμεσα ${T.theme}, και μετά την πιο ακριβή όψη (απόκλιση ${fmtDeg(a.orb)}).` : `Είναι η μόνη σχετική όψη που υπολογίστηκε (απόκλιση ${fmtDeg(a.orb)}).`}</p>
+    <button type="button" class="chip-btn" data-goto="${aspId(a)}">Δες τη στον χάρτη</button>
+  </div>` : '';
+      return `<article class="panel stack glance-card glance-${id}">
+  <h3>${T.title}</h3>
+  <p>${esc(text)}</p>${why}
+  <div class="glance-q"><span class="eyebrow">Για συζήτηση</span><p>${esc(question)}</p></div>
+</article>`;
+    };
+    return `<section class="stack-lg glance" aria-labelledby="glance-h">
+  <h2 id="glance-h">Η σχέση σας με μια ματιά</h2>
+  <div class="trio">${card('attraction', gl.attraction)}${card('communication', gl.communication)}${card('friction', gl.friction)}</div>
+</section>`;
   }
 
   function compositeHtml(ca, cb, A, B, nameA, nameB) {
@@ -149,7 +183,7 @@ ${a.uncertain ? '<p class="note">Χωρίς ώρα γέννησης αυτή η 
     const pointBtns = keys.map((k) => `<li><button type="button" class="sel-btn" data-sel="${k}" aria-pressed="false"><span class="sel-name">${pglyph(k)}${pname(k)}</span><span class="sel-meta">${where(k)}${k !== 'asc' && k !== 'mc' && comp.pos[k].house ? ` · ${comp.pos[k].house}ος οίκος` : ''}${(comp.uncertainty[k] || 0) >= 1 ? ' · ≈' : ''}</span></button></li>`).join('');
     const aspBtns = comp.aspects.map((a) => `<li><button type="button" class="sel-btn" data-sel="${aspId(a)}" aria-pressed="false"><span class="sel-name">${g(ASPECT_NAMES[a.aspect].glyph)} ${esc(aspTitle(a))}</span><span class="sel-meta"><span class="tone ${aspToneCls(a)}">${aspTone(a)}</span> ${fmtDeg(a.orb)}${a.uncertain ? ' · ενδεικτική' : ''}</span></button></li>`).join('');
     const amb = COMPOSITE_BODIES.filter((k) => comp.pos[k].ambiguous);
-    return `
+    return `${glanceHtml()}
 <section class="stack">
   <p>Ο Χάρτης Σχέσης (σύνθετος χάρτης) φτιάχνεται από τα μεσοσημεία των δύο χαρτών: για κάθε πλανήτη παίρνουμε το σημείο ακριβώς στη μέση ανάμεσα στις δύο θέσεις (${esc(nameA)} και ${esc(nameB)}), πάνω στο κοντινότερο τόξο. Το αποτέλεσμα περιγράφει τη σχέση σαν τρίτη οντότητα: τι χαρακτήρα έχει, τι τη δυναμώνει και τι τη δοκιμάζει.</p>
   ${missing.length ? `<p class="note">Λείπει η ώρα γέννησης (${missing.map(esc).join(', ')}). Δείχνουμε μόνο ό,τι υπολογίζεται αξιόπιστα: πλανήτες και όψεις, χωρίς ωροσκόπο και οίκους. Η Σελήνη είναι κατά προσέγγιση (περίπου ±${Math.round(comp.uncertainty.moon)}°), οπότε οι όψεις της σημειώνονται ως ενδεικτικές.</p>` : ''}
@@ -211,6 +245,20 @@ ${a.uncertain ? '<p class="note">Χωρίς ώρα γέννησης αυτή η 
     });
     const pane = $('pane-comp');
     pane.addEventListener('click', (ev) => {
+      const wb = ev.target.closest('[data-why]');
+      if (wb) {
+        const open = wb.getAttribute('aria-expanded') !== 'true';
+        wb.setAttribute('aria-expanded', String(open));
+        $(wb.getAttribute('aria-controls')).hidden = !open;
+        if (open) select(wb.dataset.why, false);
+        return;
+      }
+      const gt = ev.target.closest('[data-goto]');
+      if (gt) {
+        select(gt.dataset.goto, false);
+        pane.querySelector('.comp-grid').scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'start' });
+        return;
+      }
       const b = ev.target.closest('[data-sel]');
       if (b) { select(b.getAttribute('aria-pressed') === 'true' ? null : b.dataset.sel); return; }
       const w = ev.target.closest('.wpl, .wasp');
@@ -239,7 +287,7 @@ ${a.uncertain ? '<p class="note">Χωρίς ώρα γέννησης αυτή η 
   const ex = $('syn-example');
   if (ex) ex.addEventListener('click', () => {
     const A = toInput({ name: 'Μαρία', date: '1988-03-12', time: '14:20', timeKnown: true, place: { name: 'Πάτρα, Δυτική Ελλάδα', lat: 38.25, lon: 21.73, tz: 'Europe/Athens' } });
-    const B = toInput({ name: 'Νίκος', date: '1985-06-15', time: '08:30', timeKnown: true, place: { name: 'Θεσσαλονίκη, Κεντρική Μακεδονία', lat: 40.64, lon: 22.94, tz: 'Europe/Athens' } });
+    const B = toInput({ name: 'Νίκος', date: '1985-06-24', time: '08:30', timeKnown: true, place: { name: 'Θεσσαλονίκη, Κεντρική Μακεδονία', lat: 40.64, lon: 22.94, tz: 'Europe/Athens' } });
     go(A, B, { tab: 'comp', example: true });
   });
 }

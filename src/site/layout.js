@@ -225,6 +225,16 @@ a.btn { display: inline-block; text-decoration: none; }
 .sel-meta .tone { margin-left: 0; }
 .chip-btn { font: 600 .85rem var(--body); color: var(--violet); background: var(--violet-soft); border: 0; border-radius: 999px; padding: 7px 12px; cursor: pointer; }
 .chip-btn:hover { background: var(--violet); color: #fff; }
+.glance-card { align-content: start; }
+.glance-card h3 { font-family: var(--display); font-size: var(--step-1); }
+.glance-attraction h3 { color: var(--brass); } .glance-communication h3 { color: var(--violet); } .glance-friction h3 { color: var(--fire); }
+.glance-why-btn { justify-self: start; }
+.glance-why-btn[aria-expanded=true] { background: var(--violet); color: #fff; }
+.glance-why-btn:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+.glance-why { background: var(--violet-soft); border-radius: 12px; padding: 12px 14px; font-size: .93rem; }
+.glance-why .chip-btn { justify-self: start; background: var(--surface); }
+.glance-q { border-top: 1px dashed var(--line); padding-top: 10px; }
+.glance-q p { font-style: italic; margin-top: 4px; }
 footer.site { border-top: 1px solid var(--line); padding-block: 20px 36px; font-size: .85rem; color: var(--muted); display: grid; gap: 8px; }
 @media (prefers-reduced-motion: no-preference) { .sign-card { transition: border-color .15s, transform .15s, box-shadow .15s; } }
 /* Νυχτερινό πάνελ της αρχικής: ο ουρανός της ημέρας σε βαθύ μπλε-μωβ με αστεράκια */
