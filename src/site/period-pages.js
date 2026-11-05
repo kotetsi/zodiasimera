@@ -108,7 +108,7 @@ export function periodSignPage(ps, i) {
   const tabs = `<nav class="chips" aria-label="Προβλέψεις ${s.gen}"><a class="chip" href="${root}zodia/${s.slug}/index.html">Σήμερα</a><a class="chip"${ps.kind === 'week' ? ' aria-current="page"' : ''} href="${root}${periodPath('week', s)}">Εβδομάδα</a><a class="chip"${ps.kind === 'month' ? ' aria-current="page"' : ''} href="${root}${periodPath('month', s)}">Μήνας</a><a class="chip" href="${root}zodia-${FEATURED_YEAR}/${s.slug}/index.html">${FEATURED_YEAR}</a></nav>`;
   const others = SIGNS.map((o) => `<a class="chip"${o === s ? ' aria-current="page"' : ''} href="${root}${periodPath(ps.kind, o)}">${glyph(o.symbol)} ${o.name}</a>`).join('');
   const content = `
-<section class="hero-sign el-${s.element}">${glyph(s.symbol)}<h1>${s.name}: ${ps.kind === 'week' ? 'εβδομαδιαία' : 'μηνιαία'} πρόβλεψη</h1><p class="muted">${esc(label)}</p></section>
+<section class="hero-sign el-${s.element}">${glyph(s.symbol)}<h1>${s.name}</h1><p class="muted">${ps.kind === 'week' ? 'Εβδομαδιαία' : 'Μηνιαία'} πρόβλεψη · ${esc(label)}</p></section>
 ${tabs}
 <section class="split">
   <div class="panel stack"><h2>${ps.kind === 'week' ? 'Η εβδομάδα' : 'Ο μήνας'} με μια ματιά</h2>

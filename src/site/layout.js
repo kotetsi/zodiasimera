@@ -232,6 +232,7 @@ a.btn { display: inline-block; text-decoration: none; }
 details.faq { border-bottom: 1px solid var(--line); padding: 10px 0; }
 details.faq summary { font-weight: 600; cursor: pointer; }
 details.faq p { margin: 8px 0 0; }
+.hero-sign h1 { overflow-wrap: break-word; min-width: 0; }
 .export-row { display: grid; gap: 8px; justify-items: center; text-align: center; }
 .export-row .chips { justify-content: center; }
 .merch-cta { display: grid; gap: 6px; justify-items: center; }
