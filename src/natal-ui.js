@@ -6,6 +6,8 @@ import * as NT from './content/natal-texts.js';
 import { natalChart, utcOffsetLabel } from './natal.js';
 import { wheelSvg, fmtDeg } from './chart-svg.js';
 import { whatIs } from './content/glossary.js';
+import { exportButtons, downloadChart } from './chart-export.js';
+import config from './config.js';
 
 export function startNatalPage(root) {
   const $ = (id) => document.getElementById(id);
@@ -50,6 +52,11 @@ export function startNatalPage(root) {
     const glyphOf = (k) => (k === 'asc' || k === 'mc' ? '' : g(BODY_NAMES[k].glyph) + ' ');
     const asps = ch.aspects.map((a) => `<tr><td>${glyphOf(a.a)}${nameOf(a.a)}</td><td>${g(ASPECT_NAMES[a.aspect].glyph)} ${ASPECT_NAMES[a.aspect].name}</td><td>${glyphOf(a.b)}${nameOf(a.b)}</td><td class="num">${fmtDeg(a.orb)}</td><td class="muted">${NT.ASPECT_MEANING[a.aspect]}</td></tr>`).join('');
 
+    last = {
+      title: input.name || (isExample ? 'Ο ουρανός αυτή τη στιγμή' : 'Ο γενέθλιος χάρτης μου'),
+      subtitle: `${when} · ${input.place.name.split(',')[0]}`,
+      lines: [`☉ ${SIGNS[sun.sign].name} · ☽ ${SIGNS[moon.sign].name}${ch.houses ? ` · ΩΡ ${SIGNS[ascSign].name}` : ''}`],
+    };
     $('nc-result').innerHTML = `
 <section class="stack">
   <p class="eyebrow">${isExample ? 'Παράδειγμα: ο ουρανός τη στιγμή που άνοιξες τη σελίδα' : 'Γενέθλιος χάρτης'}</p>
@@ -58,7 +65,7 @@ export function startNatalPage(root) {
   <p><a href="${root}odigos/pos-diavazo-genethlio-xarti/index.html">Πώς διαβάζω τον χάρτη μου; Οδηγός βήμα βήμα</a></p>
 </section>
 <section class="split">
-  ${wheelSvg(pos, { houses: ch.houses, aspects: ch.aspects, label: 'Γενέθλιος χάρτης' })}
+  <div class="stack">${wheelSvg(pos, { houses: ch.houses, aspects: ch.aspects, label: 'Γενέθλιος χάρτης' })}${exportButtons('nc-export', config.merchUrl)}</div>
   <div class="stack-lg">
     <div class="table-wrap"><table><thead><tr><th>Σώμα</th><th>Ζώδιο</th><th>Μοίρες</th><th>Οίκος ${whatIs('house')}</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
     ${ch.bodies.some((b) => b.retro) ? `<div class="muted legend"><span class="pill">R</span> = ανάδρομος ${whatIs('retro')}</div>` : ''}
@@ -71,6 +78,14 @@ export function startNatalPage(root) {
   ${asps ? `<div class="table-wrap"><table><thead><tr><th>Από</th><th>Όψη</th><th>Προς</th><th>Απόκλιση ${whatIs('orb')}</th><th>Σημασία</th></tr></thead><tbody>${asps}</tbody></table></div>` : '<p class="muted">Δεν βρέθηκαν κύριες όψεις.</p>'}
 </section>`;
   }
+
+  let last = null;
+  document.getElementById('nc-result').addEventListener('click', (ev) => {
+    const b = ev.target.closest('[data-export]');
+    if (!b || !last) return;
+    const svg = document.querySelector('#nc-result .wheel');
+    downloadChart(svg, { kind: b.dataset.export, ...last }, `genethlios-xartis-${b.dataset.export}.png`);
+  });
 
   const shown = setupBirthForm({ onSubmit: (input) => render(input, false), onLoadSaved: (input) => render(input, false) });
   if (shown) return;

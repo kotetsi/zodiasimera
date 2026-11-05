@@ -226,6 +226,9 @@ a.btn { display: inline-block; text-decoration: none; }
 .chip-btn { font: 600 .85rem var(--body); color: var(--violet); background: var(--violet-soft); border: 0; border-radius: 999px; padding: 7px 12px; cursor: pointer; }
 .chip-btn:hover { background: var(--violet); color: #fff; }
 .trio > .panel { align-content: start; }
+.export-row { display: grid; gap: 8px; justify-items: center; text-align: center; }
+.export-row .chips { justify-content: center; }
+.merch-cta { display: grid; gap: 6px; justify-items: center; }
 .chips { align-items: flex-start; align-content: flex-start; }
 .months-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); }
 .months-grid ul { font-size: .93rem; display: grid; gap: 6px; }

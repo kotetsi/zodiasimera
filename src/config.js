@@ -16,4 +16,8 @@ export default {
   },
   // Προϊόντα/affiliate ανά ζώδιο: { krios: [{ title, url, note }] , ... }. Κενό = δεν εμφανίζεται ενότητα.
   products: {},
+  // Σελίδα προϊόντος στο sellyourmerch.gr όπου ο πελάτης ανεβάζει το PNG του χάρτη (αφίσα/μπλουζάκι). Κενό = δεν εμφανίζεται.
+  merchUrl: '',
+  // MailerLite: το URL της φόρμας εγγραφής (π.χ. 'https://assets.mailerlite.com/jsonp/123/forms/456/subscribe'). Κενό = δεν εμφανίζεται.
+  newsletterAction: '',
 };

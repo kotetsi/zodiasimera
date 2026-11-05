@@ -8,6 +8,8 @@ import { compositeChart, COMPOSITE_BODIES } from './composite.js';
 import { glance } from './composite-glance.js';
 import { initFields, fillFields, readFields, loadSavedBirth, toInput } from './birth-form.js';
 import { fmtDeg, wheelSvg } from './chart-svg.js';
+import { exportButtons, downloadChart } from './chart-export.js';
+import config from './config.js';
 
 export function startSynastryPage(root) {
   const $ = (id) => document.getElementById(id);
@@ -190,7 +192,7 @@ ${a.uncertain ? '<p class="note">Χωρίς ώρα γέννησης αυτή η 
   ${amb.length ? `<p class="note">Για ${amb.map((k) => pname(k)).join(', ')} οι δύο θέσεις είναι σχεδόν απέναντι, οπότε το μεσοσημείο είναι ευαίσθητο. Δες τις λεπτομέρειες πατώντας πάνω τους.</p>` : ''}
 </section>
 <section class="comp-grid">
-  <div class="comp-wheel">${wheelSvg(comp.pos, { houses: comp.houses, aspects: comp.aspects, label: `Χάρτης Σχέσης: ${nameA} και ${nameB}`, interactive: true })}</div>
+  <div class="comp-wheel stack">${wheelSvg(comp.pos, { houses: comp.houses, aspects: comp.aspects, label: `Χάρτης Σχέσης: ${nameA} και ${nameB}`, interactive: true })}${exportButtons('comp-export', config.merchUrl)}</div>
   <div id="comp-detail" class="panel stack comp-detail" aria-live="polite"></div>
 </section>
 <section class="split sel-list">
@@ -251,6 +253,12 @@ ${a.uncertain ? '<p class="note">Χωρίς ώρα γέννησης αυτή η 
         wb.setAttribute('aria-expanded', String(open));
         $(wb.getAttribute('aria-controls')).hidden = !open;
         if (open) select(wb.dataset.why, false);
+        return;
+      }
+      const ex = ev.target.closest('[data-export]');
+      if (ex) {
+        const s1 = SIGNS[comp.pos.sun.sign], m1 = SIGNS[comp.pos.moon.sign], v1 = SIGNS[comp.pos.venus.sign];
+        downloadChart(pane.querySelector('.wheel'), { kind: ex.dataset.export, title: `${compNames[0]} & ${compNames[1]}`, subtitle: 'Ο Χάρτης Σχέσης μας', lines: [`☉ ${s1.name} · ☽ ${m1.name} · ♀ ${v1.name}`] }, `xartis-sxesis-${ex.dataset.export}.png`);
         return;
       }
       const gt = ev.target.closest('[data-goto]');
