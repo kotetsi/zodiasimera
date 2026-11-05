@@ -229,6 +229,9 @@ a.btn { display: inline-block; text-decoration: none; }
 .trio > .panel { align-content: start; }
 .newsletter form { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); align-items: end; }
 .newsletter .wide { grid-column: 1 / -1; }
+details.faq { border-bottom: 1px solid var(--line); padding: 10px 0; }
+details.faq summary { font-weight: 600; cursor: pointer; }
+details.faq p { margin: 8px 0 0; }
 .export-row { display: grid; gap: 8px; justify-items: center; text-align: center; }
 .export-row .chips { justify-content: center; }
 .merch-cta { display: grid; gap: 6px; justify-items: center; }

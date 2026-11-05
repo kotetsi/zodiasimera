@@ -15,6 +15,10 @@ import { feeds } from './site/feeds.js';
 import { weekOf, monthOf, periodSky, periodSignPage, periodIndexPage } from './site/period-pages.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+// Κείμενα «στον έρωτα / γυναίκα / άντρας» (αν υπάρχουν)
+const profFile = join(ROOT, 'src/content/sign-profiles.js');
+const PROFILES = existsSync(profFile) ? (await import('./content/sign-profiles.js')).PROFILES : null;
+P.setProfilesAvailable(!!PROFILES);
 const OUT = join(ROOT, 'dist');
 const iso = process.argv[2] || todayInAthens();
 
@@ -39,6 +43,7 @@ const pages = [
   P.synastryPage(bundle(join(ROOT, 'src'), 'synastry-ui.js', "__m['synastry-ui'].startSynastryPage('../');")),
 ];
 for (let i = 0; i < 12; i++) for (let j = i; j < 12; j++) pages.push(P.compatPairPage(i, j));
+if (PROFILES) pages.push(...P.profilePages(PROFILES));
 // Ετήσιες προβλέψεις: τρέχον έτος, και από τον Οκτώβριο και το επόμενο
 const [curY, curM] = iso.split('-').map(Number);
 const years = curM >= 10 ? [curY, curY + 1] : [curY];

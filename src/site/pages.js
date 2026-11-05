@@ -16,6 +16,8 @@ const wheelSvg = (pos) => drawWheel(pos, {
 const PLANETS = ['mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto'];
 const ALL = ['sun', 'moon', ...PLANETS, 'node'];
 
+let HAS_PROFILES = false;
+export const setProfilesAvailable = (v) => { HAS_PROFILES = v; };
 const fmtWhen = (d) => `${fmtDate(d, { weekday: 'short', day: 'numeric', month: 'short' })}, ${fmtTime(d)}`;
 const dots = (n) => `<span class="dots" aria-label="${n} από 5">${[1, 2, 3, 4, 5].map((i) => `<i class="${i <= n ? 'on' : ''}"></i>`).join('')}</span>`;
 const retroPill = (b) => (b.retro ? ' <span class="pill" title="Ανάδρομος">R</span>' : '');
@@ -196,7 +198,7 @@ ${day(tomorrow, 'Αύριο', skyTomorrow.iso)}
   <h2>Ο χαρακτήρας ${s.gen}</h2>
   <div class="reading"><p>${esc(s.intro)}</p></div>
   <div class="split">
-    <div class="stack"><h3>Στον έρωτα</h3><p>${esc(s.love)}</p></div>
+    <div class="stack"><h3>Στον έρωτα</h3><p>${esc(s.love)}</p>${HAS_PROFILES ? `<p><a href="${root}zodia/${s.slug}/erotas/index.html">${s.name} στον έρωτα</a> · <a href="${root}zodia/${s.slug}/gynaika/index.html">Η γυναίκα ${({ didymoi: 'Δίδυμος', ichthyes: 'Ιχθύς' })[s.slug] || s.name}</a> · <a href="${root}zodia/${s.slug}/antras/index.html">Ο άντρας ${({ didymoi: 'Δίδυμος', ichthyes: 'Ιχθύς' })[s.slug] || s.name}</a></p>` : ''}</div>
     <div class="stack"><h3>Στη δουλειά</h3><p>${esc(s.work)}</p></div>
   </div>
   <div class="split">
@@ -642,4 +644,41 @@ ${fig('6-xoris-ora.webp', 'Οι κάρτες του παραδείγματος �
 </article>`;
   const jsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: 'Πώς διαβάζω τον γενέθλιο χάρτη μου;', inLanguage: 'el', datePublished: '2026-11-05', author: { '@type': 'Organization', name: config.siteName }, publisher: { '@type': 'Organization', name: config.company.name } };
   return { path, ...page({ path, title: 'Πώς διαβάζω τον γενέθλιο χάρτη μου; Οδηγός για αρχάριους', titleExact: true, description: 'Βήμα βήμα: Ήλιος, Σελήνη, ωροσκόπος, οίκοι και όψεις στον δωρεάν γενέθλιο χάρτη του Ζώδια Σήμερα, με παράδειγμα και τι αλλάζει αν δεν ξέρεις την ώρα.', content, jsonLd }) };
+}
+
+// ── Ο Χ στον έρωτα / Η γυναίκα Χ / Ο άντρας Χ ──────────────────────────
+export function profilePages(PROFILES) {
+  const out = [];
+  SIGNS.forEach((s, i) => {
+    const P = PROFILES[s.slug];
+    if (!P) return;
+    const root = '../../../';
+    const one = { didymoi: 'Δίδυμος', ichthyes: 'Ιχθύς' }[s.slug] || s.name; // «η γυναίκα Δίδυμος», «ο άντρας Ιχθύς»
+    const best = SIGNS.map((o, j) => [compatScores(i, j).love, j]).filter(([, j]) => j !== i).sort((a, b) => b[0] - a[0] || a[1] - b[1]).slice(0, 3)
+      .map(([, j]) => `<a class="chip" href="${root}symvatotita/${pairSlug(i, j)}/index.html">${glyph(SIGNS[j].symbol)} ${SIGNS[j].name}</a>`).join('');
+    const tabs = (cur) => `<nav class="chips" aria-label="Το ζώδιο ${s.gen}">${[['erotas', `${s.name} στον έρωτα`], ['gynaika', `Η γυναίκα ${one}`], ['antras', `Ο άντρας ${one}`]].map(([k, l]) => `<a class="chip"${k === cur ? ' aria-current="page"' : ''} href="${root}zodia/${s.slug}/${k}/index.html">${l}</a>`).join('')}<a class="chip" href="${root}zodia/${s.slug}/index.html">Σήμερα</a></nav>`;
+    const faq = `<section class="stack"><h2>Συχνές ερωτήσεις</h2>${P.faq.map((f) => `<details class="faq"><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join('')}</section>`;
+    const faqLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: P.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) };
+    const common = `<section class="stack"><h2>Ταιριάζει περισσότερο με</h2><div class="chips">${best}</div><p class="muted" style="font-size:.85rem">Από τη συμβατότητα των ηλιακών ζωδίων. Για ακριβή εικόνα δοκίμασε τη <a href="${root}synastria/index.html">συναστρία</a>.</p></section>`;
+    const hero = (h1, sub) => `<section class="hero-sign el-${s.element}">${glyph(s.symbol)}<h1>${h1}</h1><p class="muted">${sub}</p></section>`;
+    const P_ = (t) => `<p>${esc(t)}</p>`;
+    {
+      const path = `zodia/${s.slug}/erotas/index.html`;
+      const L = P.love;
+      const content = `${hero(`${s.name} στον έρωτα`, `${s.dates} · ${ELEMENTS[s.element].name}`)}${tabs('erotas')}
+<section class="reading">${P_(s.love)}<h2>Πώς ${s.pluralName ? 'ερωτεύονται' : 'ερωτεύεται'}</h2>${P_(L.style)}<h2>Τι ${s.pluralName ? 'χρειάζονται' : 'χρειάζεται'} σε μια σχέση</h2>${P_(L.needs)}<h2>Ως ${s.pluralName ? 'σύντροφοι' : 'σύντροφος'}</h2>${P_(L.inRelationship)}<h2>Τι ${s.pluralName ? 'τους' : 'τον'} απωθεί</h2>${P_(L.turnoffs)}<h2>Πώς να κερδίσεις την καρδιά ${s.gen}</h2>${P_(L.win)}</section>
+${adSlot()}${common}${faq}`;
+      out.push({ path, ...page({ path, title: `${s.name} στον έρωτα: πώς ${s.pluralName ? 'ερωτεύονται και τι χρειάζονται' : 'ερωτεύεται και τι χρειάζεται'}`, description: `${s.name} στον έρωτα: ${L.style.split('. ')[0]}. Τι χρειάζεται σε μια σχέση, πώς να κερδίσεις την καρδιά ${s.gen} και με ποια ζώδια ταιριάζει.`.slice(0, 300), content, jsonLd: faqLd }) });
+    }
+    for (const [k, who, art] of [['gynaika', P.woman, 'Η γυναίκα'], ['antras', P.man, 'Ο άντρας']]) {
+      const path = `zodia/${s.slug}/${k}/index.html`;
+      const pr = k === 'gynaika' ? 'την' : 'τον';
+      const content = `${hero(`${art} ${one}`, `${s.dates} · ${ELEMENTS[s.element].name} · Κυβερνήτης: ${BODY_NAMES[s.ruler].short}`)}${tabs(k)}
+<section class="reading">${P_(who.intro)}<h2>Στον έρωτα</h2>${P_(who.love)}<h2>Στη δουλειά</h2>${P_(who.work)}<h2>Πώς να ${pr} πλησιάσεις</h2>${P_(who.approach)}</section>
+<section class="split"><div class="stack"><h3>Δυνατά σημεία</h3><ul class="plain">${s.strengths.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div><div class="stack"><h3>Προκλήσεις</h3><ul class="plain">${s.challenges.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div></section>
+${adSlot()}${common}`;
+      out.push({ path, ...page({ path, title: `${art} ${one}: χαρακτήρας, έρωτας και πώς να ${pr} κατακτήσεις`, description: `${art} ${one}: ${who.intro.split('. ')[0]}. Στον έρωτα, στη δουλειά και πώς να ${pr} πλησιάσεις.`.slice(0, 300), content }) });
+    }
+  });
+  return out;
 }
