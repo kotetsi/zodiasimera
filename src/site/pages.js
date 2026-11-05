@@ -252,6 +252,7 @@ export function moonPage(sky) {
 <section class="stack"><p class="eyebrow">Ημερολόγιο Σελήνης</p><h1>Φάσεις της Σελήνης</h1>
 <p class="lede">Σήμερα η Σελήνη είναι ${SIGNS[m.sign].inSign}, ${phase.toLowerCase()}, φωτισμένη κατά ${lit}%. Επόμενη Πανσέληνος: ${fmtWhen(nextFull.date)} ${SIGNS[nextFull.sign].inSign}. Επόμενη Νέα Σελήνη: ${fmtWhen(nextNew.date)} ${SIGNS[nextNew.sign].inSign}.</p></section>
 ${adSlot()}
+<p><a class="btn-ghost" href="../panselinoi/index.html">Όλες οι Πανσέληνοι με ημερομηνίες και τι σημαίνουν</a></p>
 <section class="stack-lg"><h2>Οι επόμενοι 12 μήνες</h2>
 <div class="table-wrap"><table><thead><tr><th>Ημερομηνία</th><th>Ώρα</th><th>Φάση</th><th>Ζώδιο</th></tr></thead><tbody>${rows}</tbody></table></div>
 <p class="muted">Ώρες Ελλάδας. Η Νέα Σελήνη ευνοεί τα ξεκινήματα και η Πανσέληνος την ολοκλήρωση και το ξεκαθάρισμα.</p></section>`;
