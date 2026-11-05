@@ -11,6 +11,7 @@ import config from './config.js';
 import { bundle } from './site/bundle.js';
 import { yearSky } from './forecast.js';
 import { yearIndexPage, yearSignPage } from './site/year-pages.js';
+import { feeds } from './site/feeds.js';
 import { weekOf, monthOf, periodSky, periodSignPage, periodIndexPage } from './site/period-pages.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -60,6 +61,7 @@ if (config.siteUrl) {
   writeFileSync(join(OUT, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${config.siteUrl}/sitemap.xml\n`);
 }
 writeFileSync(join(OUT, '.nojekyll'), '');
+if (config.siteUrl) for (const [f, xml] of Object.entries(feeds(sky))) { mkdirSync(dirname(join(OUT, f)), { recursive: true }); writeFileSync(join(OUT, f), xml); }
 // Στατικά αρχεία (εικόνες οδηγών κ.λπ.)
 if (existsSync(join(ROOT, 'static'))) cpSync(join(ROOT, 'static'), OUT, { recursive: true });
 if (config.siteUrl) writeFileSync(join(OUT, 'CNAME'), new URL(config.siteUrl).host + '\n');

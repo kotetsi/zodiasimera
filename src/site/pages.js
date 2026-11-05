@@ -4,7 +4,7 @@ import * as C from '../content/compatibility-texts.js';
 import { ASC_SIGN } from '../content/natal-texts.js';
 import { horoscopeFor, fmtTime, fmtDate, fmtIsoLong } from '../horoscope.js';
 import config from '../config.js';
-import { page, esc, glyph, adSlot, FEATURED_YEAR } from './layout.js';
+import { page, esc, glyph, adSlot, FEATURED_YEAR, newsletterBox } from './layout.js';
 import { fmtDeg, wheelSvg as drawWheel } from '../chart-svg.js';
 
 export { fmtDeg };
@@ -157,6 +157,7 @@ ${adSlot()}
   <div class="stack"><h2>Ζώδια σήμερα</h2><p class="muted">Διάλεξε το ζώδιό σου για την πρόβλεψη της ημέρας και της αυριανής. Νέο: <a href="zodia-${FEATURED_YEAR}/index.html">οι ετήσιες προβλέψεις για το ${FEATURED_YEAR}</a>.</p></div>
   <div class="signs">${cards}</div>
 </section>
+${newsletterBox()}
 <section class="stack-lg">
   <h2>Επόμενες 30 ημέρες</h2>
   <div class="table-wrap"><table><thead><tr><th>Πότε</th><th>Γεγονός</th></tr></thead><tbody>
@@ -204,6 +205,7 @@ ${day(tomorrow, 'Αύριο', skyTomorrow.iso)}
   </div>
 </section>
 ${products.length ? `<section class="stack"><h2>Για ${s.acc}</h2><ul class="plain">${products.map((p) => `<li><a href="${esc(p.url)}" rel="sponsored noopener" target="_blank">${esc(p.title)}</a>${p.note ? ` · <span class="muted">${esc(p.note)}</span>` : ''}</li>`).join('')}</ul></section>` : ''}
+${newsletterBox(s.slug)}
 <section class="stack">
   <h2>Συμβατότητα ${s.gen}</h2>
   <div class="chips">${others}</div>
@@ -506,6 +508,8 @@ export function privacyPage() {
 <p>${esc(c.name)}, ${esc(c.address)}. Email: <strong>${esc(c.email)}</strong></p>
 <h2>Στοιχεία γέννησης</h2>
 <p>Ο γενέθλιος χάρτης, το προσωπικό ωροσκόπιο και η συναστρία υπολογίζονται μέσα στον browser σου. Η ημερομηνία, η ώρα και ο τόπος γέννησης που συμπληρώνεις δεν στέλνονται σε κανέναν server και δεν τα βλέπουμε. Αν επιλέξεις «Θυμήσου τα στοιχεία μου», αποθηκεύονται μόνο στη συσκευή σου (στη μνήμη του browser) και μπορείς να τα σβήσεις όποτε θέλεις, ξετσεκάροντας την επιλογή ή διαγράφοντας τα δεδομένα του site από τον browser. Τα στοιχεία του δεύτερου προσώπου στη συναστρία δεν αποθηκεύονται ποτέ.</p>
+${config.newsletterAction ? `<h2>Newsletter</h2>
+<p>Αν γραφτείς στο newsletter, το email σου και το ζώδιο που διαλέγεις αποθηκεύονται στην υπηρεσία MailerLite (MailerLite Limited, Ιρλανδία), που στέλνει για λογαριασμό μας την ημερήσια πρόβλεψη. Νομική βάση είναι η συγκατάθεσή σου, την οποία μπορείς να ανακαλέσεις οποτεδήποτε με τον σύνδεσμο διαγραφής σε κάθε email.</p>` : ''}
 <h2>Google Analytics</h2>
 <p>Αν πατήσεις «Αποδοχή» στη μπάρα cookies, χρησιμοποιούμε το Google Analytics της Google Ireland Ltd για να μετράμε ανώνυμα την επισκεψιμότητα: ποιες σελίδες διαβάζονται, από ποια χώρα και συσκευή, πώς έφτασες στο site. Το Google Analytics χρησιμοποιεί cookies και επεξεργάζεται τη διεύθυνση IP σου. Νομική βάση είναι η συγκατάθεσή σου. Αν πατήσεις «Απόρριψη», δεν αποθηκεύεται κανένα cookie μέτρησης. Μπορείς να αλλάξεις την επιλογή σου οποιαδήποτε στιγμή από τον σύνδεσμο «Ρυθμίσεις cookies» στο κάτω μέρος κάθε σελίδας.</p>
 <h2>Φιλοξενία</h2>

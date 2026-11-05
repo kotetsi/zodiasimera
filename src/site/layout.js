@@ -1,4 +1,5 @@
 import config from '../config.js';
+import { SIGNS } from '../content/signs.js';
 
 export const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 // Σύμβολα σε μορφή κειμένου (όχι emoji)
@@ -226,6 +227,8 @@ a.btn { display: inline-block; text-decoration: none; }
 .chip-btn { font: 600 .85rem var(--body); color: var(--violet); background: var(--violet-soft); border: 0; border-radius: 999px; padding: 7px 12px; cursor: pointer; }
 .chip-btn:hover { background: var(--violet); color: #fff; }
 .trio > .panel { align-content: start; }
+.newsletter form { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); align-items: end; }
+.newsletter .wide { grid-column: 1 / -1; }
 .export-row { display: grid; gap: 8px; justify-items: center; text-align: center; }
 .export-row .chips { justify-content: center; }
 .merch-cta { display: grid; gap: 6px; justify-items: center; }
@@ -274,6 +277,25 @@ const NAV = [
   ['symvatotita/index.html', 'Συμβατότητα'],
   ['sxetika/index.html', 'Σχετικά'],
 ];
+
+// Φόρμα newsletter (MailerLite). Εμφανίζεται μόνο όταν έχει οριστεί config.newsletterAction.
+export function newsletterBox(signSlug = '') {
+  if (!config.newsletterAction) return '';
+  return `<section class="panel stack newsletter">
+  <h2>Η πρόβλεψή σου κάθε πρωί στο email</h2>
+  <p class="muted">Δωρεάν, μία φορά την ημέρα. Μπορείς να διαγραφείς όποτε θέλεις.</p>
+  <form class="nl-form" action="${esc(config.newsletterAction)}" method="post" target="nl-frame">
+    <label class="field"><span>Email</span><input type="email" name="fields[email]" required autocomplete="email"></label>
+    <label class="field"><span>Ζώδιο</span><select name="fields[zodio]">${SIGNS.map((x) => `<option value="${x.slug}"${x.slug === signSlug ? ' selected' : ''}>${x.name}</option>`).join('')}</select></label>
+    <label class="check wide"><input type="checkbox" required> Συμφωνώ να λαμβάνω το newsletter και έχω διαβάσει την <a href="/apporito/">πολιτική απορρήτου</a>.</label>
+    <input type="hidden" name="ml-submit" value="1"><input type="hidden" name="anticsrf" value="true">
+    <div class="wide"><button type="submit" class="btn">Γράψου</button></div>
+    <p class="nl-ok wide" role="status" hidden>Ευχαριστούμε! Έλεγξε το email σου για να επιβεβαιώσεις την εγγραφή.</p>
+  </form>
+  <iframe name="nl-frame" title="newsletter" hidden></iframe>
+  <script>document.querySelectorAll('.nl-form').forEach(function(f){f.addEventListener('submit',function(){setTimeout(function(){f.querySelector('.nl-ok').hidden=false;f.querySelector('button').disabled=true},600)})});</script>
+</section>`;
+}
 
 export function adSlot() {
   if (!config.adsenseClient) return '';
