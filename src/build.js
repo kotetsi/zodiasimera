@@ -11,6 +11,7 @@ import config from './config.js';
 import { bundle } from './site/bundle.js';
 import { yearSky } from './forecast.js';
 import { yearIndexPage, yearSignPage } from './site/year-pages.js';
+import { weekOf, monthOf, periodSky, periodSignPage, periodIndexPage } from './site/period-pages.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'dist');
@@ -40,6 +41,7 @@ for (let i = 0; i < 12; i++) for (let j = i; j < 12; j++) pages.push(P.compatPai
 const [curY, curM] = iso.split('-').map(Number);
 const years = curM >= 10 ? [curY, curY + 1] : [curY];
 for (const y of years) { const ys = yearSky(y); pages.push(yearIndexPage(ys), ...SIGNS.map((_, i) => yearSignPage(ys, i))); }
+for (const ps of [periodSky(weekOf(iso)), periodSky(monthOf(iso))]) pages.push(periodIndexPage(ps), ...SIGNS.map((_, i) => periodSignPage(ps, i)));
 const months = P.ephemerisMonths(iso, 12);
 months.forEach((_, k) => pages.push(P.ephemerisPage(months, k)));
 

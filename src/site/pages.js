@@ -185,7 +185,8 @@ export function signPage(i, sky, skyTomorrow) {
   const others = SIGNS.map((o, j) => `<a class="chip" href="${root}symvatotita/${pairSlug(i, j)}/index.html">${glyph(o.symbol)} ${o.name}</a>`).join('');
   const products = (config.products[s.slug] || []);
   const content = `
-<section class="hero-sign el-${s.element}">${glyph(s.symbol)}<h1>${s.name}</h1><p class="muted">${s.dates} · ${ELEMENTS[s.element].name} · ${MODALITIES[s.modality].name} · Κυβερνήτης: ${BODY_NAMES[s.ruler].short}</p><p><a class="btn-ghost" href="${root}zodia-${FEATURED_YEAR}/${s.slug}/index.html">${s.name} ${FEATURED_YEAR}: η ετήσια πρόβλεψη</a></p></section>
+<section class="hero-sign el-${s.element}">${glyph(s.symbol)}<h1>${s.name}</h1><p class="muted">${s.dates} · ${ELEMENTS[s.element].name} · ${MODALITIES[s.modality].name} · Κυβερνήτης: ${BODY_NAMES[s.ruler].short}</p></section>
+<nav class="chips" aria-label="Προβλέψεις ${s.gen}"><a class="chip" aria-current="page" href="${root}zodia/${s.slug}/index.html">Σήμερα</a><a class="chip" href="${root}zodia/${s.slug}/evdomada/index.html">Εβδομάδα</a><a class="chip" href="${root}zodia/${s.slug}/minas/index.html">Μήνας</a><a class="chip" href="${root}zodia-${FEATURED_YEAR}/${s.slug}/index.html">${FEATURED_YEAR}</a></nav>
 ${day(today, 'Σήμερα', sky.iso)}
 ${adSlot()}
 ${day(tomorrow, 'Αύριο', skyTomorrow.iso)}
