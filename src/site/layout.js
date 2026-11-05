@@ -156,6 +156,7 @@ details summary { cursor: pointer; color: var(--muted); }
   display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; background: var(--surface); color: var(--ink);
   border: 1px solid var(--line); border-radius: 18px 18px 0 0; box-shadow: 0 -8px 30px -12px rgba(30,10,80,.35);
   padding: 16px max(16px, env(safe-area-inset-right, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); font-size: .9rem; }
+.consent[hidden] { display: none; }
 .consent p { flex: 1 1 18rem; }
 .consent-btns { display: flex; gap: 8px; }
 .consent .btn { padding: 9px 18px; font-size: .9rem; }
