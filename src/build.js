@@ -61,6 +61,8 @@ if (config.siteUrl) {
   writeFileSync(join(OUT, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${config.siteUrl}/sitemap.xml\n`);
 }
 writeFileSync(join(OUT, '.nojekyll'), '');
+// ads.txt για το AdSense (ca-pub-123 → pub-123)
+if (config.adsenseClient) writeFileSync(join(OUT, 'ads.txt'), `google.com, ${config.adsenseClient.replace(/^ca-/, '')}, DIRECT, f08c47fec0942fa0\n`);
 if (config.siteUrl) for (const [f, xml] of Object.entries(feeds(sky))) { mkdirSync(dirname(join(OUT, f)), { recursive: true }); writeFileSync(join(OUT, f), xml); }
 // Στατικά αρχεία (εικόνες οδηγών κ.λπ.)
 if (existsSync(join(ROOT, 'static'))) cpSync(join(ROOT, 'static'), OUT, { recursive: true });
