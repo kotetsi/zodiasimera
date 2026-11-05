@@ -277,7 +277,7 @@ export function retroPage(sky) {
   const now = PLANETS.filter((b) => sky.pos[b].retro);
   const content = `
 <section class="stack"><p class="eyebrow">${year}–${year + 1}</p><h1>Ανάδρομοι πλανήτες</h1>
-<p class="lede">Ένας πλανήτης λέγεται ανάδρομος όταν, όπως φαίνεται από τη Γη, μοιάζει να κινείται προς τα πίσω στον ζωδιακό. Στην αστρολογία οι περίοδοι αυτές θεωρούνται κατάλληλες για αναθεώρηση. ${now.length ? `Σήμερα ανάδρομοι είναι: ${now.map((b) => BODY_NAMES[b].short).join(', ')}.` : ''}</p></section>
+<p class="lede">Ένας πλανήτης λέγεται ανάδρομος όταν, όπως φαίνεται από τη Γη, μοιάζει να κινείται προς τα πίσω στον ζωδιακό. Στην αστρολογία οι περίοδοι αυτές θεωρούνται κατάλληλες για αναθεώρηση. ${now.length ? `Σήμερα ανάδρομοι είναι: ${now.map((b) => BODY_NAMES[b].short).join(', ')}.` : ''}</p><p><a class="btn-ghost" href="../anadromos-ermis-${new Date().getUTCMonth() >= 9 ? new Date().getUTCFullYear() + 1 : new Date().getUTCFullYear()}/index.html">Ανάδρομος Ερμής ${new Date().getUTCMonth() >= 9 ? new Date().getUTCFullYear() + 1 : new Date().getUTCFullYear()}: ημερομηνίες και σκιές</a></p></section>
 ${adSlot()}
 <section class="stack-lg"><div class="table-wrap"><table><thead><tr><th>Ανάδρομος από</th><th>Ορθή φορά από</th><th>Από → Έως</th></tr></thead><tbody>${sections}</tbody></table></div>
 <p class="muted">Ημερομηνίες σε ώρα Ελλάδας. Ο ανάδρομος Ερμής, τρεις φορές τον χρόνο, συνδέεται με καθυστερήσεις στην επικοινωνία, τα ταξίδια και την τεχνολογία.</p></section>`;
