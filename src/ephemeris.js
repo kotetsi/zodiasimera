@@ -126,11 +126,19 @@ const meanNode = (T) => norm(125.0445479 - 1934.1362891 * T + 0.0020754 * T * T)
 
 export const BODIES = ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto', 'node'];
 
+// Φαινόμενο μήκος: διόρθωση για τη ζύγιση του άξονα (nutation, Meeus 22) και, για τον Ήλιο,
+// για την αποπλάνηση του φωτός (−20,5″). Χωρίς αυτές οι ισημερίες/τροπές βγαίνουν έως ~15′ νωρίτερα.
+function nutationLon(T) {
+  const om = 125.04452 - 1934.136261 * T, L = 280.4665 + 36000.7698 * T, Lm = 218.3165 + 481267.8813 * T;
+  return (-17.2 * sind(om) - 1.32 * sind(2 * L) - 0.23 * sind(2 * Lm) + 0.21 * sind(2 * om)) / 3600;
+}
+
 export function longitude(body, date) {
   const T = centuries(julianDay(date));
-  if (body === 'moon') return moonLongitude(T);
   if (body === 'node') return meanNode(T);
-  return geocentricLongitude(body, T);
+  const dpsi = nutationLon(T);
+  if (body === 'moon') return norm(moonLongitude(T) + dpsi);
+  return norm(geocentricLongitude(body, T) + dpsi + (body === 'sun' ? -20.4898 / 3600 : 0));
 }
 
 // Ημερήσια κίνηση (μοίρες/ημέρα) — αρνητική = ανάδρομη φορά

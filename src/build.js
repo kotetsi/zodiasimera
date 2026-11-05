@@ -40,6 +40,7 @@ const pages = [
   P.natalPage(bundle(join(ROOT, 'src'), 'natal-ui.js', "__m['natal-ui'].startNatalPage('../');")),
   P.dailyPage(bundle(join(ROOT, 'src'), 'daily-ui.js', "__m['daily-ui'].startDailyPage('../');")),
   P.ascPage(bundle(join(ROOT, 'src'), 'asc-ui.js', `__m['asc-ui'].startAscPage('../', ${new Date().getUTCMonth() >= 9 ? new Date().getUTCFullYear() + 1 : new Date().getUTCFullYear()});`)),
+  P.sunSignPage(bundle(join(ROOT, 'src'), 'sunsign-ui.js', `__m['sunsign-ui'].startSunSignPage('../', ${new Date().getUTCMonth() >= 9 ? new Date().getUTCFullYear() + 1 : new Date().getUTCFullYear()});`)),
   P.synastryPage(bundle(join(ROOT, 'src'), 'synastry-ui.js', "__m['synastry-ui'].startSynastryPage('../');")),
 ];
 for (let i = 0; i < 12; i++) for (let j = i; j < 12; j++) pages.push(P.compatPairPage(i, j));

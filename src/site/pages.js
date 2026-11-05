@@ -394,6 +394,31 @@ ${adSlot()}
   return { path, ...page({ path, title: 'Γενέθλιος χάρτης δωρεάν', description: 'Υπολόγισε δωρεάν τον γενέθλιο χάρτη σου: ωροσκόπος, Σελήνη, θέσεις πλανητών, οίκοι και όψεις, με ερμηνείες στα ελληνικά.', content }) };
 }
 
+// ── Τι ζώδιο είμαι; ─────────────────────────────────────────────────────
+export function sunSignPage(script) {
+  const path = 'ti-zodio-eimai/index.html';
+  const zones = [['Europe/Athens', 'Ελλάδα / Κύπρος'], ['Europe/London', 'Ηνωμένο Βασίλειο'], ['Europe/Berlin', 'Γερμανία, Ιταλία, Γαλλία κ.ά.'], ['America/New_York', 'ΗΠΑ (Ανατολική ακτή)'], ['America/Chicago', 'ΗΠΑ (Κεντρικές)'], ['America/Los_Angeles', 'ΗΠΑ (Δυτική ακτή)'], ['Australia/Melbourne', 'Αυστραλία (Μελβούρνη, Σίδνεϊ)'], ['America/Toronto', 'Καναδάς (Τορόντο)']];
+  const rows = SIGNS.map((s) => `<tr><td>${glyph(s.symbol)} <a href="zodia/${s.slug}/index.html">${s.name}</a></td><td>${s.dates}</td><td>${ELEMENTS[s.element].name}</td><td>${BODY_NAMES[s.ruler].short}</td></tr>`).join('').replace(/href="zodia\//g, 'href="../zodia/');
+  const content = `
+<section class="stack"><p class="eyebrow">Δωρεάν υπολογισμός</p><h1>Τι ζώδιο είμαι;</h1>
+<p class="lede">Βάλε την ημερομηνία γέννησής σου για να δεις το ζώδιό σου. Αν γεννήθηκες τη μέρα που ο Ήλιος αλλάζει ζώδιο, βάλε και την ώρα: υπολογίζουμε την ακριβή στιγμή της αλλαγής για τη χρονιά σου.</p></section>
+<form id="ss-form" class="panel natal-form" novalidate>
+  <label class="field"><span>Ημερομηνία γέννησης</span><input id="ss-date" type="date" min="1800-01-01" max="2050-12-31" required></label>
+  <label class="field"><span>Ώρα <small class="muted">(προαιρετικά)</small></span><input id="ss-time" type="time" step="60"></label>
+  <label class="field wide"><span>Πού γεννήθηκες</span><select id="ss-tz">${zones.map(([z, l]) => `<option value="${z}">${l}</option>`).join('')}</select></label>
+  <p id="ss-error" class="error wide" role="alert" hidden></p>
+  <div class="wide"><button type="submit" class="btn">Βρες το ζώδιό μου</button></div>
+</form>
+<div id="ss-result" class="stack-lg" aria-live="polite"></div>
+${adSlot()}
+<section class="stack-lg"><h2>Τα ζώδια και οι ημερομηνίες τους</h2>
+<div class="table-wrap"><table><thead><tr><th>Ζώδιο</th><th>Ημερομηνίες</th><th>Στοιχείο</th><th>Κυβερνήτης</th></tr></thead><tbody>${rows}</tbody></table></div>
+<div class="reading"><p>Οι ημερομηνίες είναι κατά προσέγγιση: η στιγμή που ο Ήλιος περνά από ζώδιο σε ζώδιο μετακινείται λίγο κάθε χρόνο, συνήθως μεταξύ 19 και 23 του μήνα. Γι’ αυτό όσοι γεννήθηκαν κοντά στην αλλαγή χρειάζονται τη χρονιά και την ώρα γέννησης για να είναι σίγουροι.</p>
+<p>Το ζώδιο του Ήλιου είναι μόνο η αρχή. Για πιο πλήρη εικόνα δες τον <a href="../oroskopos/index.html">ωροσκόπο</a> σου και ολόκληρο τον <a href="../xartis/index.html">γενέθλιο χάρτη</a>.</p></div></section>
+<script>${script}</script>`;
+  return { path, ...page({ path, title: 'Τι ζώδιο είμαι; Βρες το ζώδιό σου από την ημερομηνία γέννησης', description: 'Τι ζώδιο είμαι; Βάλε την ημερομηνία γέννησης και δες το ζώδιό σου, με ακριβή υπολογισμό για όσους γεννήθηκαν τη μέρα αλλαγής ζωδίου. Πίνακας με τα ζώδια και τις ημερομηνίες τους.', content }) };
+}
+
 // ── Υπολογισμός ωροσκόπου ────────────────────────────────────────────────
 export function ascPage(script) {
   const path = 'oroskopos/index.html';
