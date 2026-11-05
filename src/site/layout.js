@@ -273,6 +273,7 @@ const NAV = [
   ['prosopiko/index.html', 'Προσωπικό ωροσκόπιο'],
   ['xartis/index.html', 'Γενέθλιος χάρτης'],
   ['oroskopos/index.html', 'Ωροσκόπος'],
+  ['kinezika-zodia/index.html', 'Κινέζικα ζώδια'],
   ['synastria/index.html', 'Συναστρία'],
   ['ouranos/index.html', 'Ο ουρανός'],
   ['efimerida/index.html', 'Εφημερίδα'],
