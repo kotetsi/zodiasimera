@@ -160,6 +160,9 @@ details summary { cursor: pointer; color: var(--muted); }
 .consent p { flex: 1 1 18rem; }
 .consent-btns { display: flex; gap: 8px; }
 .consent .btn { padding: 9px 18px; font-size: .9rem; }
+.footer-links { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.linkish { font: inherit; color: inherit; background: none; border: 0; padding: 0; text-decoration: underline; text-decoration-color: var(--brass); text-underline-offset: 3px; cursor: pointer; }
+.legal h2 { font-size: var(--step-2); margin-top: 8px; }
 footer.site { border-top: 1px solid var(--line); padding-block: 20px 36px; font-size: .85rem; color: var(--muted); display: grid; gap: 8px; }
 @media (prefers-reduced-motion: no-preference) { .sign-card { transition: border-color .15s, transform .15s, box-shadow .15s; } }
 /* Νυχτερινό πάνελ της αρχικής: ο ουρανός της ημέρας σε βαθύ μπλε-μωβ με αστεράκια */
@@ -224,8 +227,10 @@ gtag('js',new Date());gtag('config','${esc(config.gaId)}');</script><script asyn
 <header class="site"><a class="brand" href="${root}index.html">${glyph('☉')}${esc(config.siteName)}</a><nav class="main" aria-label="Κύριο μενού">${nav}</nav></header>
 <main>${content}</main>
 ${config.gaId ? `<div class="consent" id="zs-consent" hidden role="dialog" aria-label="Cookies"><p>Χρησιμοποιούμε cookies του Google Analytics για να μετράμε την επισκεψιμότητα. Τα στοιχεία γέννησης που βάζεις στα εργαλεία μας δεν στέλνονται πουθενά.</p><div class="consent-btns"><button type="button" class="btn-ghost" id="zs-no">Απόρριψη</button><button type="button" class="btn" id="zs-yes">Αποδοχή</button></div></div>
-<script>(function(){var b=document.getElementById('zs-consent'),v=null;try{v=localStorage.getItem('zs-consent')}catch(e){}if(!v)b.hidden=false;function set(x){try{localStorage.setItem('zs-consent',x)}catch(e){}b.hidden=true;if(x==='yes'&&window.gtag)gtag('consent','update',{analytics_storage:'granted'})}document.getElementById('zs-yes').onclick=function(){set('yes')};document.getElementById('zs-no').onclick=function(){set('no')};})();</script>` : ''}
-<footer class="site"><p>${esc(config.siteName)} · Οι θέσεις των πλανητών υπολογίζονται καθημερινά για ώρα Αθήνας. Οι προβλέψεις είναι για ψυχαγωγικούς σκοπούς.</p><p><a href="${root}sxetika/index.html">Σχετικά με τις προβλέψεις</a></p></footer>
+<script>(function(){var b=document.getElementById('zs-consent'),v=null;try{v=localStorage.getItem('zs-consent')}catch(e){}if(!v)b.hidden=false;function set(x){try{localStorage.setItem('zs-consent',x)}catch(e){}b.hidden=true;if(x==='yes'&&window.gtag)gtag('consent','update',{analytics_storage:'granted'})}document.getElementById('zs-yes').onclick=function(){set('yes')};document.getElementById('zs-no').onclick=function(){set('no')};document.addEventListener('click',function(e){if(e.target&&e.target.id==='zs-reopen')b.hidden=false});})();</script>` : ''}
+<footer class="site"><p>${esc(config.siteName)} · Οι θέσεις των πλανητών υπολογίζονται καθημερινά για ώρα Αθήνας. Οι προβλέψεις είναι για ψυχαγωγικούς σκοπούς.</p>
+<p class="footer-links"><a href="${root}sxetika/index.html">Σχετικά</a><a href="${root}epikoinonia/index.html">Επικοινωνία</a><a href="${root}apporito/index.html">Πολιτική απορρήτου</a><a href="${root}oroi/index.html">Όροι χρήσης</a>${config.gaId ? '<button type="button" class="linkish" id="zs-reopen">Ρυθμίσεις cookies</button>' : ''}</p>
+<p>© ${new Date().getFullYear()} ${esc(config.company.name)}</p></footer>
 </div>`;
   return { head, body, root };
 }

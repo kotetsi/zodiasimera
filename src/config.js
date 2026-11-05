@@ -8,6 +8,12 @@ export default {
   adsenseClient: '',
   // Google Analytics 4 measurement ID, π.χ. 'G-XXXXXXX'. Κενό = χωρίς analytics.
   gaId: 'G-NMC44TGESS',
+  // Υπεύθυνος του site (πολιτική απορρήτου, όροι, επικοινωνία)
+  company: {
+    name: 'SPORT FANATICS ΜΟΝΟΠΡΟΣΩΠΗ Ι.Κ.Ε.',
+    address: 'Ξανθίππου 7, 155 61 Χολαργός, Αττική',
+    email: 'info@zodiasimera.com',
+  },
   // Προϊόντα/affiliate ανά ζώδιο: { krios: [{ title, url, note }] , ... }. Κενό = δεν εμφανίζεται ενότητα.
   products: {},
 };
