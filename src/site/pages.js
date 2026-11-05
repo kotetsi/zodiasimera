@@ -159,6 +159,11 @@ ${adSlot()}
   <div class="stack"><h2>Ζώδια σήμερα</h2><p class="muted">Διάλεξε το ζώδιό σου για την πρόβλεψη της ημέρας και της αυριανής. Νέο: <a href="zodia-${FEATURED_YEAR}/index.html">οι ετήσιες προβλέψεις για το ${FEATURED_YEAR}</a>.</p></div>
   <div class="signs">${cards}</div>
 </section>
+<section class="stack"><h2>Εργαλεία και προβλέψεις</h2><div class="chips">${[
+    ['ti-zodio-eimai', 'Τι ζώδιο είμαι;'], ['oroskopos', 'Ο ωροσκόπος μου'], ['xartis', 'Γενέθλιος χάρτης'], ['synastria', 'Συναστρία και Χάρτης Σχέσης'],
+    [`zodia-${FEATURED_YEAR}`, `Ζώδια ${FEATURED_YEAR}`], ['evdomadiaia', 'Εβδομαδιαίες προβλέψεις'], ['miniaia', 'Μηνιαίες προβλέψεις'],
+    ['panselinoi', 'Πανσέληνοι'], [`anadromos-ermis-${FEATURED_YEAR}`, `Ανάδρομος Ερμής ${FEATURED_YEAR}`], ['kinezika-zodia', 'Κινέζικο ωροσκόπιο'], ['arithmologia', 'Αριθμολογία'],
+  ].map(([h, l]) => `<a class="chip" href="${h}/index.html">${l}</a>`).join('')}</div></section>
 ${newsletterBox()}
 <section class="stack-lg">
   <h2>Επόμενες 30 ημέρες</h2>

@@ -274,6 +274,7 @@ const NAV = [
   ['xartis/index.html', 'Γενέθλιος χάρτης'],
   ['oroskopos/index.html', 'Ωροσκόπος'],
   ['kinezika-zodia/index.html', 'Κινέζικα ζώδια'],
+  ['arithmologia/index.html', 'Αριθμολογία'],
   ['synastria/index.html', 'Συναστρία'],
   ['ouranos/index.html', 'Ο ουρανός'],
   ['efimerida/index.html', 'Εφημερίδα'],
