@@ -1,0 +1,1 @@
+{"name":"astro-site","type":"module","private":true,"scripts":{"build":"node src/build.js"}}
