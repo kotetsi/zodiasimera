@@ -1,6 +1,7 @@
 import * as E from '../ephemeris.js';
 import { SIGNS, BODY_NAMES, ASPECT_NAMES, ELEMENTS, MODALITIES, PHASE_NAMES } from '../content/signs.js';
 import * as C from '../content/compatibility-texts.js';
+import { ASC_SIGN } from '../content/natal-texts.js';
 import { horoscopeFor, fmtTime, fmtDate, fmtIsoLong } from '../horoscope.js';
 import config from '../config.js';
 import { page, esc, glyph, adSlot, FEATURED_YEAR } from './layout.js';
@@ -387,6 +388,24 @@ ${adSlot()}
 <div id="nc-result" class="stack-lg"><noscript><p>Ο υπολογισμός του χάρτη χρειάζεται JavaScript.</p></noscript></div>
 <script>${script}</script>`;
   return { path, ...page({ path, title: 'Γενέθλιος χάρτης δωρεάν', description: 'Υπολόγισε δωρεάν τον γενέθλιο χάρτη σου: ωροσκόπος, Σελήνη, θέσεις πλανητών, οίκοι και όψεις, με ερμηνείες στα ελληνικά.', content }) };
+}
+
+// ── Υπολογισμός ωροσκόπου ────────────────────────────────────────────────
+export function ascPage(script) {
+  const path = 'oroskopos/index.html';
+  const list = SIGNS.map((s, i) => `<div class="stack"><h3>${glyph(s.symbol)} Ωροσκόπος ${s.name}</h3><p>${esc(ASC_SIGN[i])}</p></div>`).join('');
+  const content = `
+<section class="stack"><p class="eyebrow">Δωρεάν υπολογισμός</p><h1>Υπολόγισε τον ωροσκόπο σου</h1>
+<p class="lede">Ο ωροσκόπος είναι το ζώδιο που ανέτελλε στον ανατολικό ορίζοντα τη στιγμή που γεννήθηκες. Μαζί με τον Ήλιο και τη Σελήνη είναι ένα από τα τρία βασικά σημεία του χάρτη σου. Βάλε ημερομηνία, ακριβή ώρα και τόπο γέννησης.</p></section>
+${birthFormHtml('Βρες τον ωροσκόπο μου')}
+${adSlot()}
+<div id="nc-result" class="stack-lg"><noscript><p>Ο υπολογισμός χρειάζεται JavaScript.</p></noscript></div>
+<section class="stack-lg"><h2>Τι σημαίνει ο ωροσκόπος</h2>
+<div class="reading"><p>Το ζώδιο του Ήλιου (αυτό που λέμε απλώς «ζώδιο») δείχνει τον πυρήνα σου. Ο ωροσκόπος δείχνει τη «βιτρίνα»: πώς σε αντιλαμβάνονται οι άλλοι με την πρώτη ματιά, πώς αντιδράς αυθόρμητα και πώς ξεκινάς κάτι καινούργιο. Επειδή ο ουρανός γυρίζει, ο ωροσκόπος αλλάζει ζώδιο κάθε δύο ώρες περίπου, γι’ αυτό χρειάζεται ακριβής ώρα γέννησης.</p>
+<p>Ο ωροσκόπος ορίζει και τον 1ο οίκο του χάρτη, άρα από αυτόν ξεκινά η διάταξη όλων των οίκων.</p></div>
+<div class="readings">${list}</div></section>
+<script>${script}</script>`;
+  return { path, ...page({ path, title: 'Υπολογισμός ωροσκόπου: ποιος είναι ο ωροσκόπος μου;', description: 'Βρες δωρεάν τον ωροσκόπο σου από την ημερομηνία, την ώρα και τον τόπο γέννησης. Τι σημαίνει ο ωροσκόπος σε κάθε ζώδιο, με ερμηνείες στα ελληνικά.', content }) };
 }
 
 // ── Προσωπικό ημερήσιο ωροσκόπιο (υπολογίζεται στον browser) ─────────────

@@ -262,6 +262,7 @@ const NAV = [
   [`zodia-${FEATURED_YEAR}/index.html`, `Ζώδια ${FEATURED_YEAR}`],
   ['prosopiko/index.html', 'Προσωπικό ωροσκόπιο'],
   ['xartis/index.html', 'Γενέθλιος χάρτης'],
+  ['oroskopos/index.html', 'Ωροσκόπος'],
   ['synastria/index.html', 'Συναστρία'],
   ['ouranos/index.html', 'Ο ουρανός'],
   ['efimerida/index.html', 'Εφημερίδα'],
