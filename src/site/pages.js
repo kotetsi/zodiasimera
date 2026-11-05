@@ -3,7 +3,7 @@ import { SIGNS, BODY_NAMES, ASPECT_NAMES, ELEMENTS, MODALITIES, PHASE_NAMES } fr
 import * as C from '../content/compatibility-texts.js';
 import { horoscopeFor, fmtTime, fmtDate, fmtIsoLong } from '../horoscope.js';
 import config from '../config.js';
-import { page, esc, glyph, adSlot } from './layout.js';
+import { page, esc, glyph, adSlot, FEATURED_YEAR } from './layout.js';
 import { fmtDeg, wheelSvg as drawWheel } from '../chart-svg.js';
 
 export { fmtDeg };
@@ -153,7 +153,7 @@ export function homePage(sky, skyTomorrow) {
 </section>
 ${adSlot()}
 <section class="stack-lg">
-  <div class="stack"><h2>Ζώδια σήμερα</h2><p class="muted">Διάλεξε το ζώδιό σου για την πρόβλεψη της ημέρας και της αυριανής.</p></div>
+  <div class="stack"><h2>Ζώδια σήμερα</h2><p class="muted">Διάλεξε το ζώδιό σου για την πρόβλεψη της ημέρας και της αυριανής. Νέο: <a href="zodia-${FEATURED_YEAR}/index.html">οι ετήσιες προβλέψεις για το ${FEATURED_YEAR}</a>.</p></div>
   <div class="signs">${cards}</div>
 </section>
 <section class="stack-lg">
@@ -185,7 +185,7 @@ export function signPage(i, sky, skyTomorrow) {
   const others = SIGNS.map((o, j) => `<a class="chip" href="${root}symvatotita/${pairSlug(i, j)}/index.html">${glyph(o.symbol)} ${o.name}</a>`).join('');
   const products = (config.products[s.slug] || []);
   const content = `
-<section class="hero-sign el-${s.element}">${glyph(s.symbol)}<h1>${s.name}</h1><p class="muted">${s.dates} · ${ELEMENTS[s.element].name} · ${MODALITIES[s.modality].name} · Κυβερνήτης: ${BODY_NAMES[s.ruler].short}</p></section>
+<section class="hero-sign el-${s.element}">${glyph(s.symbol)}<h1>${s.name}</h1><p class="muted">${s.dates} · ${ELEMENTS[s.element].name} · ${MODALITIES[s.modality].name} · Κυβερνήτης: ${BODY_NAMES[s.ruler].short}</p><p><a class="btn-ghost" href="${root}zodia-${FEATURED_YEAR}/${s.slug}/index.html">${s.name} ${FEATURED_YEAR}: η ετήσια πρόβλεψη</a></p></section>
 ${day(today, 'Σήμερα', sky.iso)}
 ${adSlot()}
 ${day(tomorrow, 'Αύριο', skyTomorrow.iso)}

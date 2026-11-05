@@ -225,6 +225,10 @@ a.btn { display: inline-block; text-decoration: none; }
 .sel-meta .tone { margin-left: 0; }
 .chip-btn { font: 600 .85rem var(--body); color: var(--violet); background: var(--violet-soft); border: 0; border-radius: 999px; padding: 7px 12px; cursor: pointer; }
 .chip-btn:hover { background: var(--violet); color: #fff; }
+.trio > .panel { align-content: start; }
+.chips { align-items: flex-start; align-content: flex-start; }
+.months-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); }
+.months-grid ul { font-size: .93rem; display: grid; gap: 6px; }
 .glance-card { align-content: start; }
 .glance-card h3 { font-family: var(--display); font-size: var(--step-1); }
 .glance-attraction h3 { color: var(--brass); } .glance-communication h3 { color: var(--violet); } .glance-friction h3 { color: var(--fire); }
@@ -251,8 +255,11 @@ footer.site { border-top: 1px solid var(--line); padding-block: 20px 36px; font-
 .night a { color: var(--ink); }
 `;
 
+// Από τον Οκτώβριο προβάλλεται η επόμενη χρονιά
+export const FEATURED_YEAR = (() => { const d = new Date(); return d.getUTCMonth() >= 9 ? d.getUTCFullYear() + 1 : d.getUTCFullYear(); })();
 const NAV = [
   ['index.html', 'Σήμερα'],
+  [`zodia-${FEATURED_YEAR}/index.html`, `Ζώδια ${FEATURED_YEAR}`],
   ['prosopiko/index.html', 'Προσωπικό ωροσκόπιο'],
   ['xartis/index.html', 'Γενέθλιος χάρτης'],
   ['synastria/index.html', 'Συναστρία'],
