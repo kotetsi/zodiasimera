@@ -4,9 +4,9 @@ import { SIGNS } from '../content/signs.js';
 import { FULL_MOON_HOUSE, NEW_MOON_HOUSE } from '../content/daily-texts.js';
 import { FULL_MOON_SIGN, NEW_MOON_SIGN_SHORT } from '../content/moon-texts.js';
 import { eclipses, houseOf } from '../forecast.js';
-import { athensTime, fmtDate, fmtTime } from '../horoscope.js';
+import { athensTime, fmtDate, fmtTime, todayInAthens } from '../horoscope.js';
 import { fmtDeg } from '../chart-svg.js';
-import { page, esc, glyph, adSlot } from './layout.js';
+import { page, esc, glyph, adSlot, articleLd } from './layout.js';
 
 const MONTHS_GEN = ['Ιανουαρίου', 'Φεβρουαρίου', 'Μαρτίου', 'Απριλίου', 'Μαΐου', 'Ιουνίου', 'Ιουλίου', 'Αυγούστου', 'Σεπτεμβρίου', 'Οκτωβρίου', 'Νοεμβρίου', 'Δεκεμβρίου'];
 const MONTH_SLUG = ['ianouariou', 'fevrouariou', 'martiou', 'apriliou', 'maiou', 'iouniou', 'iouliou', 'avgoustou', 'septemvriou', 'oktovriou', 'noemvriou', 'dekemvriou'];
@@ -54,7 +54,7 @@ ${adSlot()}
     path, title: `${title}: ημερομηνία, ώρα και τι σημαίνει για κάθε ζώδιο`,
     description: `${title}: ${long(f.date)}, ${fmtTime(f.date)} ώρα Ελλάδας, ${SIGNS[f.sign].inSign}.${f.eclipse ? ' Έκλειψη Σελήνης.' : ''} Τι σημαίνει και τι φέρνει σε κάθε ζώδιο.`,
     content,
-    jsonLd: { '@context': 'https://schema.org', '@type': 'Event', name: title, startDate: f.date.toISOString(), eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode', location: { '@type': 'Place', name: 'Ελλάδα' } },
+    jsonLd: articleLd({ path, headline: `${title}: ημερομηνία, ώρα και τι σημαίνει για κάθε ζώδιο`, description: `${title}: ${long(f.date)}, ${fmtTime(f.date)} ώρα Ελλάδας, ${SIGNS[f.sign].inSign}.`, published: `${f.y - 1}-11-01`, modified: todayInAthens() }),
   }) };
 }
 

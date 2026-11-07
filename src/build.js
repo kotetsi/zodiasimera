@@ -17,6 +17,10 @@ import { numerologyPages } from './site/numerology-pages.js';
 import { mercuryYear, mercuryPage } from './site/mercury-pages.js';
 import { moonYears, fullMoonPage, fullMoonIndexPage } from './site/moon-pages.js';
 import { weekOf, monthOf, periodSky, periodSignPage, periodIndexPage } from './site/period-pages.js';
+import { archiveDayPage, archiveIndexPage, tomorrowPage } from './site/daily-pages.js';
+import { birthdayPage, birthdayIndexPage, allBirthdays } from './site/birthday-pages.js';
+import { eclipseYear, eclipsePage } from './site/eclipse-pages.js';
+import { tarotPages } from './site/tarot-pages.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 // Κείμενα «στον έρωτα / γυναίκα / άντρας» (αν υπάρχουν)
@@ -57,6 +61,22 @@ for (const ps of [periodSky(weekOf(iso)), periodSky(monthOf(iso))]) pages.push(p
 pages.push(...chinesePages(), ...numerologyPages(curY));
 for (const y of [curY, curY + 1]) pages.push(mercuryPage(y, mercuryYear(y), sky.noon));
 { const my = moonYears([curY, curY + 1]); pages.push(fullMoonIndexPage(my), ...my.full.map((_, k) => fullMoonPage(my, k))); }
+// Αρχείο ημερήσιων: μία σελίδα ανά ημέρα από το config.archiveStart έως αύριο, και «Ζώδια αύριο»
+{
+  const first = config.archiveStart && config.archiveStart <= iso ? config.archiveStart : iso;
+  const last = addDays(iso, 1);
+  const days = [];
+  for (let d = first; d <= last; d = addDays(d, 1)) days.push(d);
+  for (const d of days) pages.push(archiveDayPage(d === iso ? sky : d === last ? skyTomorrow : skyForDay(d), { first, last }));
+  pages.push(archiveIndexPage(days, iso), tomorrowPage(skyTomorrow));
+}
+// Εκλείψεις: από το 2026 έως το επόμενο έτος
+// (κρατάμε και τα προηγούμενα έτη από το 2026, για να μη χαθούν σελίδες που έχουν ήδη μπει στο Google)
+{ const ys = []; for (let y = Math.min(2026, curY); y <= curY + 1; y++) ys.push(y); for (const y of ys) pages.push(eclipsePage(y, eclipseYear(y), ys)); }
+// Ταρώ ημέρας και οι 22 κάρτες
+pages.push(...tarotPages(iso));
+// Γεννημένοι μέρα προς μέρα (366 σελίδες)
+pages.push(birthdayIndexPage(), ...allBirthdays().map(([m, d]) => birthdayPage(m, d)));
 const months = P.ephemerisMonths(iso, 12);
 months.forEach((_, k) => pages.push(P.ephemerisPage(months, k)));
 
@@ -69,7 +89,7 @@ for (const pg of pages) {
 
 // Χωρίς domain δεν φτιάχνουμε sitemap (χρειάζεται απόλυτα URL)
 if (config.siteUrl) {
-  const urls = pages.map((p) => `<url><loc>${config.siteUrl}/${p.path.replace(/index\.html$/, '')}</loc><lastmod>${iso}</lastmod></url>`).join('');
+  const urls = pages.map((p) => `<url><loc>${config.siteUrl}/${p.path.replace(/index\.html$/, '')}</loc><lastmod>${p.lastmod || iso}</lastmod></url>`).join('');
   writeFileSync(join(OUT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`);
   writeFileSync(join(OUT, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${config.siteUrl}/sitemap.xml\n`);
 }

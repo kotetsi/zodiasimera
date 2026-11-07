@@ -3,8 +3,8 @@ import { SIGNS, BODY_NAMES } from '../content/signs.js';
 import { HOUSE_AREA, HOUSE_TOPIC, MERCURY_RX_HOUSE } from '../content/daily-texts.js';
 import * as Y from '../content/year-texts.js';
 import { houseOf } from '../forecast.js';
-import { fmtDate } from '../horoscope.js';
-import { page, esc, glyph, adSlot } from './layout.js';
+import { fmtDate, todayInAthens } from '../horoscope.js';
+import { page, esc, glyph, adSlot, articleLd, ogImage } from './layout.js';
 
 const MONTHS = ['Ιανουάριος', 'Φεβρουάριος', 'Μάρτιος', 'Απρίλιος', 'Μάιος', 'Ιούνιος', 'Ιούλιος', 'Αύγουστος', 'Σεπτέμβριος', 'Οκτώβριος', 'Νοέμβριος', 'Δεκέμβριος'];
 const day = (d) => fmtDate(d, { day: 'numeric', month: 'long' });
@@ -166,7 +166,7 @@ ${adSlot()}
     path, title: `${s.name} ${ys.year}: ετήσια πρόβλεψη για έρωτα, δουλειά και χρήματα`,
     description: `Ζώδια ${ys.year}: τι φέρνει η χρονιά ${s.inSign}. Καλύτεροι μήνες για έρωτα και δουλειά, εκλείψεις, ανάδρομος Ερμής και πρόβλεψη μήνα μήνα. ${firstJ}.`.slice(0, 300),
     content,
-    jsonLd: { '@context': 'https://schema.org', '@type': 'Article', headline: `${s.name} ${ys.year}: ετήσια πρόβλεψη`, inLanguage: 'el' },
+    jsonLd: articleLd({ path, headline: `${s.name} ${ys.year}: ετήσια πρόβλεψη για έρωτα, δουλειά και χρήματα`, description: `Ζώδια ${ys.year}: τι φέρνει η χρονιά ${s.inSign}.`, published: `${ys.year - 1}-10-01`, modified: todayInAthens(), image: ogImage(s.slug) }),
   }) };
 }
 

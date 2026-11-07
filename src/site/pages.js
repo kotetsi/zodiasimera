@@ -4,7 +4,9 @@ import * as C from '../content/compatibility-texts.js';
 import { ASC_SIGN } from '../content/natal-texts.js';
 import { horoscopeFor, fmtTime, fmtDate, fmtIsoLong } from '../horoscope.js';
 import config from '../config.js';
-import { page, esc, glyph, adSlot, FEATURED_YEAR, newsletterBox } from './layout.js';
+import { page, esc, glyph, adSlot, FEATURED_YEAR, newsletterBox, ogImage, articleLd, breadcrumbLd, crumbs, ORG_LD } from './layout.js';
+import { luckFor, luckHtml } from './luck.js';
+import { signBirthdays, bdayPath } from './birthday-pages.js';
 import { fmtDeg, wheelSvg as drawWheel } from '../chart-svg.js';
 
 export { fmtDeg };
@@ -24,6 +26,8 @@ const retroPill = (b) => (b.retro ? ' <span class="pill" title="Ανάδρομο
 const signLink = (root, s) => `${root}zodia/${s.slug}/index.html`;
 const pairSlug = (i, j) => (i <= j ? `${SIGNS[i].slug}-${SIGNS[j].slug}` : `${SIGNS[j].slug}-${SIGNS[i].slug}`);
 const fem = (b) => b === 'venus' || b === 'moon';
+// «7/11» για τίτλους
+export const dm = (iso) => { const [, m, d] = iso.split('-').map(Number); return `${d}/${m}`; };
 
 
 // Γεγονότα ουρανού στο διάστημα, με κατηγορία και στοιχεία για κάρτες
@@ -156,13 +160,14 @@ export function homePage(sky, skyTomorrow) {
 </section>
 ${adSlot()}
 <section class="stack-lg">
-  <div class="stack"><h2>Ζώδια σήμερα</h2><p class="muted">Διάλεξε το ζώδιό σου για την πρόβλεψη της ημέρας και της αυριανής. Νέο: <a href="zodia-${FEATURED_YEAR}/index.html">οι ετήσιες προβλέψεις για το ${FEATURED_YEAR}</a>.</p></div>
+  <div class="stack"><h2>Ζώδια σήμερα</h2><p class="muted">Διάλεξε το ζώδιό σου για την πρόβλεψη της ημέρας και της αυριανής. Νέο: <a href="zodia-${FEATURED_YEAR}/index.html">οι ετήσιες προβλέψεις για το ${FEATURED_YEAR}</a>.</p>
+  <p class="chips"><a class="chip" href="zodia-simera/${sky.iso}/index.html">Όλα τα ζώδια σε μία σελίδα</a><a class="chip" href="zodia-avrio/index.html">Ζώδια αύριο ${dm(skyTomorrow.iso)}</a><a class="chip" href="taro/index.html">Ταρώ ημέρας</a><a class="chip" href="zodia-simera/index.html">Αρχείο</a></p></div>
   <div class="signs">${cards}</div>
 </section>
 <section class="stack"><h2>Εργαλεία και προβλέψεις</h2><div class="chips">${[
     ['ti-zodio-eimai', 'Τι ζώδιο είμαι;'], ['oroskopos', 'Ο ωροσκόπος μου'], ['xartis', 'Γενέθλιος χάρτης'], ['synastria', 'Συναστρία και Χάρτης Σχέσης'],
     [`zodia-${FEATURED_YEAR}`, `Ζώδια ${FEATURED_YEAR}`], ['evdomadiaia', 'Εβδομαδιαίες προβλέψεις'], ['miniaia', 'Μηνιαίες προβλέψεις'],
-    ['panselinoi', 'Πανσέληνοι'], [`anadromos-ermis-${FEATURED_YEAR}`, `Ανάδρομος Ερμής ${FEATURED_YEAR}`], ['kinezika-zodia', 'Κινέζικο ωροσκόπιο'], ['arithmologia', 'Αριθμολογία'],
+    ['panselinoi', 'Πανσέληνοι'], [`ekleipseis-${FEATURED_YEAR}`, `Εκλείψεις ${FEATURED_YEAR}`], ['genethlia', 'Γεννημένοι μέρα προς μέρα'], ['taro', 'Ταρώ ημέρας'], [`anadromos-ermis-${FEATURED_YEAR}`, `Ανάδρομος Ερμής ${FEATURED_YEAR}`], ['kinezika-zodia', 'Κινέζικο ωροσκόπιο'], ['arithmologia', 'Αριθμολογία'],
   ].map(([h, l]) => `<a class="chip" href="${h}/index.html">${l}</a>`).join('')}</div></section>
 ${newsletterBox()}
 <section class="stack-lg">
@@ -171,7 +176,12 @@ ${newsletterBox()}
   ${events.map((e) => `<tr><td class="num" style="white-space:nowrap">${fmtWhen(e.date)}</td><td>${e.text}</td></tr>`).join('')}
   </tbody></table></div>
 </section>`;
-  return { path, ...page({ path, title: '', description: `Ημερήσιες προβλέψεις για τα 12 ζώδια, ${fmtIsoLong(sky.iso)}. Σελήνη ${SIGNS[m.sign].inSign}, φάση και ανάδρομοι πλανήτες.`, content }) };
+  const description = `Ζώδια σήμερα ${fmtIsoLong(sky.iso)}: ημερήσιες προβλέψεις για τα 12 ζώδια από τις πραγματικές θέσεις των πλανητών. Σελήνη ${SIGNS[m.sign].inSign}, φάση και ανάδρομοι.`;
+  const jsonLd = [
+    { '@context': 'https://schema.org', '@type': 'WebSite', '@id': `${config.siteUrl}/#site`, name: config.siteName, alternateName: 'zodiasimera.com', url: `${config.siteUrl}/`, inLanguage: 'el', publisher: { '@id': `${config.siteUrl}/#org` } },
+    { '@context': 'https://schema.org', ...ORG_LD() },
+  ];
+  return { path, ...page({ path, title: `Ζώδια σήμερα ${dm(sky.iso)}: Προβλέψεις για τα 12 ζώδια | ${config.siteName}`, titleExact: true, description, content, jsonLd }) };
 }
 
 // ── Σελίδα ζωδίου ────────────────────────────────────────────────────────
@@ -190,15 +200,19 @@ export function signPage(i, sky, skyTomorrow) {
   <div class="day-head"><h2>${label}</h2><span class="muted">${esc(fmtIsoLong(iso))}</span></div>
   ${ratingsHtml(h.ratings)}
   <div class="reading">${h.paras.map((p) => `<p>${esc(p)}</p>`).join('')}<p class="advice">${esc(h.advice)}</p></div>
+  ${luckHtml(luckFor(i, iso, h.ratings))}
 </article>`;
   const others = SIGNS.map((o, j) => `<a class="chip" href="${root}symvatotita/${pairSlug(i, j)}/index.html">${glyph(o.symbol)} ${o.name}</a>`).join('');
   const products = (config.products[s.slug] || []);
+  const trail = [['Ζώδια Σήμερα', 'index.html'], [`${s.name} σήμερα`, path]];
   const content = `
-<section class="hero-sign el-${s.element}">${glyph(s.symbol)}<h1>${s.name}</h1><p class="muted">${s.dates} · ${ELEMENTS[s.element].name} · ${MODALITIES[s.modality].name} · Κυβερνήτης: ${BODY_NAMES[s.ruler].short}</p></section>
+${crumbs(trail, root)}
+<section class="hero-sign el-${s.element}">${glyph(s.symbol)}<h1>${s.name} σήμερα</h1><p class="muted">${s.dates} · ${ELEMENTS[s.element].name} · ${MODALITIES[s.modality].name} · Κυβερνήτης: ${BODY_NAMES[s.ruler].short}</p></section>
 <nav class="chips" aria-label="Προβλέψεις ${s.gen}"><a class="chip" aria-current="page" href="${root}zodia/${s.slug}/index.html">Σήμερα</a><a class="chip" href="${root}zodia/${s.slug}/evdomada/index.html">Εβδομάδα</a><a class="chip" href="${root}zodia/${s.slug}/minas/index.html">Μήνας</a><a class="chip" href="${root}zodia-${FEATURED_YEAR}/${s.slug}/index.html">${FEATURED_YEAR}</a></nav>
 ${day(today, 'Σήμερα', sky.iso)}
 ${adSlot()}
 ${day(tomorrow, 'Αύριο', skyTomorrow.iso)}
+<p class="chips"><a class="chip" href="${root}zodia-simera/${sky.iso}/index.html">Όλα τα ζώδια σήμερα ${dm(sky.iso)}</a><a class="chip" href="${root}zodia-avrio/index.html">Ζώδια αύριο</a><a class="chip" href="${root}taro/index.html">Ταρώ ημέρας</a><a class="chip" href="${root}zodia-simera/index.html">Αρχείο προβλέψεων</a></p>
 <section class="stack-lg">
   <h2>Ο χαρακτήρας ${s.gen}</h2>
   <div class="reading"><p>${esc(s.intro)}</p></div>
@@ -211,6 +225,10 @@ ${day(tomorrow, 'Αύριο', skyTomorrow.iso)}
     <div class="stack"><h3>Προκλήσεις</h3><ul class="plain">${s.challenges.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>
   </div>
 </section>
+<section class="stack">
+  <h2>Γεννημένοι ${s.inSign} μέρα προς μέρα</h2>
+  <div class="chips">${signBirthdays(i).map(([m, d, label]) => `<a class="chip" href="${root}${bdayPath(m, d)}">${label}</a>`).join('')}</div>
+</section>
 ${products.length ? `<section class="stack"><h2>Για ${s.acc}</h2><ul class="plain">${products.map((p) => `<li><a href="${esc(p.url)}" rel="sponsored noopener" target="_blank">${esc(p.title)}</a>${p.note ? ` · <span class="muted">${esc(p.note)}</span>` : ''}</li>`).join('')}</ul></section>` : ''}
 ${newsletterBox(s.slug)}
 <section class="stack">
@@ -218,7 +236,11 @@ ${newsletterBox(s.slug)}
   <div class="chips">${others}</div>
 </section>`;
   const first = today.paras[0].split('. ')[0];
-  return { path, ...page({ path, title: `${s.name} σήμερα: ημερήσια πρόβλεψη`, description: `${s.name} σήμερα, ${fmtIsoLong(sky.iso)}: ${first}.`, content }) };
+  const title = `${s.name} σήμερα ${dm(sky.iso)}: ημερήσια πρόβλεψη`;
+  const description = `${s.name} σήμερα, ${fmtIsoLong(sky.iso)}: ${first}.`;
+  const image = ogImage(s.slug);
+  const jsonLd = [articleLd({ path, headline: title, description, published: sky.iso, image }), breadcrumbLd(trail)];
+  return { path, ...page({ path, title, description, content, image, ogType: 'article', jsonLd }) };
 }
 
 // ── Ο ουρανός (θέσεις & όψεις) ───────────────────────────────────────────
@@ -351,15 +373,41 @@ ${adSlot()}
 
 export function aboutPage() {
   const path = 'sxetika/index.html';
+  const root = '../';
+  const trail = [['Ζώδια Σήμερα', 'index.html'], ['Σχετικά', path]];
   const content = `
-<section class="stack"><p class="eyebrow">Πώς δουλεύουμε</p><h1>Σχετικά με τις προβλέψεις</h1></section>
-<section class="reading">
-<p>Κάθε μέρα υπολογίζουμε τις πραγματικές θέσεις του Ήλιου, της Σελήνης και των πλανητών για την ώρα Αθήνας, με αστρονομικά μοντέλα του Jet Propulsion Laboratory της NASA για τους πλανήτες και του Jean Meeus για τη Σελήνη. Οι φάσεις της Σελήνης και οι ανάδρομοι πλανήτες βγαίνουν από τους ίδιους υπολογισμούς.</p>
-<p>Οι ημερήσιες προβλέψεις στηρίζονται στους ηλιακούς οίκους: το ζώδιό σου θεωρείται πρώτος οίκος και κάθε επόμενο ζώδιο ο επόμενος οίκος. Όταν η Σελήνη ή ένας πλανήτης περνά από έναν οίκο, ενεργοποιεί τον αντίστοιχο τομέα της ζωής. Οι βαθμολογίες για την αγάπη, τη δουλειά και τη διάθεση προκύπτουν από τις όψεις της Σελήνης προς την Αφροδίτη, τον Ερμή, τον Δία, τον Κρόνο και τον Άρη.</p>
-<p>Αν ανοίγεις γενέθλιο χάρτη πρώτη φορά, δες τον οδηγό <a href="../odigos/pos-diavazo-genethlio-xarti/index.html">Πώς διαβάζω τον γενέθλιο χάρτη μου;</a></p>
-<p>Η αστρολογία δεν είναι επιστήμη. Οι προβλέψεις του site έχουν ψυχαγωγικό χαρακτήρα και δεν υποκαθιστούν επαγγελματικές συμβουλές για υγεία, οικονομικά ή νομικά θέματα.</p>
+${crumbs(trail, root)}
+<section class="stack"><p class="eyebrow">Πώς δουλεύουμε</p><h1>Σχετικά με το Ζώδια Σήμερα</h1>
+<p class="lede">Το Ζώδια Σήμερα γράφει ημερήσιες προβλέψεις για τα 12 ζώδια ξεκινώντας από αυτό που πραγματικά συμβαίνει στον ουρανό: πού βρίσκονται σήμερα ο Ήλιος, η Σελήνη και οι πλανήτες, ποιοι είναι ανάδρομοι και ποιες όψεις σχηματίζουν.</p></section>
+<section class="split">
+  <div class="panel stack">
+    <h2>Οι υπολογισμοί</h2>
+    <p>Κάθε βράδυ, λίγο μετά τα μεσάνυχτα, υπολογίζουμε τις θέσεις για την ώρα Αθήνας με αστρονομικά μοντέλα: τα στοιχεία τροχιών του Jet Propulsion Laboratory της NASA για τους πλανήτες και τις μεθόδους του Jean Meeus για τη Σελήνη.</p>
+    <p>Οι φάσεις της Σελήνης ελέγχθηκαν με τα επίσημα στοιχεία του US Naval Observatory για το 2026, με απόκλιση περίπου ενός λεπτού. Από τους ίδιους υπολογισμούς βγαίνουν οι ανάδρομοι πλανήτες, οι αλλαγές ζωδίου, οι Πανσέληνοι και οι εκλείψεις.</p>
+  </div>
+  <div class="panel stack">
+    <h2>Οι προβλέψεις</h2>
+    <p>Οι ημερήσιες προβλέψεις στηρίζονται στους ηλιακούς οίκους: το ζώδιό σου θεωρείται πρώτος οίκος και κάθε επόμενο ζώδιο ο επόμενος. Όταν η Σελήνη ή ένας πλανήτης περνά από έναν οίκο, ενεργοποιεί τον αντίστοιχο τομέα της ζωής.</p>
+    <p>Τα κείμενα είναι γραμμένα από εμάς στα ελληνικά, για κάθε θέση της Σελήνης, κάθε ανάδρομο πλανήτη και κάθε όψη, και συνδυάζονται κάθε μέρα ανάλογα με τον ουρανό. Οι βαθμολογίες για αγάπη, δουλειά και διάθεση προκύπτουν από τις όψεις της Σελήνης προς την Αφροδίτη, τον Ερμή, τον Δία, τον Κρόνο και τον Άρη.</p>
+  </div>
+</section>
+<section class="stack">
+  <h2>Τι θα βρεις εδώ</h2>
+  <ul class="plain">
+    <li><a href="${root}index.html">Ζώδια σήμερα</a>, <a href="${root}zodia-avrio/index.html">ζώδια αύριο</a>, <a href="${root}evdomadiaia/index.html">εβδομαδιαίες</a> και <a href="${root}miniaia/index.html">μηνιαίες</a> προβλέψεις, και <a href="${root}zodia-simera/index.html">αρχείο</a> όλων των ημερών</li>
+    <li>Δωρεάν <a href="${root}xartis/index.html">γενέθλιος χάρτης</a>, <a href="${root}oroskopos/index.html">ωροσκόπος</a>, <a href="${root}prosopiko/index.html">προσωπικό ωροσκόπιο</a> και <a href="${root}synastria/index.html">συναστρία</a>, που υπολογίζονται στον browser σου: τα στοιχεία γέννησης δεν στέλνονται πουθενά</li>
+    <li><a href="${root}efimerida/index.html">Εφημερίδα πλανητών</a>, <a href="${root}selini/index.html">ημερολόγιο Σελήνης</a>, <a href="${root}anadromoi/index.html">ανάδρομοι πλανήτες</a> και <a href="${root}ekleipseis-${FEATURED_YEAR}/index.html">εκλείψεις</a></li>
+    <li><a href="${root}genethlia/index.html">Γεννημένοι μέρα προς μέρα</a>, <a href="${root}symvatotita/index.html">συμβατότητα ζωδίων</a>, <a href="${root}kinezika-zodia/index.html">κινέζικα ζώδια</a>, <a href="${root}arithmologia/index.html">αριθμολογία</a> και <a href="${root}taro/index.html">ταρώ ημέρας</a></li>
+  </ul>
+  <p>Αν ανοίγεις γενέθλιο χάρτη πρώτη φορά, δες τον οδηγό <a href="${root}odigos/pos-diavazo-genethlio-xarti/index.html">Πώς διαβάζω τον γενέθλιο χάρτη μου;</a></p>
+</section>
+<section class="panel stack">
+  <h2>Ποιοι είμαστε</h2>
+  <p>Το Ζώδια Σήμερα ανήκει στην ${esc(config.company.name)}, ${esc(config.company.address)}. Για σχόλια, διορθώσεις ή συνεργασίες γράψε μας στο <a href="mailto:${esc(config.company.email)}">${esc(config.company.email)}</a> ή από τη σελίδα <a href="${root}epikoinonia/index.html">επικοινωνίας</a>.</p>
+  <p class="muted">Η αστρολογία δεν είναι επιστήμη. Οι προβλέψεις του site έχουν ψυχαγωγικό χαρακτήρα και δεν υποκαθιστούν επαγγελματικές συμβουλές για υγεία, οικονομικά ή νομικά θέματα.</p>
 </section>`;
-  return { path, ...page({ path, title: 'Σχετικά', description: 'Πώς υπολογίζονται οι θέσεις των πλανητών και οι ημερήσιες προβλέψεις.', content }) };
+  const jsonLd = [{ '@context': 'https://schema.org', '@type': 'AboutPage', name: 'Σχετικά με το Ζώδια Σήμερα', url: `${config.siteUrl}/sxetika/`, inLanguage: 'el', about: ORG_LD() }, breadcrumbLd(trail)];
+  return { path, ...page({ path, title: 'Σχετικά: πώς υπολογίζονται οι προβλέψεις', description: 'Πώς δουλεύει το Ζώδια Σήμερα: πραγματικές θέσεις πλανητών με μοντέλα NASA JPL και Meeus, ηλιακοί οίκοι, ελληνικά κείμενα και ποιοι είμαστε.', content, jsonLd }) };
 }
 
 // ── Φόρμα στοιχείων γέννησης (κοινή) ─────────────────────────────────────
