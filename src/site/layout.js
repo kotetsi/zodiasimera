@@ -198,6 +198,26 @@ th .whatis-pop, .legend .whatis-pop { left: auto; right: -8px; }
 .shot img { width: 100%; height: auto; border-radius: 14px; border: 1px solid var(--line); background: #fff; }
 .shot figcaption { font-size: .86rem; color: var(--muted); }
 a.btn { display: inline-block; text-decoration: none; }
+.crumbs { font-size: .85rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 6px; }
+.crumbs a { color: var(--muted); }
+.lucky { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); margin: 0; }
+.lucky > div { background: var(--chip); border-radius: 14px; padding: 10px 14px; }
+.lucky dt { font-size: .78rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.lucky dd { margin: 2px 0 0; font-weight: 700; font-family: var(--display); font-size: var(--step-1); }
+.swatch { display: inline-block; width: .9em; height: .9em; border-radius: 50%; vertical-align: -.1em; margin-right: 6px; border: 1px solid var(--line); }
+.luckbar { height: 8px; border-radius: 999px; background: var(--chip); overflow: hidden; margin-top: 6px; }
+.luckbar i { display: block; height: 100%; background: linear-gradient(90deg, var(--violet), var(--brass)); }
+.day-list { display: grid; gap: 22px; }
+.day-list article h2 { font-size: var(--step-2); }
+.cal { display: grid; gap: 6px; grid-template-columns: repeat(7, minmax(0, 1fr)); text-align: center; }
+.cal a, .cal span { display: block; padding: 8px 0; border-radius: 10px; text-decoration: none; font-variant-numeric: tabular-nums; }
+.cal a { background: var(--chip); font-weight: 600; }
+.cal a:hover, .cal a[aria-current] { background: var(--violet); color: #fff; }
+.tarot-card { display: grid; gap: 10px; justify-items: center; text-align: center; padding: 22px 16px; border-radius: 18px;
+  background: linear-gradient(160deg, var(--night-2), var(--night)); color: #f6f2ff; border: 2px solid var(--sun); }
+.tarot-card .num { color: var(--sun); font-family: var(--display); font-weight: 700; letter-spacing: .1em; }
+.tarot-card h3 { font-size: var(--step-2); }
+.tarot-card .g { font-size: 2.6rem; color: var(--sun); }
 .tone-mid { background: var(--violet-soft); color: var(--violet); }
 .note { background: var(--brass-soft); border-radius: 12px; padding: 10px 14px; font-size: .92rem; }
 .syn-actions { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; }
@@ -269,6 +289,7 @@ footer.site { border-top: 1px solid var(--line); padding-block: 20px 36px; font-
 export const FEATURED_YEAR = (() => { const d = new Date(); return d.getUTCMonth() >= 9 ? d.getUTCFullYear() + 1 : d.getUTCFullYear(); })();
 const NAV = [
   ['index.html', 'Σήμερα'],
+  ['zodia-avrio/index.html', 'Αύριο'],
   [`zodia-${FEATURED_YEAR}/index.html`, `Ζώδια ${FEATURED_YEAR}`],
   ['prosopiko/index.html', 'Προσωπικό ωροσκόπιο'],
   ['xartis/index.html', 'Γενέθλιος χάρτης'],
@@ -281,6 +302,7 @@ const NAV = [
   ['selini/index.html', 'Σελήνη'],
   ['anadromoi/index.html', 'Ανάδρομοι'],
   ['symvatotita/index.html', 'Συμβατότητα'],
+  ['taro/index.html', 'Ταρώ'],
   ['sxetika/index.html', 'Σχετικά'],
 ];
 
@@ -309,11 +331,32 @@ export function adSlot() {
 }
 
 // Επιστρέφει { head, body } — η build τα τυλίγει σε πλήρες έγγραφο
-export function page({ path, title, titleExact = false, description, content, jsonLd }) {
+// Εικόνα κοινοποίησης: ανά ζώδιο (static/og/<slug>.png) ή η γενική
+export const ogImage = (slug = 'zodia-simera') => `${config.siteUrl}/og/${slug}.png`;
+export const ORG_LD = () => ({ '@type': 'Organization', '@id': `${config.siteUrl}/#org`, name: config.siteName, url: `${config.siteUrl}/`, logo: ogImage(), legalName: config.company.name, email: config.company.email,
+  address: { '@type': 'PostalAddress', streetAddress: 'Ξανθίππου 7', postalCode: '155 61', addressLocality: 'Χολαργός', addressRegion: 'Αττική', addressCountry: 'GR' } });
+// Δομημένα δεδομένα: άρθρο (με ημερομηνίες) και διαδρομή (breadcrumbs)
+export function articleLd({ path, headline, description, published, modified, image }) {
+  const url = `${config.siteUrl}/${path.replace(/index\.html$/, '')}`;
+  return { '@context': 'https://schema.org', '@type': 'Article', headline: headline.slice(0, 110), description, inLanguage: 'el', url, mainEntityOfPage: url,
+    image: [image || ogImage()], datePublished: published, dateModified: modified || published,
+    author: { '@type': 'Organization', name: config.siteName, url: `${config.siteUrl}/sxetika/` }, publisher: ORG_LD() };
+}
+export function breadcrumbLd(items) {
+  return { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: items.map(([name, path], k) => ({ '@type': 'ListItem', position: k + 1, name, item: `${config.siteUrl}/${path.replace(/index\.html$/, '')}` })) };
+}
+// Ορατή διαδρομή πάνω από τον τίτλο (ταιριάζει με το breadcrumbLd)
+export function crumbs(items, root) {
+  return `<nav class="crumbs" aria-label="Διαδρομή">${items.map(([name, path], k) => k === items.length - 1 ? `<span aria-current="page">${esc(name)}</span>` : `<a href="${root}${path}">${esc(name)}</a>`).join(' <span aria-hidden="true">›</span> ')}</nav>`;
+}
+
+export function page({ path, title, titleExact = false, description, content, jsonLd, image, ogType = 'website', noindex = false }) {
   const depth = path.split('/').length - 1;
   const root = depth ? '../'.repeat(depth) : '';
   const fullTitle = titleExact ? title : title ? `${title} | ${config.siteName}` : `${config.siteName} | ${config.tagline}`;
   const canonical = config.siteUrl ? `${config.siteUrl}/${path.replace(/index\.html$/, '')}` : '';
+  // Σελίδες που αφορούν ένα ζώδιο παίρνουν την εικόνα του αυτόματα
+  if (!image) { const seg = path.split('/').find((x) => SIGNS.some((z) => z.slug === x)); if (seg) image = ogImage(seg); }
   const head = [
     `<title>${esc(fullTitle)}</title>`,
     '<meta name="claude:viewport-fit-sides" content="cover">',
@@ -322,6 +365,15 @@ export function page({ path, title, titleExact = false, description, content, js
     `<meta property="og:title" content="${esc(fullTitle)}">`,
     `<meta property="og:description" content="${esc(description)}">`,
     '<meta property="og:locale" content="el_GR">',
+    `<meta property="og:type" content="${ogType}">`,
+    `<meta property="og:site_name" content="${esc(config.siteName)}">`,
+    canonical ? `<meta property="og:url" content="${esc(canonical)}">` : '',
+    config.siteUrl ? `<meta property="og:image" content="${esc(image || ogImage())}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="${esc(fullTitle)}">` : '',
+    '<meta name="twitter:card" content="summary_large_image">',
+    `<meta name="robots" content="${noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1'}">`,
+    config.siteUrl ? `<link rel="icon" href="${config.siteUrl}/favicon.svg" type="image/svg+xml">` : '',
+    config.siteUrl ? `<link rel="alternate" type="application/rss+xml" title="${esc(config.siteName)}" href="${config.siteUrl}/rss/zodia.xml">` : '',
+    config.gscVerification ? `<meta name="google-site-verification" content="${esc(config.gscVerification)}">` : '',
     '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>',
     '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;600;700&family=Commissioner:wght@400;500;600;700&family=Noto+Sans+Symbols&display=swap">',
     config.adsenseClient ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${esc(config.adsenseClient)}" crossorigin="anonymous"></script>` : '',
@@ -330,7 +382,7 @@ export function page({ path, title, titleExact = false, description, content, js
 gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied'});
 try{if(localStorage.getItem('zs-consent')==='yes')gtag('consent','update',{analytics_storage:'granted'})}catch(e){}
 gtag('js',new Date());gtag('config','${esc(config.gaId)}');</script><script async src="https://www.googletagmanager.com/gtag/js?id=${esc(config.gaId)}"></script>` : '',
-    jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>` : '',
+    ...[].concat(jsonLd || []).map((ld) => `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>`),
     `<style>${CSS}</style>`,
   ].filter(Boolean).join('\n');
   const nav = NAV.map(([href, label]) => `<a href="${root}${href}"${href === path ? ' aria-current="page"' : ''}>${label}</a>`).join('');
@@ -347,6 +399,10 @@ ${config.gaId ? `<div class="consent" id="zs-consent" hidden role="dialog" aria-
   return { head, body, root };
 }
 
+// Καθαρά URL: κάθε link σε «…/index.html» γίνεται «…/», ώστε να ταιριάζει με το canonical
+export const cleanLinks = (html) => html.replace(/href="([^"]*?)index\.html(#[^"]*)?"/g, (_, pre, hash = '') => `href="${pre || './'}${hash}"`);
+
 export function fullDocument({ head, body }) {
+  head = cleanLinks(head); body = cleanLinks(body);
   return `<!doctype html>\n<html lang="el">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n${head}\n</head>\n<body>\n${body}\n</body>\n</html>\n`;
 }
