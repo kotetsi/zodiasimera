@@ -395,7 +395,7 @@ ${crumbs(trail, root)}
   <h2>Τι θα βρεις εδώ</h2>
   <ul class="plain">
     <li><a href="${root}index.html">Ζώδια σήμερα</a>, <a href="${root}zodia-avrio/index.html">ζώδια αύριο</a>, <a href="${root}evdomadiaia/index.html">εβδομαδιαίες</a> και <a href="${root}miniaia/index.html">μηνιαίες</a> προβλέψεις, και <a href="${root}zodia-simera/index.html">αρχείο</a> όλων των ημερών</li>
-    <li>Δωρεάν <a href="${root}xartis/index.html">γενέθλιος χάρτης</a>, <a href="${root}oroskopos/index.html">ωροσκόπος</a>, <a href="${root}prosopiko/index.html">προσωπικό ωροσκόπιο</a> και <a href="${root}synastria/index.html">συναστρία</a>, που υπολογίζονται στον browser σου: τα στοιχεία γέννησης δεν στέλνονται πουθενά</li>
+    <li>Δωρεάν <a href="${root}xartis/index.html">γενέθλιος χάρτης</a>, <a href="${root}oroskopos/index.html">ωροσκόπος</a>, <a href="${root}prosopiko/index.html">προσωπικό ωροσκόπιο</a> και <a href="${root}synastria/index.html">συναστρία</a>, που υπολογίζονται στον browser σου: η ημερομηνία και η ώρα γέννησης δεν στέλνονται πουθενά</li>
     <li><a href="${root}efimerida/index.html">Εφημερίδα πλανητών</a>, <a href="${root}selini/index.html">ημερολόγιο Σελήνης</a>, <a href="${root}anadromoi/index.html">ανάδρομοι πλανήτες</a> και <a href="${root}ekleipseis-${FEATURED_YEAR}/index.html">εκλείψεις</a></li>
     <li><a href="${root}genethlia/index.html">Γεννημένοι μέρα προς μέρα</a>, <a href="${root}symvatotita/index.html">συμβατότητα ζωδίων</a>, <a href="${root}kinezika-zodia/index.html">κινέζικα ζώδια</a>, <a href="${root}arithmologia/index.html">αριθμολογία</a> και <a href="${root}taro/index.html">ταρώ ημέρας</a></li>
   </ul>
@@ -417,7 +417,7 @@ const birthFields = (px, nameLabel = 'Όνομα <small class="muted">(προα�
   <label class="field"><span>Ημερομηνία γέννησης</span><input id="${px}-date" type="date" min="1800-01-01" max="2050-12-31" required></label>
   <label class="field"><span>Ώρα γέννησης</span><input id="${px}-time" type="time" step="60"></label>
   <label class="check"><input id="${px}-notime" type="checkbox"> Δεν ξέρω την ώρα</label>
-  <label class="field wide"><span>Τόπος γέννησης</span><input id="${px}-place" type="text" list="${px}-cities" placeholder="Γράψε πόλη, π.χ. Θεσσαλονίκη" autocomplete="off"><datalist id="${px}-cities"></datalist></label>
+  <label class="field wide"><span>Τόπος γέννησης</span><input id="${px}-place" type="text" list="${px}-cities" placeholder="Γράψε πόλη ή χωριό, π.χ. Μαρούσι" autocomplete="off"><datalist id="${px}-cities"></datalist></label>
   <details id="${px}-custom" class="wide"><summary>Άλλος τόπος (με συντεταγμένες)</summary>
     <div class="custom-grid">
       <label class="field"><span>Γεωγραφικό πλάτος</span><input id="${px}-lat" type="text" inputmode="decimal" placeholder="π.χ. 38.25"></label>
@@ -439,7 +439,7 @@ export function natalPage(script) {
   const path = 'xartis/index.html';
   const content = `
 <section class="stack"><p class="eyebrow">Δωρεάν υπολογισμός</p><h1>Γενέθλιος χάρτης</h1>
-<p class="lede">Βάλε ημερομηνία, ώρα και τόπο γέννησης για να δεις πού βρίσκονταν ο Ήλιος, η Σελήνη και οι πλανήτες τη στιγμή που γεννήθηκες, τον ωροσκόπο και τους οίκους σου. Ο υπολογισμός γίνεται στη συσκευή σου· τα στοιχεία σου δεν στέλνονται πουθενά.</p></section>
+<p class="lede">Βάλε ημερομηνία, ώρα και τόπο γέννησης για να δεις πού βρίσκονταν ο Ήλιος, η Σελήνη και οι πλανήτες τη στιγμή που γεννήθηκες, τον ωροσκόπο και τους οίκους σου. Ο υπολογισμός γίνεται στη συσκευή σου· η ημερομηνία και η ώρα γέννησης δεν στέλνονται πουθενά.</p></section>
 ${birthFormHtml('Υπολόγισε τον χάρτη')}
 <p class="muted">Πρώτη φορά; <a href="../odigos/pos-diavazo-genethlio-xarti/index.html">Πώς διαβάζω τον γενέθλιο χάρτη μου</a>: οδηγός βήμα βήμα με παράδειγμα.</p>
 ${adSlot()}
@@ -501,7 +501,7 @@ export function dailyPage(script) {
 ${birthFormHtml('Δες το ωροσκόπιό μου')}
 </details>
 ${adSlot()}
-<div id="nc-result" class="stack-lg"><div class="panel stack"><h2>Ξεκίνα από τα στοιχεία γέννησης</h2><p>Συμπλήρωσε ημερομηνία, ώρα και τόπο γέννησης. Θα δεις τις ώρες της ημέρας που η Σελήνη αγγίζει τον χάρτη σου, τις επιρροές των γρήγορων πλανητών και τις μεγάλες περιόδους από τον Δία, τον Κρόνο και τους εξωτερικούς πλανήτες.</p><p class="muted">Ο υπολογισμός γίνεται στη συσκευή σου· τα στοιχεία σου δεν στέλνονται πουθενά.</p></div><noscript><p>Το ωροσκόπιο χρειάζεται JavaScript.</p></noscript></div>
+<div id="nc-result" class="stack-lg"><div class="panel stack"><h2>Ξεκίνα από τα στοιχεία γέννησης</h2><p>Συμπλήρωσε ημερομηνία, ώρα και τόπο γέννησης. Θα δεις τις ώρες της ημέρας που η Σελήνη αγγίζει τον χάρτη σου, τις επιρροές των γρήγορων πλανητών και τις μεγάλες περιόδους από τον Δία, τον Κρόνο και τους εξωτερικούς πλανήτες.</p><p class="muted">Ο υπολογισμός γίνεται στη συσκευή σου· η ημερομηνία και η ώρα γέννησης δεν στέλνονται πουθενά.</p></div><noscript><p>Το ωροσκόπιο χρειάζεται JavaScript.</p></noscript></div>
 <script>${script}</script>`;
   return { path, ...page({ path, title: 'Προσωπικό ημερήσιο ωροσκόπιο', description: 'Δωρεάν προσωπικό ωροσκόπιο από τον γενέθλιο χάρτη σου: οι όψεις της Σελήνης και των πλανητών με τον χάρτη σου, ώρα προς ώρα.', content }) };
 }
@@ -517,7 +517,7 @@ export function synastryPage(script) {
   <fieldset class="panel natal-form"><legend>Πρόσωπο Α</legend>${birthFields('sa', 'Όνομα')}</fieldset>
   <fieldset class="panel natal-form"><legend>Πρόσωπο Β</legend>${birthFields('sb', 'Όνομα')}</fieldset>
   <p id="syn-error" class="error wide" role="alert" hidden></p>
-  <div class="wide syn-actions"><button type="submit" class="btn">Σύγκρινε τους χάρτες</button> <button type="button" class="btn-ghost" id="syn-example">Δες ένα παράδειγμα</button> <span class="muted" style="font-size:.85rem">Ο υπολογισμός γίνεται στη συσκευή σου· τα στοιχεία δεν στέλνονται πουθενά.</span></div>
+  <div class="wide syn-actions"><button type="submit" class="btn">Σύγκρινε τους χάρτες</button> <button type="button" class="btn-ghost" id="syn-example">Δες ένα παράδειγμα</button> <span class="muted" style="font-size:.85rem">Ο υπολογισμός γίνεται στη συσκευή σου· η ημερομηνία και η ώρα δεν στέλνονται πουθενά.</span></div>
 </form>
 ${adSlot()}
 <div id="syn-result" class="stack-lg"><div class="panel stack"><h2>Συμπλήρωσε τα στοιχεία και των δύο</h2><p>Θα δεις δύο τρόπους σύγκρισης. Στη <strong>Συναστρία</strong>: βαθμολογίες για την έλξη, τη συναισθηματική σύνδεση, την επικοινωνία και τη σταθερότητα, τις σημαντικότερες όψεις ανάμεσα στους δύο χάρτες και σε ποιους οίκους του ενός πέφτουν οι πλανήτες του άλλου. Στον <strong>Χάρτη Σχέσης</strong>: τον σύνθετο χάρτη του ζευγαριού, με εξηγήσεις για κάθε πλανήτη και όψη.</p><p class="muted">Χωρίς ώρα γέννησης η συναστρία γίνεται κανονικά, απλώς χωρίς ωροσκόπο και οίκους.</p></div><noscript><p>Η συναστρία χρειάζεται JavaScript.</p></noscript></div>
@@ -588,7 +588,7 @@ export function privacyPage() {
 <h2>Υπεύθυνος επεξεργασίας</h2>
 <p>${esc(c.name)}, ${esc(c.address)}. Email: <strong>${esc(c.email)}</strong></p>
 <h2>Στοιχεία γέννησης</h2>
-<p>Ο γενέθλιος χάρτης, το προσωπικό ωροσκόπιο και η συναστρία υπολογίζονται μέσα στον browser σου. Η ημερομηνία, η ώρα και ο τόπος γέννησης που συμπληρώνεις δεν στέλνονται σε κανέναν server και δεν τα βλέπουμε. Αν επιλέξεις «Θυμήσου τα στοιχεία μου», αποθηκεύονται μόνο στη συσκευή σου (στη μνήμη του browser) και μπορείς να τα σβήσεις όποτε θέλεις, ξετσεκάροντας την επιλογή ή διαγράφοντας τα δεδομένα του site από τον browser. Τα στοιχεία του δεύτερου προσώπου στη συναστρία δεν αποθηκεύονται ποτέ.</p>
+<p>Ο γενέθλιος χάρτης, το προσωπικό ωροσκόπιο και η συναστρία υπολογίζονται μέσα στον browser σου. Η ημερομηνία και η ώρα γέννησης που συμπληρώνεις δεν στέλνονται σε κανέναν server και δεν τις βλέπουμε. Για να βρεθούν οι συντεταγμένες ενός τόπου που δεν υπάρχει στη λίστα πόλεων του site, μόνο το όνομα του τόπου που γράφεις αναζητείται στη δωρεάν υπηρεσία Open-Meteo Geocoding (open-meteo.com), χωρίς κανένα άλλο στοιχείο. Αν επιλέξεις «Θυμήσου τα στοιχεία μου», αποθηκεύονται μόνο στη συσκευή σου (στη μνήμη του browser) και μπορείς να τα σβήσεις όποτε θέλεις, ξετσεκάροντας την επιλογή ή διαγράφοντας τα δεδομένα του site από τον browser. Τα στοιχεία του δεύτερου προσώπου στη συναστρία δεν αποθηκεύονται ποτέ.</p>
 ${config.newsletterAction ? `<h2>Newsletter</h2>
 <p>Αν γραφτείς στο newsletter, το email σου και το ζώδιο που διαλέγεις αποθηκεύονται στην υπηρεσία MailerLite (MailerLite Limited, Ιρλανδία), που στέλνει για λογαριασμό μας την ημερήσια πρόβλεψη. Νομική βάση είναι η συγκατάθεσή σου, την οποία μπορείς να ανακαλέσεις οποτεδήποτε με τον σύνδεσμο διαγραφής σε κάθε email.</p>` : ''}
 <h2>Google Analytics</h2>

@@ -6,7 +6,7 @@ import { natalChart } from './natal.js';
 import { synastry } from './synastry.js';
 import { compositeChart, COMPOSITE_BODIES } from './composite.js';
 import { glance } from './composite-glance.js';
-import { initFields, fillFields, readFields, loadSavedBirth, toInput } from './birth-form.js';
+import { initFields, fillFields, readFields, loadSavedBirth, toInput, ensurePlace } from './birth-form.js';
 import { fmtDeg, wheelSvg } from './chart-svg.js';
 import { exportButtons, downloadChart } from './chart-export.js';
 import config from './config.js';
@@ -281,8 +281,9 @@ ${a.uncertain ? '<p class="note">Χωρίς ώρα γέννησης αυτή η 
     $('syn-result').scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'start' });
   }
 
-  $('syn-form').addEventListener('submit', (ev) => {
+  $('syn-form').addEventListener('submit', async (ev) => {
     ev.preventDefault();
+    await Promise.all([ensurePlace('sa'), ensurePlace('sb')]);
     const ra = readFields('sa'), rb = readFields('sb');
     const err = ra.error ? `Πρόσωπο Α: ${ra.error}` : rb.error ? `Πρόσωπο Β: ${rb.error}` : '';
     $('syn-error').textContent = err;
