@@ -4,7 +4,7 @@ import { SIGNS } from '../content/signs.js';
 import { FULL_MOON_HOUSE, NEW_MOON_HOUSE } from '../content/daily-texts.js';
 import { FULL_MOON_SIGN, NEW_MOON_SIGN_SHORT } from '../content/moon-texts.js';
 import { eclipses, houseOf } from '../forecast.js';
-import { athensTime, fmtDate, fmtTime, todayInAthens } from '../horoscope.js';
+import { athensTime, fmtDate, fmtTime } from '../horoscope.js';
 import { fmtDeg } from '../chart-svg.js';
 import { page, esc, glyph, adSlot, articleLd } from './layout.js';
 
@@ -54,7 +54,7 @@ ${adSlot()}
     path, title: `${title}: ημερομηνία, ώρα και τι σημαίνει για κάθε ζώδιο`,
     description: `${title}: ${long(f.date)}, ${fmtTime(f.date)} ώρα Ελλάδας, ${SIGNS[f.sign].inSign}.${f.eclipse ? ' Έκλειψη Σελήνης.' : ''} Τι σημαίνει και τι φέρνει σε κάθε ζώδιο.`,
     content,
-    jsonLd: articleLd({ path, headline: `${title}: ημερομηνία, ώρα και τι σημαίνει για κάθε ζώδιο`, description: `${title}: ${long(f.date)}, ${fmtTime(f.date)} ώρα Ελλάδας, ${SIGNS[f.sign].inSign}.`, published: `${f.y - 1}-11-01`, modified: todayInAthens() }),
+    jsonLd: articleLd({ path, headline: `${title}: ημερομηνία, ώρα και τι σημαίνει για κάθε ζώδιο`, description: `${title}: ${long(f.date)}, ${fmtTime(f.date)} ώρα Ελλάδας, ${SIGNS[f.sign].inSign}.`, }),
   }) };
 }
 
@@ -71,8 +71,9 @@ export function fullMoonIndexPage(my) {
     return `<section class="stack-lg"><h2>Πανσέληνοι και Νέες Σελήνες ${y}</h2><div class="table-wrap"><table><thead><tr><th>Ημερομηνία</th><th>Ώρα</th><th>Φάση</th><th>Ζώδιο</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
   }).join(adSlot());
   const content = `
-<section class="stack"><p class="eyebrow">Ημερολόγιο Σελήνης</p><h1>Πανσέληνοι ${my.years.join(' και ')}</h1>
+<section class="stack"><p class="eyebrow">Ημερολόγιο Σελήνης</p><h1>Πανσέληνοι: ημερολόγιο και αρχείο</h1>
 <p class="lede">Όλες οι Πανσέληνοι και οι Νέες Σελήνες με ημερομηνία και ώρα Ελλάδας, το ζώδιο όπου πέφτουν και τις εκλείψεις. Πάτησε σε μια Πανσέληνο για να δεις τι σημαίνει και τι φέρνει σε κάθε ζώδιο.</p></section>
 ${sec}`;
   return { path, ...page({ path, title: `Πανσέληνοι ${my.years.join(' και ')}: ημερομηνίες, ώρες και ζώδια`, description: `Πότε είναι η Πανσέληνος: όλες οι Πανσέληνοι και Νέες Σελήνες ${my.years.join(' και ')} με ώρα Ελλάδας, ζώδιο και εκλείψεις.`, content }) };
 }
+

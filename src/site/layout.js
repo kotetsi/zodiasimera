@@ -1,11 +1,12 @@
 import config from '../config.js';
+import { metadata, buildDate, featuredYear } from './seo.js';
 import { SIGNS } from '../content/signs.js';
 
 export const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 // Σύμβολα σε μορφή κειμένου (όχι emoji)
 export const glyph = (g) => `<span class="g">${g}︎</span>`;
 
-const CSS = `
+export const CSS = `
 /* Ζωντανή, νεανική παλέτα: ματζέντα και βιολετί για τόνο, κίτρινο ήλιου, χρώμα ανά στοιχείο ζωδίου (φωτιά, γη, αέρας, νερό) */
 :root {
   --paper: #fbf8ff; --surface: #ffffff; --ink: #1d1640; --muted: #655d8c; --line: #e8e2f6;
@@ -49,6 +50,15 @@ header.site { display: flex; flex-wrap: wrap; align-items: center; justify-conte
   padding-block: 20px 14px; border-bottom: 1px solid var(--line); }
 .brand { font-family: var(--display); font-weight: 700; font-size: var(--step-3); line-height: 1; text-decoration: none; color: var(--violet); }
 .brand:hover { color: var(--brass); }
+nav.main { align-items: flex-start; }
+.night h1 { font-size: clamp(1.8rem, 7vw, var(--step-4)); }
+.nav-group { position: relative; }
+.nav-group summary { cursor: pointer; padding: 4px 11px; border-radius: 999px; color: var(--muted); }
+.nav-group summary.is-current, .nav-group[open] summary { color: var(--ink); background: var(--chip); }
+.nav-menu { position: absolute; z-index: 20; right: 0; top: 100%; display: grid; gap: 4px; padding: 12px; width: 17rem; max-width: 85vw; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 8px 24px #0002; }
+.nav-menu a { min-height: 44px; display: flex; align-items: center; }
+.nav-group summary:focus-visible, a:focus-visible, button:focus-visible { outline: 3px solid var(--violet); outline-offset: 3px; }
+@media (max-width: 640px) { nav.main { width: 100%; } .nav-group { flex: 1 1 44%; } .nav-menu { position: static; width: 100%; max-width: none; } }
 .brand .g { font-size: .8em; margin-right: .2em; color: var(--sun); }
 nav.main { display: flex; flex-wrap: wrap; gap: 6px; font-size: .9rem; }
 nav.main a { text-decoration: none; color: var(--muted); padding: 4px 11px; border-radius: 999px; font-weight: 500; }
@@ -287,11 +297,11 @@ footer.site { border-top: 1px solid var(--line); padding-block: 20px 36px; font-
 `;
 
 // Από τον Οκτώβριο προβάλλεται η επόμενη χρονιά
-export const FEATURED_YEAR = (() => { const d = new Date(); return d.getUTCMonth() >= 9 ? d.getUTCFullYear() + 1 : d.getUTCFullYear(); })();
-const NAV = [
+export { featuredYear as FEATURED_YEAR } from './seo.js';
+const navigation = () => [
   ['index.html', 'Σήμερα'],
   ['zodia-avrio/index.html', 'Αύριο'],
-  [`zodia-${FEATURED_YEAR}/index.html`, `Ζώδια ${FEATURED_YEAR}`],
+  [`zodia-${featuredYear}/index.html`, `Ζώδια ${featuredYear}`],
   ['prosopiko/index.html', 'Προσωπικό ωροσκόπιο'],
   ['xartis/index.html', 'Γενέθλιος χάρτης'],
   ['oroskopos/index.html', 'Ωροσκόπος'],
@@ -305,6 +315,9 @@ const NAV = [
   ['symvatotita/index.html', 'Συμβατότητα'],
   ['taro/index.html', 'Ταρώ'],
   ['sxetika/index.html', 'Σχετικά'],
+  ['evdomadiaia/index.html', 'Εβδομαδιαίες προβλέψεις'],
+  ['miniaia/index.html', 'Μηνιαίες προβλέψεις'],
+  ['ti-zodio-eimai/index.html', 'Τι ζώδιο είμαι;'],
 ];
 
 // Φόρμα newsletter (MailerLite). Εμφανίζεται μόνο όταν έχει οριστεί config.newsletterAction.
@@ -340,7 +353,7 @@ export const ORG_LD = () => ({ '@type': 'Organization', '@id': `${config.siteUrl
 export function articleLd({ path, headline, description, published, modified, image }) {
   const url = `${config.siteUrl}/${path.replace(/index\.html$/, '')}`;
   return { '@context': 'https://schema.org', '@type': 'Article', headline: headline.slice(0, 110), description, inLanguage: 'el', url, mainEntityOfPage: url,
-    image: [image || ogImage()], datePublished: published, dateModified: modified || published,
+    image: [image || ogImage()], ...(published ? { datePublished: published } : {}), ...(modified ? { dateModified: modified } : {}),
     author: { '@type': 'Organization', name: config.siteName, url: `${config.siteUrl}/sxetika/` }, publisher: ORG_LD() };
 }
 export function breadcrumbLd(items) {
@@ -354,7 +367,10 @@ export function crumbs(items, root) {
 export function page({ path, title, titleExact = false, description, content, jsonLd, image, ogType = 'website', noindex = false }) {
   const depth = path.split('/').length - 1;
   const root = depth ? '../'.repeat(depth) : '';
-  const fullTitle = titleExact ? title : title ? `${title} | ${config.siteName}` : `${config.siteName} | ${config.tagline}`;
+  const seo = metadata(path, title || config.siteName, description);
+  const brandedTitle = `${seo.title} | ${config.siteName}`;
+  const fullTitle = !titleExact && brandedTitle.length <= 60 ? brandedTitle : seo.title;
+  description = seo.description;
   const canonical = config.siteUrl ? `${config.siteUrl}/${path.replace(/index\.html$/, '')}` : '';
   // Σελίδες που αφορούν ένα ζώδιο παίρνουν την εικόνα του αυτόματα
   if (!image) { const seg = path.split('/').find((x) => SIGNS.some((z) => z.slug === x)); if (seg) image = ogImage(seg); }
@@ -384,20 +400,33 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 try{if(localStorage.getItem('zs-consent')==='yes')gtag('consent','update',{analytics_storage:'granted'})}catch(e){}
 gtag('js',new Date());gtag('config','${esc(config.gaId)}');</script><script async src="https://www.googletagmanager.com/gtag/js?id=${esc(config.gaId)}"></script>` : '',
     ...[].concat(jsonLd || []).map((ld) => `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>`),
-    `<style>${CSS}</style>`,
+    `<link rel="stylesheet" href="${root}assets/site.css">`,
   ].filter(Boolean).join('\n');
-  const nav = NAV.map(([href, label]) => `<a href="${root}${href}"${href === path ? ' aria-current="page"' : ''}>${label}</a>`).join('');
+  const items = navigation();
+  const link = ([href, label]) => `<a href="${root}${href}"${href === path ? ' aria-current="page"' : ''}>${label}</a>`;
+  const groups = [
+    ['Προβλέψεις', [1, 16, 17, 2, 3]],
+    ['Εργαλεία', [18, 4, 5]],
+    ['Σχέσεις', [8, 13]],
+    ['Σελήνη και πλανήτες', [9, 10, 11, 12]],
+    ['Περισσότερα', [6, 7, 14, 15]],
+  ];
+  const nav = link(items[0]) + groups.map(([label, indices]) => {
+    const active = indices.some(i => items[i][0] === path);
+    return `<details class="nav-group"><summary${active ? ' class="is-current"' : ''}>${label}</summary><div class="nav-menu">${indices.map(i => link(items[i])).join('')}</div></details>`;
+  }).join('');
   const body = `<div class="wrap">
 <header class="site"><a class="brand" href="${root}index.html">${glyph('☉')}${esc(config.siteName)}</a><nav class="main" aria-label="Κύριο μενού">${nav}</nav></header>
 <main>${content}</main>
 ${config.gaId ? `<div class="consent" id="zs-consent" hidden role="dialog" aria-label="Cookies"><p>Χρησιμοποιούμε cookies του Google Analytics για να μετράμε την επισκεψιμότητα. Η ημερομηνία και η ώρα γέννησης που βάζεις στα εργαλεία μας δεν στέλνονται πουθενά.</p><div class="consent-btns"><button type="button" class="btn-ghost" id="zs-no">Απόρριψη</button><button type="button" class="btn" id="zs-yes">Αποδοχή</button></div></div>
 <script>(function(){var b=document.getElementById('zs-consent'),v=null;try{v=localStorage.getItem('zs-consent')}catch(e){}if(!v)b.hidden=false;function set(x){try{localStorage.setItem('zs-consent',x)}catch(e){}b.hidden=true;if(x==='yes'&&window.gtag)gtag('consent','update',{analytics_storage:'granted'})}document.getElementById('zs-yes').onclick=function(){set('yes')};document.getElementById('zs-no').onclick=function(){set('no')};document.addEventListener('click',function(e){if(e.target&&e.target.id==='zs-reopen')b.hidden=false});})();</script>` : ''}
 <footer class="site"><p>${esc(config.siteName)} · Οι θέσεις των πλανητών υπολογίζονται καθημερινά για ώρα Αθήνας. Οι προβλέψεις είναι για ψυχαγωγικούς σκοπούς.</p>
-<p class="footer-links"><a href="${root}sxetika/index.html">Σχετικά</a><a href="${root}epikoinonia/index.html">Επικοινωνία</a><a href="${root}apporito/index.html">Πολιτική απορρήτου</a><a href="${root}oroi/index.html">Όροι χρήσης</a>${config.gaId ? '<button type="button" class="linkish" id="zs-reopen">Ρυθμίσεις cookies</button>' : ''}</p>
-<p>© ${new Date().getFullYear()} ${esc(config.company.name)}</p></footer>
-<script>document.addEventListener('click',function(e){document.querySelectorAll('details.whatis[open]').forEach(function(d){if(!d.contains(e.target))d.open=false})});document.addEventListener('keydown',function(e){if(e.key==='Escape')document.querySelectorAll('details.whatis[open]').forEach(function(d){d.open=false})});</script>
+<p class="footer-links"><a href="${root}sxetika/index.html">Σχετικά</a><a href="${root}epikoinonia/index.html">Επικοινωνία</a><a href="${root}apporito/index.html">Πολιτική απορρήτου</a><a href="${root}oroi/index.html">Όροι χρήσης</a><a href="${root}arxeio/index.html">Αρχείο ετών</a>${config.gaId ? '<button type="button" class="linkish" id="zs-reopen">Ρυθμίσεις cookies</button>' : ''}</p>
+<p>© ${buildDate.slice(0, 4)} ${esc(config.company.name)}</p></footer>
+<script>document.addEventListener('toggle',function(e){if(e.target.matches('details.nav-group[open]'))document.querySelectorAll('details.nav-group[open]').forEach(function(d){if(d!==e.target)d.open=false})},true);document.addEventListener('click',function(e){document.querySelectorAll('details.nav-group[open]').forEach(function(d){if(!d.contains(e.target))d.open=false});document.querySelectorAll('details.whatis[open]').forEach(function(d){if(!d.contains(e.target))d.open=false})});document.addEventListener('keydown',function(e){if(e.key==='Escape')document.querySelectorAll('details.whatis[open],details.nav-group[open]').forEach(function(d){d.open=false})});</script>
 </div>`;
-  return { head, body, root };
+  const daily = ['index.html', 'zodia-avrio/index.html', 'ouranos/index.html', 'selini/index.html', 'anadromoi/index.html', 'taro/index.html'].includes(path) || /^zodia\/[^/]+\/index\.html$/.test(path);
+  return { head, body, root, ...(daily ? { lastmod: buildDate } : {}) };
 }
 
 // Καθαρά URL: κάθε link σε «…/index.html» γίνεται «…/», ώστε να ταιριάζει με το canonical
@@ -407,3 +436,4 @@ export function fullDocument({ head, body }) {
   head = cleanLinks(head); body = cleanLinks(body);
   return `<!doctype html>\n<html lang="el">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n${head}\n</head>\n<body>\n${body}\n</body>\n</html>\n`;
 }
+
