@@ -145,7 +145,10 @@ export function homePage(sky, skyTomorrow) {
   <div class="stack-lg">
     <div class="stack">
       <p class="eyebrow">${esc(fmtIsoLong(sky.iso))}</p>
-      <h1>Ο ουρανός σήμερα</h1>
+      <h1>Ζώδια σήμερα: ημερήσιες προβλέψεις</h1>
+      <p>Διάλεξε το ζώδιό σου για σήμερα και αύριο ή δες τις εβδομαδιαίες και μηνιαίες προβλέψεις. Οι ώρες των αστρονομικών γεγονότων αναφέρονται στην Ελλάδα.</p>
+      <a class="btn" href="#zodia">Διάλεξε το ζώδιό σου</a>
+      <h2>Ο ουρανός σήμερα</h2>
       <p class="lede">Η Σελήνη βρίσκεται ${SIGNS[m.sign].inSign}${sky.moonIngress ? ` και στις ${fmtTime(sky.moonIngress.date)} περνά ${SIGNS[sky.moonIngress.sign].inSign}` : ''}. ${retros.length ? `Ανάδρομοι: ${retros.map((b) => BODY_NAMES[b].short).join(', ')}.` : 'Κανένας πλανήτης δεν είναι ανάδρομος.'}</p>
     </div>
     <dl class="facts">
@@ -160,7 +163,7 @@ export function homePage(sky, skyTomorrow) {
 </section>
 ${adSlot()}
 <section class="stack-lg">
-  <div class="stack"><h2>Ζώδια σήμερα</h2><p class="muted">Διάλεξε το ζώδιό σου για την πρόβλεψη της ημέρας και της αυριανής. Νέο: <a href="zodia-${FEATURED_YEAR}/index.html">οι ετήσιες προβλέψεις για το ${FEATURED_YEAR}</a>.</p>
+  <div class="stack"><h2 id="zodia">Διάλεξε το ζώδιό σου</h2><p class="muted">Διάλεξε το ζώδιό σου για την πρόβλεψη της ημέρας και της αυριανής. Νέο: <a href="zodia-${FEATURED_YEAR}/index.html">οι ετήσιες προβλέψεις για το ${FEATURED_YEAR}</a>.</p>
   <p class="chips"><a class="chip" href="zodia-simera/${sky.iso}/index.html">Όλα τα ζώδια σε μία σελίδα</a><a class="chip" href="zodia-avrio/index.html">Ζώδια αύριο ${dm(skyTomorrow.iso)}</a><a class="chip" href="taro/index.html">Ταρώ ημέρας</a><a class="chip" href="zodia-simera/index.html">Αρχείο</a></p></div>
   <div class="signs">${cards}</div>
 </section>
@@ -181,7 +184,7 @@ ${newsletterBox()}
     { '@context': 'https://schema.org', '@type': 'WebSite', '@id': `${config.siteUrl}/#site`, name: config.siteName, alternateName: 'zodiasimera.com', url: `${config.siteUrl}/`, inLanguage: 'el', publisher: { '@id': `${config.siteUrl}/#org` } },
     { '@context': 'https://schema.org', ...ORG_LD() },
   ];
-  return { path, ...page({ path, title: `Ζώδια σήμερα ${dm(sky.iso)}: Προβλέψεις για τα 12 ζώδια | ${config.siteName}`, titleExact: true, description, content, jsonLd }) };
+  return { path, ...page({ path, title: `Ζώδια σήμερα ${dm(sky.iso)}: Προβλέψεις για τα 12 ζώδια`, titleExact: true, description, content, jsonLd }) };
 }
 
 // ── Σελίδα ζωδίου ────────────────────────────────────────────────────────
@@ -196,7 +199,7 @@ export function signPage(i, sky, skyTomorrow) {
   tomorrow.paras = tomorrow.paras.map(toTomorrow);
   tomorrow.advice = toTomorrow(tomorrow.advice);
   const day = (h, label, iso) => `
-<article class="panel stack-lg">
+<article class="panel stack-lg" id="${label === 'Σήμερα' ? 'simera' : 'avrio'}">
   <div class="day-head"><h2>${label}</h2><span class="muted">${esc(fmtIsoLong(iso))}</span></div>
   ${ratingsHtml(h.ratings)}
   <div class="reading">${h.paras.map((p) => `<p>${esc(p)}</p>`).join('')}<p class="advice">${esc(h.advice)}</p></div>
@@ -208,13 +211,13 @@ export function signPage(i, sky, skyTomorrow) {
   const content = `
 ${crumbs(trail, root)}
 <section class="hero-sign el-${s.element}">${glyph(s.symbol)}<h1>${s.name} σήμερα</h1><p class="muted">${s.dates} · ${ELEMENTS[s.element].name} · ${MODALITIES[s.modality].name} · Κυβερνήτης: ${BODY_NAMES[s.ruler].short}</p></section>
-<nav class="chips" aria-label="Προβλέψεις ${s.gen}"><a class="chip" aria-current="page" href="${root}zodia/${s.slug}/index.html">Σήμερα</a><a class="chip" href="${root}zodia/${s.slug}/evdomada/index.html">Εβδομάδα</a><a class="chip" href="${root}zodia/${s.slug}/minas/index.html">Μήνας</a><a class="chip" href="${root}zodia-${FEATURED_YEAR}/${s.slug}/index.html">${FEATURED_YEAR}</a></nav>
+<nav class="chips" aria-label="Προβλέψεις ${s.gen}"><a class="chip" href="#simera">Σήμερα</a><a class="chip" href="#avrio">Αύριο</a><a class="chip" href="#xaraktiristika">Χαρακτηριστικά</a><a class="chip" href="${root}zodia/${s.slug}/evdomada/index.html">Εβδομάδα</a><a class="chip" href="${root}zodia/${s.slug}/minas/index.html">Μήνας</a><a class="chip" href="${root}zodia-${FEATURED_YEAR}/${s.slug}/index.html">${FEATURED_YEAR}</a></nav>
 ${day(today, 'Σήμερα', sky.iso)}
 ${adSlot()}
 ${day(tomorrow, 'Αύριο', skyTomorrow.iso)}
 <p class="chips"><a class="chip" href="${root}zodia-simera/${sky.iso}/index.html">Όλα τα ζώδια σήμερα ${dm(sky.iso)}</a><a class="chip" href="${root}zodia-avrio/index.html">Ζώδια αύριο</a><a class="chip" href="${root}taro/index.html">Ταρώ ημέρας</a><a class="chip" href="${root}zodia-simera/index.html">Αρχείο προβλέψεων</a></p>
 <section class="stack-lg">
-  <h2>Ο χαρακτήρας ${s.gen}</h2>
+  <h2 id="xaraktiristika">Ο χαρακτήρας ${s.gen}</h2>
   <div class="reading"><p>${esc(s.intro)}</p></div>
   <div class="split">
     <div class="stack"><h3>Στον έρωτα</h3><p>${esc(s.love)}</p>${HAS_PROFILES ? `<p><a href="${root}zodia/${s.slug}/erotas/index.html">${s.name} στον έρωτα</a> · <a href="${root}zodia/${s.slug}/gynaika/index.html">Η γυναίκα ${({ didymoi: 'Δίδυμος', ichthyes: 'Ιχθύς' })[s.slug] || s.name}</a> · <a href="${root}zodia/${s.slug}/antras/index.html">Ο άντρας ${({ didymoi: 'Δίδυμος', ichthyes: 'Ιχθύς' })[s.slug] || s.name}</a></p>` : ''}</div>
@@ -239,7 +242,7 @@ ${newsletterBox(s.slug)}
   const title = `${s.name} σήμερα ${dm(sky.iso)}: ημερήσια πρόβλεψη`;
   const description = `${s.name} σήμερα, ${fmtIsoLong(sky.iso)}: ${first}.`;
   const image = ogImage(s.slug);
-  const jsonLd = [articleLd({ path, headline: title, description, published: sky.iso, image }), breadcrumbLd(trail)];
+  const jsonLd = [articleLd({ path, headline: title, description, modified: sky.iso, image }), breadcrumbLd(trail)];
   return { path, ...page({ path, title, description, content, image, ogType: 'article', jsonLd }) };
 }
 
@@ -367,6 +370,7 @@ ${adSlot()}
   <div class="stack"><h3><a href="${root}zodia/${a.slug}/index.html">${a.name}</a></h3><p class="muted">${a.dates}</p><p>${esc(a.love)}</p></div>
   ${same ? '' : `<div class="stack"><h3><a href="${root}zodia/${b.slug}/index.html">${b.name}</a></h3><p class="muted">${b.dates}</p><p>${esc(b.love)}</p></div>`}
 </section>
+<p><a href="${root}synastria/index.html">Σύγκρινε τους δύο γενέθλιους χάρτες στη δωρεάν συναστρία</a>. Η σύγκριση ηλιακών ζωδίων είναι μια γενική αστρολογική προσέγγιση· οι βαθμολογίες δεν είναι πιθανότητες επιτυχίας μιας σχέσης.</p>
 <p><a href="../index.html">Όλοι οι συνδυασμοί ζωδίων</a></p>`;
   return { path, ...page({ path, title: `${title}: συμβατότητα`, description: `Ταιριάζουν ${title.replace(' και ', ' με ')}; Συμβατότητα στην αγάπη (${sc.love}/5), τη φιλία και τη δουλειά.`, content }) };
 }
@@ -483,6 +487,11 @@ export function ascPage(script) {
 ${birthFormHtml('Βρες τον ωροσκόπο μου')}
 ${adSlot()}
 <div id="nc-result" class="stack-lg"><noscript><p>Ο υπολογισμός χρειάζεται JavaScript.</p></noscript></div>
+<section class="stack"><h2>Συχνές ερωτήσεις για τον υπολογισμό</h2>
+<details class="faq"><summary>Μπορώ να βρω ωροσκόπο χωρίς ώρα γέννησης;</summary><p>Χρειάζεται η ώρα γέννησης. Μια πρόχειρη εκτίμηση μπορεί να δώσει διαφορετικό αποτέλεσμα, ιδίως κοντά στην αλλαγή ζωδίου. Αν δεν την ξέρεις, ο <a href="../xartis/index.html">γενέθλιος χάρτης</a> επιτρέπει υπολογισμό χωρίς ωροσκόπο και οίκους.</p></details>
+<details class="faq"><summary>Βάζω τον τόπο γέννησης ή τον τόπο κατοικίας;</summary><p>Τον τόπο όπου γεννήθηκες. Η γεωγραφική θέση και η τοπική ώρα εκείνης της ημερομηνίας συμμετέχουν στον υπολογισμό.</p></details>
+<details class="faq"><summary>Πρέπει να αφαιρέσω τη θερινή ώρα;</summary><p>Καταχώρισε την τοπική ώρα που αναγράφεται στα στοιχεία γέννησης. Το εργαλείο υπολογίζει τη διαφορά ώρας για την επιλεγμένη τοποθεσία και ημερομηνία. Έλεγξε τη γραμμή στοιχείων στο αποτέλεσμα.</p></details>
+<details class="faq"><summary>Γιατί διαφέρει το αποτέλεσμα από άλλο εργαλείο;</summary><p>Σύγκρινε πρώτα ημερομηνία, ώρα, τοποθεσία και ζώνη ώρας. Χωρίς τα ίδια δεδομένα δεν συγκρίνεις τον ίδιο υπολογισμό. Δες τον <a href="../odigos/pos-diavazo-genethlio-xarti/index.html">οδηγό ανάγνωσης χάρτη</a>.</p></details></section>
 <section class="stack-lg"><h2>Τι σημαίνει ο ωροσκόπος</h2>
 <div class="reading"><p>Το ζώδιο του Ήλιου (αυτό που λέμε απλώς «ζώδιο») δείχνει τον πυρήνα σου. Ο ωροσκόπος δείχνει τη «βιτρίνα»: πώς σε αντιλαμβάνονται οι άλλοι με την πρώτη ματιά, πώς αντιδράς αυθόρμητα και πώς ξεκινάς κάτι καινούργιο. Επειδή ο ουρανός γυρίζει, ο ωροσκόπος αλλάζει ζώδιο κάθε δύο ώρες περίπου, γι’ αυτό χρειάζεται ακριβής ώρα γέννησης.</p>
 <p>Ο ωροσκόπος ορίζει και τον 1ο οίκο του χάρτη, άρα από αυτόν ξεκινά η διάταξη όλων των οίκων.</p></div>
@@ -502,6 +511,7 @@ ${birthFormHtml('Δες το ωροσκόπιό μου')}
 </details>
 ${adSlot()}
 <div id="nc-result" class="stack-lg"><div class="panel stack"><h2>Ξεκίνα από τα στοιχεία γέννησης</h2><p>Συμπλήρωσε ημερομηνία, ώρα και τόπο γέννησης. Θα δεις τις ώρες της ημέρας που η Σελήνη αγγίζει τον χάρτη σου, τις επιρροές των γρήγορων πλανητών και τις μεγάλες περιόδους από τον Δία, τον Κρόνο και τους εξωτερικούς πλανήτες.</p><p class="muted">Ο υπολογισμός γίνεται στη συσκευή σου· η ημερομηνία και η ώρα γέννησης δεν στέλνονται πουθενά.</p></div><noscript><p>Το ωροσκόπιο χρειάζεται JavaScript.</p></noscript></div>
+<section class="stack"><h2>Πώς διαβάζεις το αποτέλεσμα</h2><p>Ξεκίνα από τις όψεις της ημέρας και διάβασε ποια σημεία του γενέθλιου χάρτη σου συγκρίνονται με τους σημερινούς πλανήτες. Μια αστρολογική ερμηνεία για την επικοινωνία, για παράδειγμα, είναι αφορμή αναστοχασμού και δεν προβλέπει συγκεκριμένο γεγονός ή έκβαση.</p><p>Αν δεν γνωρίζεις την ώρα γέννησης, οι οίκοι και ο ωροσκόπος δεν μπορούν να χρησιμοποιηθούν με ακρίβεια. Για τις βασικές έννοιες δες <a href="../odigos/pos-diavazo-genethlio-xarti/index.html">πώς διαβάζεται ο γενέθλιος χάρτης</a> ή άνοιξε τον <a href="../xartis/index.html">γενέθλιο χάρτη σου</a>.</p></section>
 <script>${script}</script>`;
   return { path, ...page({ path, title: 'Προσωπικό ημερήσιο ωροσκόπιο', description: 'Δωρεάν προσωπικό ωροσκόπιο από τον γενέθλιο χάρτη σου: οι όψεις της Σελήνης και των πλανητών με τον χάρτη σου, ώρα προς ώρα.', content }) };
 }
@@ -521,6 +531,7 @@ export function synastryPage(script) {
 </form>
 ${adSlot()}
 <div id="syn-result" class="stack-lg"><div class="panel stack"><h2>Συμπλήρωσε τα στοιχεία και των δύο</h2><p>Θα δεις δύο τρόπους σύγκρισης. Στη <strong>Συναστρία</strong>: βαθμολογίες για την έλξη, τη συναισθηματική σύνδεση, την επικοινωνία και τη σταθερότητα, τις σημαντικότερες όψεις ανάμεσα στους δύο χάρτες και σε ποιους οίκους του ενός πέφτουν οι πλανήτες του άλλου. Στον <strong>Χάρτη Σχέσης</strong>: τον σύνθετο χάρτη του ζευγαριού, με εξηγήσεις για κάθε πλανήτη και όψη.</p><p class="muted">Χωρίς ώρα γέννησης η συναστρία γίνεται κανονικά, απλώς χωρίς ωροσκόπο και οίκους.</p></div><noscript><p>Η συναστρία χρειάζεται JavaScript.</p></noscript></div>
+<section class="stack"><h2>Πώς διαβάζεις τη σύγκριση</h2><p>Η συναστρία συγκρίνει θέσεις στους δύο χάρτες. Ο σύνθετος Χάρτης Σχέσης είναι διαφορετική αστρολογική κατασκευή: βασίζεται στα μεσοδιαστήματα των θέσεων των δύο ανθρώπων.</p><p>Ως παράδειγμα ανάγνωσης, μια ένδειξη για την επικοινωνία σε καλεί να σκεφτείς πώς ακούτε και εκφράζετε τις ανάγκες σας. Δεν αποτελεί μέτρηση της ποιότητας της σχέσης. Οι βαθμολογίες δεν είναι ποσοστά επιτυχίας και καμία όψη δεν καθορίζει αν δύο άνθρωποι θα μείνουν μαζί.</p><p>Πάτησε «Δες ένα παράδειγμα» για υπολογισμένο αποτέλεσμα ή διάλεξε έναν <a href="../symvatotita/index.html">συνδυασμό ηλιακών ζωδίων</a> για μια γενικότερη εισαγωγή. Για τα σύμβολα δες τον <a href="../odigos/pos-diavazo-genethlio-xarti/index.html">οδηγό του γενέθλιου χάρτη</a>.</p></section>
 <script>${script}</script>`;
   return { path, ...page({ path, title: 'Συναστρία και Χάρτης Σχέσης: ταιριάζουμε;', description: 'Δωρεάν συναστρία και σύνθετος Χάρτης Σχέσης για δύο γενέθλιους χάρτες: έλξη, επικοινωνία, σταθερότητα και ο χαρακτήρας της σχέσης, με διαδραστικό τροχό και ερμηνείες στα ελληνικά.', content }) };
 }
@@ -534,12 +545,18 @@ export function ephemerisMonths(iso, count = 12) {
   const [y, m] = iso.split('-').map(Number);
   return Array.from({ length: count }, (_, k) => { const d = new Date(Date.UTC(y, m - 1 + k, 1)); return { y: d.getUTCFullYear(), m: d.getUTCMonth() + 1 }; });
 }
-const monthPath = (mo, first) => (first ? 'efimerida/index.html' : `efimerida/${mo.y}-${String(mo.m).padStart(2, '0')}/index.html`);
+const monthPath = (mo) => `efimerida/${mo.y}-${String(mo.m).padStart(2, '0')}/index.html`;
+
+export function ephemerisIndexPage(months, iso) {
+  const current = iso.slice(0, 7);
+  const content = `<section class="stack"><h1>Εφημερίδα πλανητών</h1><p class="lede">Διάλεξε μήνα για τις ημερήσιες θέσεις των πλανητών, τις φάσεις της Σελήνης και τους ανάδρομους. Οι πίνακες θέσεων αναφέρονται στις 00:00 UTC και τα γεγονότα σε ώρα Ελλάδας.</p><p><a class="btn" href="${current}/index.html">Ο τρέχων μήνας</a></p></section><section class="stack"><h2>Μήνες και αρχείο</h2><div class="chips">${months.map(m => `<a class="chip" href="../${monthPath(m)}">${MONTHS[m.m - 1]} ${m.y}</a>`).join('')}</div></section>`;
+  return { path: 'efimerida/index.html', ...page({ path: 'efimerida/index.html', title: 'Εφημερίδα πλανητών: θέσεις και αρχείο ανά μήνα', description: 'Θέσεις πλανητών ανά ημέρα και μήνα, φάσεις Σελήνης, ανάδρομοι και αστρονομικά γεγονότα σε ώρα Ελλάδας. Διάλεξε μήνα από το αρχείο.', content }) };
+}
 
 export function ephemerisPage(months, k) {
   const mo = months[k];
   const path = monthPath(mo, k === 0);
-  const root = k === 0 ? '../' : '../../';
+  const root = '../../';
   const days = new Date(Date.UTC(mo.y, mo.m, 0)).getUTCDate();
   const cell = (p) => `<td class="num${p.retro ? ' rx' : ''}">${Math.floor(p.deg)}${glyph(SIGNS[p.sign].symbol)}${String(Math.floor((p.deg % 1) * 60)).padStart(2, '0')}${p.retro ? '<sup>R</sup>' : ''}</td>`;
   const rows = [];
@@ -761,3 +778,4 @@ ${adSlot()}${common}`;
   });
   return out;
 }
+

@@ -44,7 +44,7 @@ ${adSlot()}
 <section class="stack-lg"><h2>Οι 22 κάρτες των Μεγάλων Αρκάνων</h2><div class="signs">${all}</div></section>`;
   const title = `Ταρώ ημέρας: ${day.name}, η κάρτα για σήμερα και για κάθε ζώδιο`;
   const description = `Ταρώ ημέρας, ${fmtIsoLong(iso)}: ${day.name} (${day.keywords.join(', ')}). Τι σημαίνει για έρωτα και δουλειά, και η κάρτα της ημέρας για κάθε ζώδιο.`;
-  return { path, ...page({ path, title, titleExact: false, description, content, ogType: 'article', jsonLd: [articleLd({ path, headline: title, description, published: iso }), breadcrumbLd(trail)] }) };
+  return { path, ...page({ path, title, titleExact: false, description, content, ogType: 'article', jsonLd: [articleLd({ path, headline: title, description, modified: iso }), breadcrumbLd(trail)] }) };
 }
 
 export function tarotCardPage(k) {
@@ -78,3 +78,4 @@ ${adSlot()}
 }
 
 export const tarotPages = (iso) => [tarotIndexPage(iso), ...TAROT.map((_, k) => tarotCardPage(k))];
+

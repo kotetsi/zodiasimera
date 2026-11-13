@@ -45,7 +45,7 @@ export function mercuryPage(year, spans, todayDate) {
   const now = spans.find((r) => todayDate >= r.from && todayDate <= r.to);
   const nextR = spans.find((r) => r.from > todayDate);
   const status = now ? `<p class="note"><strong>Αυτή τη στιγμή ο Ερμής είναι ανάδρομος</strong> ${SIGNS[now.signFrom].inSign}, έως τις ${fmtDate(now.to, { day: 'numeric', month: 'long' })}.</p>`
-    : nextR ? `<p class="muted">Ο Ερμής δεν είναι ανάδρομος σήμερα. Η επόμενη ανάδρομη περίοδος ξεκινά στις ${fmtDate(nextR.from, { day: 'numeric', month: 'long', year: 'numeric' })}.</p>` : '';
+    : nextR ? `<p class="muted">Η επόμενη ανάδρομη περίοδος του ${year} ξεκινά στις ${fmtDate(nextR.from, { day: 'numeric', month: 'long', year: 'numeric' })}.</p>` : '';
   const cards = spans.map((r, k) => `<div class="panel stack"><p class="eyebrow">${k + 1}η περίοδος</p><h3>${day(r.from)} – ${day(r.to)}</h3>
 <p>${glyph(SIGNS[r.signFrom].symbol)} ${SIGNS[r.signFrom].inSign}${r.signTo !== r.signFrom ? ` → ${glyph(SIGNS[r.signTo].symbol)} ${SIGNS[r.signTo].inSign}` : ''}: πηγαίνει πίσω από τις ${fmtDeg(r.lr % 30)} ${SIGNS[r.signFrom].gen} στις ${fmtDeg(r.ld % 30)} ${SIGNS[r.signTo].gen}.</p>
 <ul class="plain"><li><strong>Γυρίζει ανάδρομος:</strong> ${day(r.from)}, ${fmtTime(r.from)}</li><li><strong>Γυρίζει ορθός:</strong> ${day(r.to)}, ${fmtTime(r.to)}</li>${r.pre ? `<li><strong>Σκιά πριν:</strong> από ${day(r.pre)}</li>` : ''}${r.post ? `<li><strong>Σκιά μετά:</strong> έως ${day(r.post)}</li>` : ''}</ul></div>`).join('');
@@ -63,3 +63,4 @@ ${adSlot()}
 <p><a href="${root}anadromoi/index.html">Όλοι οι ανάδρομοι πλανήτες τώρα</a> · <a href="${root}efimerida/index.html">Εφημερίδα πλανητών</a></p>`;
   return { path, ...page({ path, title: `Ανάδρομος Ερμής ${year}: ημερομηνίες, σκιές και τι σημαίνει για κάθε ζώδιο`, description: `Πότε είναι ανάδρομος ο Ερμής το ${year}: ${spans.map((r) => `${fmtDate(r.from, { day: 'numeric', month: 'long' })} – ${fmtDate(r.to, { day: 'numeric', month: 'long' })}`).join(', ')}. Ώρες Ελλάδας, σκιές και επίδραση σε κάθε ζώδιο.`, content }) };
 }
+

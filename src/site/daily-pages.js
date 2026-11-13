@@ -52,7 +52,7 @@ function dayEvents(sky) {
 
 const PLANETS = ['mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto'];
 
-export function archiveDayPage(sky, { first, last }) {
+export function archiveDayPage(sky, { first, last, asOf = sky.iso }) {
   const iso = sky.iso;
   const path = dayPath(iso);
   const root = '../../';
@@ -84,8 +84,8 @@ ${crumbs(trail, root)}
 <nav class="month-nav" aria-label="Άλλες ημέρες">${prev ? `<a href="${root}${dayPath(prev)}">← ${dayMonth(prev)}</a>` : '<span></span>'}<a href="${root}zodia-simera/index.html">Όλες οι ημέρες</a>${next ? `<a href="${root}${dayPath(next)}">${dayMonth(next)} →</a>` : '<span></span>'}</nav>`;
   const title = `Ζώδια σήμερα ${dm(iso)}: ${hook}`;
   const description = `Ζώδια ${dayMonth(iso)}: ${hook}. Η πρόβλεψη για όλα τα ζώδια σε έρωτα, δουλειά και διάθεση.`;
-  const jsonLd = [articleLd({ path, headline: title, description, published: iso, image: ogImage() }), breadcrumbLd(trail)];
-  return { path, lastmod: iso, ...page({ path, title, description, content, ogType: 'article', jsonLd }) };
+  const jsonLd = [articleLd({ path, headline: title, description, image: ogImage() }), breadcrumbLd(trail)];
+  return { path, lastmod: iso > asOf ? asOf : iso, ...page({ path, title, description, content, ogType: 'article', jsonLd }) };
 }
 
 const MONTHS = ['Ιανουάριος', 'Φεβρουάριος', 'Μάρτιος', 'Απρίλιος', 'Μάιος', 'Ιούνιος', 'Ιούλιος', 'Αύγουστος', 'Σεπτέμβριος', 'Οκτώβριος', 'Νοέμβριος', 'Δεκέμβριος'];
@@ -148,5 +148,6 @@ ${crumbs(trail, root)}
 <p class="chips"><a class="chip" href="${root}index.html">Ζώδια σήμερα</a><a class="chip" href="${root}zodia-simera/index.html">Αρχείο προβλέψεων</a><a class="chip" href="${root}evdomadiaia/index.html">Η εβδομάδα</a></p>`;
   const title = `Ζώδια αύριο ${dm(iso)}: ${hook}`;
   const description = `Ζώδια αύριο ${dayMonth(iso)}: ${hook}. Τι φέρνει η αυριανή μέρα σε κάθε ζώδιο, με τυχερό αριθμό και χρώμα.`;
-  return { path, lastmod: addDays(iso, -1), ...page({ path, title, description, content, ogType: 'article', jsonLd: [articleLd({ path, headline: title, description, published: addDays(iso, -1) }), breadcrumbLd(trail)] }) };
+  return { path, lastmod: addDays(iso, -1), ...page({ path, title, description, content, ogType: 'article', jsonLd: [articleLd({ path, headline: title, description, modified: addDays(iso, -1) }), breadcrumbLd(trail)] }) };
 }
+

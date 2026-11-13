@@ -5,9 +5,9 @@ import { SIGNS } from '../content/signs.js';
 import { HOUSE_AREA } from '../content/daily-texts.js';
 import * as Y from '../content/year-texts.js';
 import { eclipses, houseOf } from '../forecast.js';
-import { athensTime, fmtDate, fmtTime, todayInAthens } from '../horoscope.js';
+import { athensTime, fmtDate, fmtTime } from '../horoscope.js';
 import { fmtDeg } from '../chart-svg.js';
-import { page, esc, glyph, adSlot, articleLd, breadcrumbLd, crumbs } from './layout.js';
+import { page, esc, glyph, adSlot, articleLd, breadcrumbLd, crumbs, FEATURED_YEAR } from './layout.js';
 
 export const eclipsePath = (y) => `ekleipseis-${y}/index.html`;
 
@@ -93,9 +93,10 @@ ${adSlot()}
     <p>Στην αστρολογία οι εκλείψεις θεωρούνται πιο δυνατές από μια απλή Νέα Σελήνη ή Πανσέληνο. Οι εκλείψεις Ηλίου ανοίγουν νέα κεφάλαια, ενώ οι εκλείψεις Σελήνης κλείνουν κύκλους. Τα αποτελέσματα λέγεται ότι φαίνονται και τους επόμενους μήνες, ιδιαίτερα για τα ζώδια όπου πέφτουν.</p>
     <p class="muted">Μην κοιτάς ποτέ τον Ήλιο χωρίς ειδικά γυαλιά έκλειψης, ούτε όταν είναι μερικά καλυμμένος. Τις εκλείψεις Σελήνης μπορείς να τις δεις με ασφάλεια με γυμνό μάτι.</p>
   </div>
-  <p class="chips">${years.filter((x) => x !== y).map((x) => `<a class="chip" href="${root}${eclipsePath(x)}">Εκλείψεις ${x}</a>`).join('')}<a class="chip" href="${root}panselinoi/index.html">Πανσέληνοι</a><a class="chip" href="${root}selini/index.html">Ημερολόγιο Σελήνης</a><a class="chip" href="${root}zodia-${y}/index.html">Ζώδια ${y}</a></p>
+  <p class="chips">${years.filter((x) => x !== y).map((x) => `<a class="chip" href="${root}${eclipsePath(x)}">Εκλείψεις ${x}</a>`).join('')}<a class="chip" href="${root}panselinoi/index.html">Πανσέληνοι</a><a class="chip" href="${root}selini/index.html">Ημερολόγιο Σελήνης</a>${y <= FEATURED_YEAR ? `<a class="chip" href="${root}zodia-${y}/index.html">Ζώδια ${y}</a>` : ''}</p>
 </section>`;
   const title = `Εκλείψεις ${y}: ημερομηνίες, ζώδια και τι σημαίνουν`;
   const description = `Οι ${list.length} εκλείψεις του ${y} (${list.map((e) => fmtDate(e.date, { day: 'numeric', month: 'numeric' })).join(', ')}): ώρες Ελλάδας, ζώδιο, αν φαίνονται από την Ελλάδα και τι φέρνουν σε κάθε ζώδιο.`;
-  return { path, ...page({ path, title, description, content, ogType: 'article', jsonLd: [articleLd({ path, headline: title, description, published: `${y - 1}-11-07`, modified: todayInAthens() }), breadcrumbLd(trail)] }) };
+  return { path, ...page({ path, title, description, content, ogType: 'article', jsonLd: [articleLd({ path, headline: title, description, }), breadcrumbLd(trail)] }) };
 }
+
