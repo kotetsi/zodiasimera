@@ -21,6 +21,7 @@ import { archiveDayPage, archiveIndexPage, tomorrowPage } from './site/daily-pag
 import { birthdayPage, birthdayIndexPage, allBirthdays } from './site/birthday-pages.js';
 import { eclipseYear, eclipsePage } from './site/eclipse-pages.js';
 import { tarotPages } from './site/tarot-pages.js';
+import { merchPage } from './site/merch.js';
 import { setBuildDate, featuredYear } from './site/seo.js';
 import { retainedYears, retainedMonths, archivePage } from './site/archive.js';
 
@@ -38,6 +39,7 @@ const skyTomorrow = skyForDay(addDays(iso, 1));
 
 const pages = [
   P.homePage(sky, skyTomorrow),
+  merchPage(),
   ...SIGNS.map((_, i) => P.signPage(i, sky, skyTomorrow)),
   P.skyPage(sky),
   P.moonPage(sky),

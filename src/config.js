@@ -22,6 +22,10 @@ export default {
   products: {},
   // Σελίδα προϊόντος στο sellyourmerch.gr όπου ο πελάτης ανεβάζει το PNG του χάρτη (αφίσα/μπλουζάκι). Κενό = δεν εμφανίζεται.
   merchUrl: '',
+  // Δημόσια σελίδα συλλογής και εγκεκριμένα προϊόντα στο SellYourMerch.
+  merchStoreUrl: '',
+  merchProducts: {},
   // MailerLite: το URL της φόρμας εγγραφής (π.χ. 'https://assets.mailerlite.com/jsonp/123/forms/456/subscribe'). Κενό = δεν εμφανίζεται.
   newsletterAction: '',
 };
+

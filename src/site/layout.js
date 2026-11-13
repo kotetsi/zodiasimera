@@ -57,6 +57,14 @@ nav.main { align-items: flex-start; }
 .nav-group summary.is-current, .nav-group[open] summary { color: var(--ink); background: var(--chip); }
 .nav-menu { position: absolute; z-index: 20; right: 0; top: 100%; display: grid; gap: 4px; padding: 12px; width: 17rem; max-width: 85vw; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 8px 24px #0002; }
 .nav-menu a { min-height: 44px; display: flex; align-items: center; }
+.merch-hero { padding: clamp(1.25rem, 4vw, 3rem); }
+.merch-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 1.15rem; }
+.merch-card { overflow: hidden; padding: 0; display: flex; flex-direction: column; }
+.merch-card img { display: block; width: 100%; height: auto; }
+.merch-card-copy { padding: 1rem; display: grid; gap: .55rem; }
+.merch-card-copy h2 { font-size: 1.3rem; }
+.merch-card-copy p { margin: 0; }
+.merch-links { display: flex; flex-wrap: wrap; gap: .7rem; align-items: center; }
 .nav-group summary:focus-visible, a:focus-visible, button:focus-visible { outline: 3px solid var(--violet); outline-offset: 3px; }
 @media (max-width: 640px) { nav.main { width: 100%; } .nav-group { flex: 1 1 44%; } .nav-menu { position: static; width: 100%; max-width: none; } }
 .brand .g { font-size: .8em; margin-right: .2em; color: var(--sun); }
@@ -414,7 +422,7 @@ gtag('js',new Date());gtag('config','${esc(config.gaId)}');</script><script asyn
   const nav = link(items[0]) + groups.map(([label, indices]) => {
     const active = indices.some(i => items[i][0] === path);
     return `<details class="nav-group"><summary${active ? ' class="is-current"' : ''}>${label}</summary><div class="nav-menu">${indices.map(i => link(items[i])).join('')}</div></details>`;
-  }).join('');
+  }).join('') + link(['eshop/index.html', 'E-shop']);
   const body = `<div class="wrap">
 <header class="site"><a class="brand" href="${root}index.html">${glyph('☉')}${esc(config.siteName)}</a><nav class="main" aria-label="Κύριο μενού">${nav}</nav></header>
 <main>${content}</main>
