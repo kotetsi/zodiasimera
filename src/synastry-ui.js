@@ -18,7 +18,7 @@ export function startSynastryPage(root) {
   const cap = (s) => s[0].toUpperCase() + s.slice(1);
   const pname = (p) => (p === 'asc' ? 'Ωροσκόπος' : p === 'mc' ? 'Μεσουράνημα' : BODY_NAMES[p].short);
   const pglyph = (p) => (BODY_NAMES[p] ? g(BODY_NAMES[p].glyph) + ' ' : '');
-  const dots = (n) => `<span class="dots" aria-label="${n} από 5">${[1, 2, 3, 4, 5].map((i) => `<i class="${i <= n ? 'on' : ''}"></i>`).join('')}</span>`;
+  const dots = (n) => `<span class="dots" role="img" aria-label="${n} από 5">${[1, 2, 3, 4, 5].map((i) => `<i class="${i <= n ? 'on' : ''}"></i>`).join('')}</span>`;
   const pairSlug = (i, j) => (i <= j ? `${SIGNS[i].slug}-${SIGNS[j].slug}` : `${SIGNS[j].slug}-${SIGNS[i].slug}`);
   const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 

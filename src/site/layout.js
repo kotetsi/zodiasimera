@@ -8,15 +8,24 @@ export const glyph = (g) => `<span class="g">${g}︎</span>`;
 
 export const CSS = `
 /* Ζωντανή, νεανική παλέτα: ματζέντα και βιολετί για τόνο, κίτρινο ήλιου, χρώμα ανά στοιχείο ζωδίου (φωτιά, γη, αέρας, νερό) */
+/* Γραμματοσειρές στο ίδιο το site (OFL, από github.com/google/fonts), υποσύνολο Λατινικά + Ελληνικά.
+   Οι «Fallback» έχουν τις διαστάσεις της κανονικής, ώστε όταν φορτώσει να μη μετακινηθεί το κείμενο. */
+@font-face { font-family: 'Commissioner'; src: url(fonts/commissioner.woff2) format('woff2'); font-weight: 400 700; font-display: swap; }
+@font-face { font-family: 'Comfortaa'; src: url(fonts/comfortaa.woff2) format('woff2'); font-weight: 500 700; font-display: swap; }
+@font-face { font-family: 'Noto Sans Symbols'; src: url(fonts/noto-sans-symbols.woff2) format('woff2'); font-display: swap; }
+@font-face { font-family: 'Commissioner Fallback'; src: local('Arial'), local('Liberation Sans'); size-adjust: 102.52%; ascent-override: 99.2%; descent-override: 20.09%; line-gap-override: 0%; }
+@font-face { font-family: 'Commissioner Fallback Roboto'; src: local('Roboto'); size-adjust: 99.11%; ascent-override: 102.62%; descent-override: 20.79%; line-gap-override: 0%; }
+@font-face { font-family: 'Comfortaa Fallback'; src: local('Arial'), local('Liberation Sans'); size-adjust: 120.76%; ascent-override: 72.96%; descent-override: 19.38%; line-gap-override: 0%; }
+@font-face { font-family: 'Comfortaa Fallback Roboto'; src: local('Roboto'); size-adjust: 116.74%; ascent-override: 75.47%; descent-override: 20.04%; line-gap-override: 0%; }
 :root {
   --paper: #fbf8ff; --surface: #ffffff; --ink: #1d1640; --muted: #655d8c; --line: #e8e2f6;
-  --brass: #d81b73; --brass-soft: #ffe2ef; --violet: #6236ff; --violet-soft: #ece6ff; --sun: #ffb703;
+  --brass: #c71a6a; --brass-soft: #ffe2ef; --violet: #6236ff; --violet-soft: #ece6ff; --sun: #ffb703;
   --chip: #f2edff; --danger: #c8264b;
   --fire: #f0441c; --fire-soft: #ffe7df; --earth: #12925c; --earth-soft: #daf5e7;
   --air: #b77900; --air-soft: #fff0c2; --water: #1f6fff; --water-soft: #e0ebff;
   --night: #241763; --night-2: #3a1f8f;
-  --display: 'Comfortaa', 'Commissioner', system-ui, sans-serif;
-  --body: 'Commissioner', 'Segoe UI', system-ui, sans-serif;
+  --display: 'Comfortaa', 'Comfortaa Fallback', 'Comfortaa Fallback Roboto', 'Commissioner', system-ui, sans-serif;
+  --body: 'Commissioner', 'Commissioner Fallback', 'Commissioner Fallback Roboto', system-ui, sans-serif;
   --sym: 'Noto Sans Symbols', 'Segoe UI Symbol', 'Apple Symbols', sans-serif;
   --step-0: 1rem; --step-1: 1.2rem; --step-2: 1.5rem; --step-3: 2rem; --step-4: 2.75rem;
 }
@@ -68,10 +77,23 @@ nav.main { align-items: flex-start; }
 .nav-group summary:focus-visible, a:focus-visible, button:focus-visible { outline: 3px solid var(--violet); outline-offset: 3px; }
 @media (max-width: 640px) { nav.main { width: 100%; } .nav-group { flex: 1 1 44%; } .nav-menu { position: static; width: 100%; max-width: none; } }
 .brand .g { font-size: .8em; margin-right: .2em; color: var(--sun); }
+.brand-sun { width: .8em; height: .8em; margin-right: .25em; color: var(--sun); vertical-align: -.02em; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 nav.main { display: flex; flex-wrap: wrap; gap: 6px; font-size: .9rem; }
 nav.main a { text-decoration: none; color: var(--muted); padding: 4px 11px; border-radius: 999px; font-weight: 500; }
 nav.main a:hover { color: var(--violet); background: var(--violet-soft); }
 nav.main a[aria-current] { color: #fff; background: var(--violet); }
+#cc-main { --cc-font-family: var(--body); --cc-bg: var(--surface); --cc-primary-color: var(--ink); --cc-secondary-color: var(--muted);
+  --cc-btn-primary-bg: var(--violet); --cc-btn-primary-color: #fff; --cc-btn-primary-border-color: var(--violet);
+  --cc-btn-primary-hover-bg: var(--brass); --cc-btn-primary-hover-border-color: var(--brass); --cc-btn-primary-hover-color: #fff;
+  --cc-btn-secondary-bg: var(--chip); --cc-btn-secondary-color: var(--ink); --cc-btn-secondary-border-color: var(--line);
+  --cc-btn-secondary-hover-bg: var(--violet-soft); --cc-btn-secondary-hover-color: var(--ink); --cc-btn-secondary-hover-border-color: var(--violet);
+  --cc-separator-border-color: var(--line); --cc-toggle-on-bg: var(--violet); --cc-toggle-readonly-bg: var(--line);
+  --cc-cookie-category-block-bg: var(--paper); --cc-cookie-category-block-border: var(--line); --cc-cookie-category-block-hover-bg: var(--chip);
+  --cc-cookie-category-block-hover-border: var(--line); --cc-cookie-category-expanded-block-bg: var(--paper); --cc-overlay-bg: rgba(10, 6, 30, .6);
+  --cc-footer-bg: var(--paper); --cc-footer-color: var(--muted); --cc-footer-border-color: var(--line); --cc-modal-border-radius: 16px; --cc-btn-border-radius: 999px; }
+.zs-search { --pagefind-ui-primary: var(--violet); --pagefind-ui-text: var(--ink); --pagefind-ui-background: var(--surface);
+  --pagefind-ui-border: var(--line); --pagefind-ui-tag: var(--chip); --pagefind-ui-font: var(--body); --pagefind-ui-border-radius: 12px; }
 main { padding-block: 28px 48px; display: grid; gap: 40px; }
 h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 1.2; letter-spacing: -.01em; text-wrap: balance; margin: 0; }
 h1 { font-size: var(--step-4); }
@@ -172,14 +194,7 @@ details summary { cursor: pointer; color: var(--muted); }
 .eph sup { font-size: .65em; font-weight: 600; margin-left: 1px; }
 .month-nav { display: flex; justify-content: space-between; gap: 12px; font-weight: 500; }
 .chip[aria-current] { background: var(--violet); color: #fff; }
-.consent { position: fixed; z-index: 20; left: 0; right: 0; bottom: 0; margin: 0 auto; max-width: 44rem;
-  display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; background: var(--surface); color: var(--ink);
-  border: 1px solid var(--line); border-radius: 18px 18px 0 0; box-shadow: 0 -8px 30px -12px rgba(30,10,80,.35);
-  padding: 16px max(16px, env(safe-area-inset-right, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); font-size: .9rem; }
-[hidden], .consent[hidden] { display: none !important; }
-.consent p { flex: 1 1 18rem; }
-.consent-btns { display: flex; gap: 8px; }
-.consent .btn { padding: 9px 18px; font-size: .9rem; }
+[hidden] { display: none !important; }
 .footer-links { display: flex; flex-wrap: wrap; gap: 6px 16px; }
 .linkish { font: inherit; color: inherit; background: none; border: 0; padding: 0; text-decoration: underline; text-decoration-color: var(--brass); text-underline-offset: 3px; cursor: pointer; }
 .legal h2 { font-size: var(--step-2); margin-top: 8px; }
@@ -372,7 +387,51 @@ export function crumbs(items, root) {
   return `<nav class="crumbs" aria-label="Διαδρομή">${items.map(([name, path], k) => k === items.length - 1 ? `<span aria-current="page">${esc(name)}</span>` : `<a href="${root}${path}">${esc(name)}</a>`).join(' <span aria-hidden="true">›</span> ')}</nav>`;
 }
 
-export function page({ path, title, titleExact = false, description, content, jsonLd, image, ogType = 'website', noindex = false }) {
+// Συγκατάθεση cookies με το CookieConsent v3 (Orest Bida, MIT, https://github.com/orestbida/cookieconsent).
+// Κατηγορίες: απαραίτητα (πάντα), μέτρηση (Google Analytics) και, μόνο όταν υπάρχει AdSense, διαφήμιση.
+// Ενημερώνει το Google Consent Mode v2. Όσοι είχαν απαντήσει στην παλιά μπάρα (localStorage «zs-consent»)
+// κρατούν την επιλογή τους χωρίς να ξαναρωτηθούν.
+function consentScripts(root) {
+  if (!config.gaId && !config.adsenseClient) return '';
+  const ads = !!config.adsenseClient;
+  const categories = { necessary: { enabled: true, readOnly: true } };
+  if (config.gaId) categories.analytics = {};
+  if (ads) categories.ads = {};
+  const sections = [
+    { title: 'Πώς χρησιμοποιούμε τα cookies', description: `Η ημερομηνία, η ώρα και ο τόπος γέννησης που βάζεις στα εργαλεία υπολογίζονται μόνο στον browser σου και δεν στέλνονται πουθενά. Δες την <a href="${root}apporito/index.html">πολιτική απορρήτου</a>.` },
+    { title: 'Απαραίτητα', description: 'Θυμούνται μόνο την επιλογή σου για τα cookies. Δεν απενεργοποιούνται.', linkedCategory: 'necessary' },
+  ];
+  if (config.gaId) sections.push({ title: 'Μέτρηση επισκεψιμότητας', description: 'Google Analytics: ποιες σελίδες διαβάζονται, από ποια χώρα και συσκευή. Μας βοηθά να βελτιώνουμε το site.', linkedCategory: 'analytics' });
+  if (ads) sections.push({ title: 'Διαφήμιση', description: 'Google AdSense: διαφημίσεις που κρατούν το site δωρεάν, προσαρμοσμένες στα ενδιαφέροντά σου μόνο αν το επιτρέψεις.', linkedCategory: 'ads' });
+  const cfg = {
+    revision: 1,
+    cookie: { name: 'cc_cookie', expiresAfterDays: 182 },
+    guiOptions: { consentModal: { layout: 'box inline', position: 'bottom center', equalWeightButtons: true }, preferencesModal: { layout: 'box', equalWeightButtons: true } },
+    categories,
+    language: { default: 'el', translations: { el: {
+      consentModal: {
+        title: 'Cookies',
+        description: `Χρησιμοποιούμε cookies ${ads ? 'για μέτρηση επισκεψιμότητας και διαφήμιση' : 'του Google Analytics για να μετράμε την επισκεψιμότητα'}, μόνο αν συμφωνήσεις. Τα στοιχεία γέννησης που βάζεις στα εργαλεία δεν στέλνονται πουθενά.`,
+        acceptAllBtn: 'Αποδοχή όλων', acceptNecessaryBtn: 'Απόρριψη', showPreferencesBtn: 'Ρυθμίσεις',
+        footer: `<a href="${root}apporito/index.html">Πολιτική απορρήτου</a>`,
+      },
+      preferencesModal: {
+        title: 'Ρυθμίσεις cookies', acceptAllBtn: 'Αποδοχή όλων', acceptNecessaryBtn: 'Απόρριψη όλων', savePreferencesBtn: 'Αποθήκευση επιλογών', closeIconLabel: 'Κλείσιμο',
+        sections,
+      },
+    } } },
+  };
+  return `<link rel="stylesheet" href="${root}assets/cookieconsent.css">
+<script defer src="${root}assets/cookieconsent.umd.js"></script>
+<script>window.addEventListener('DOMContentLoaded',function(){if(!window.CookieConsent)return;var cfg=${JSON.stringify(cfg).replace(/</g, '\\u003c')};
+function upd(){if(!window.gtag)return;var a=CookieConsent.acceptedCategory('analytics')?'granted':'denied',d=CookieConsent.acceptedCategory('ads')?'granted':'denied';gtag('consent','update',{analytics_storage:a,ad_storage:d,ad_user_data:d,ad_personalization:d})}
+cfg.onConsent=upd;cfg.onChange=upd;cfg.categories.necessary={enabled:true,readOnly:true};
+${config.gaId ? "if(cfg.categories.analytics)cfg.categories.analytics.autoClear={cookies:[{name:/^_ga/},{name:'_gid'}]};" : ''}
+var old=null;try{old=localStorage.getItem('zs-consent')}catch(e){}if(old)cfg.autoShow=false;
+CookieConsent.run(cfg).then(function(){if(old&&!CookieConsent.validConsent()){CookieConsent.acceptCategory(old==='yes'?['analytics']:[]);}try{localStorage.removeItem('zs-consent')}catch(e){}if(!CookieConsent.validConsent())CookieConsent.show()});});</script>`;
+}
+
+export function page({ path, title, titleExact = false, description, content, jsonLd, image, ogType = 'website', noindex = false, searchable = !noindex }) {
   const depth = path.split('/').length - 1;
   const root = depth ? '../'.repeat(depth) : '';
   const seo = metadata(path, title || config.siteName, description);
@@ -399,13 +458,12 @@ export function page({ path, title, titleExact = false, description, content, js
     config.siteUrl ? `<link rel="icon" href="${config.siteUrl}/favicon.svg" type="image/svg+xml">` : '',
     config.siteUrl ? `<link rel="alternate" type="application/rss+xml" title="${esc(config.siteName)}" href="${config.siteUrl}/rss/zodia.xml">` : '',
     config.gscVerification ? `<meta name="google-site-verification" content="${esc(config.gscVerification)}">` : '',
-    '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>',
-    '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;600;700&family=Commissioner:wght@400;500;600;700&family=Noto+Sans+Symbols&display=swap">',
+    `<link rel="preload" href="${root}assets/fonts/commissioner.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="${root}assets/fonts/comfortaa.woff2" as="font" type="font/woff2" crossorigin>`,
     config.adsenseClient ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${esc(config.adsenseClient)}" crossorigin="anonymous"></script>` : '',
     // Google Analytics με Consent Mode: τίποτα δεν αποθηκεύεται πριν ο επισκέπτης πατήσει «Αποδοχή»
     config.gaId ? `<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
 gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied'});
-try{if(localStorage.getItem('zs-consent')==='yes')gtag('consent','update',{analytics_storage:'granted'})}catch(e){}
+try{var c=JSON.parse(decodeURIComponent((document.cookie.match(/(?:^|; )cc_cookie=([^;]*)/)||[])[1]||'null'));if(c&&c.categories){var a=c.categories.indexOf('analytics')>-1?'granted':'denied',d=c.categories.indexOf('ads')>-1?'granted':'denied';gtag('consent','update',{analytics_storage:a,ad_storage:d,ad_user_data:d,ad_personalization:d})}}catch(e){}
 gtag('js',new Date());gtag('config','${esc(config.gaId)}');</script><script async src="https://www.googletagmanager.com/gtag/js?id=${esc(config.gaId)}"></script>` : '',
     ...[].concat(jsonLd || []).map((ld) => `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>`),
     `<link rel="stylesheet" href="${root}assets/site.css">`,
@@ -422,19 +480,18 @@ gtag('js',new Date());gtag('config','${esc(config.gaId)}');</script><script asyn
   const nav = link(items[0]) + groups.map(([label, indices]) => {
     const active = indices.some(i => items[i][0] === path);
     return `<details class="nav-group"><summary${active ? ' class="is-current"' : ''}>${label}</summary><div class="nav-menu">${indices.map(i => link(items[i])).join('')}</div></details>`;
-  }).join('') + link(['eshop/index.html', 'E-shop']);
+  }).join('') + link(['eshop/index.html', 'E-shop']) + `<a class="nav-search" href="${root}anazitisi/index.html"${path === 'anazitisi/index.html' ? ' aria-current="page"' : ''}>Αναζήτηση</a>`;
   const body = `<div class="wrap">
-<header class="site"><a class="brand" href="${root}index.html">${glyph('☉')}${esc(config.siteName)}</a><nav class="main" aria-label="Κύριο μενού">${nav}</nav></header>
-<main>${content}</main>
-${config.gaId ? `<div class="consent" id="zs-consent" hidden role="dialog" aria-label="Cookies"><p>Χρησιμοποιούμε cookies του Google Analytics για να μετράμε την επισκεψιμότητα. Η ημερομηνία και η ώρα γέννησης που βάζεις στα εργαλεία μας δεν στέλνονται πουθενά.</p><div class="consent-btns"><button type="button" class="btn-ghost" id="zs-no">Απόρριψη</button><button type="button" class="btn" id="zs-yes">Αποδοχή</button></div></div>
-<script>(function(){var b=document.getElementById('zs-consent'),v=null;try{v=localStorage.getItem('zs-consent')}catch(e){}if(!v)b.hidden=false;function set(x){try{localStorage.setItem('zs-consent',x)}catch(e){}b.hidden=true;if(x==='yes'&&window.gtag)gtag('consent','update',{analytics_storage:'granted'})}document.getElementById('zs-yes').onclick=function(){set('yes')};document.getElementById('zs-no').onclick=function(){set('no')};document.addEventListener('click',function(e){if(e.target&&e.target.id==='zs-reopen')b.hidden=false});})();</script>` : ''}
+<header class="site"><a class="brand" href="${root}index.html"><svg class="brand-sun" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.6"/><circle cx="12" cy="12" r="2.6" fill="currentColor"/></svg>${esc(config.siteName)}</a><nav class="main" aria-label="Κύριο μενού">${nav}</nav></header>
+<main${searchable ? ' data-pagefind-body' : ''}>${content}</main>
 <footer class="site"><p>${esc(config.siteName)} · Οι θέσεις των πλανητών υπολογίζονται καθημερινά για ώρα Αθήνας. Οι προβλέψεις είναι για ψυχαγωγικούς σκοπούς.</p>
-<p class="footer-links"><a href="${root}sxetika/index.html">Σχετικά</a><a href="${root}epikoinonia/index.html">Επικοινωνία</a><a href="${root}apporito/index.html">Πολιτική απορρήτου</a><a href="${root}oroi/index.html">Όροι χρήσης</a><a href="${root}arxeio/index.html">Αρχείο ετών</a>${config.gaId ? '<button type="button" class="linkish" id="zs-reopen">Ρυθμίσεις cookies</button>' : ''}</p>
+<p class="footer-links"><a href="${root}sxetika/index.html">Σχετικά</a><a href="${root}epikoinonia/index.html">Επικοινωνία</a><a href="${root}apporito/index.html">Πολιτική απορρήτου</a><a href="${root}oroi/index.html">Όροι χρήσης</a><a href="${root}arxeio/index.html">Αρχείο ετών</a>${config.gaId || config.adsenseClient ? '<button type="button" class="linkish" data-cc="show-preferencesModal">Ρυθμίσεις cookies</button>' : ''}</p>
 <p>© ${buildDate.slice(0, 4)} ${esc(config.company.name)}</p></footer>
+${consentScripts(root)}
 <script>document.addEventListener('toggle',function(e){if(e.target.matches('details.nav-group[open]'))document.querySelectorAll('details.nav-group[open]').forEach(function(d){if(d!==e.target)d.open=false})},true);document.addEventListener('click',function(e){document.querySelectorAll('details.nav-group[open]').forEach(function(d){if(!d.contains(e.target))d.open=false});document.querySelectorAll('details.whatis[open]').forEach(function(d){if(!d.contains(e.target))d.open=false})});document.addEventListener('keydown',function(e){if(e.key==='Escape')document.querySelectorAll('details.whatis[open],details.nav-group[open]').forEach(function(d){d.open=false})});</script>
 </div>`;
   const daily = ['index.html', 'zodia-avrio/index.html', 'ouranos/index.html', 'selini/index.html', 'anadromoi/index.html', 'taro/index.html'].includes(path) || /^zodia\/[^/]+\/index\.html$/.test(path);
-  return { head, body, root, ...(daily ? { lastmod: buildDate } : {}) };
+  return { head, body, root, ...(noindex ? { noindex: true } : {}), ...(daily ? { lastmod: buildDate } : {}) };
 }
 
 // Καθαρά URL: κάθε link σε «…/index.html» γίνεται «…/», ώστε να ταιριάζει με το canonical

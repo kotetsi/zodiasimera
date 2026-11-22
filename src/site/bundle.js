@@ -3,6 +3,10 @@
 import { readFileSync } from 'node:fs';
 import { join, dirname, normalize, relative } from 'node:path';
 
+// Βιβλιοθήκες που ΔΕΝ ενσωματώνονται: φορτώνονται μία φορά ως ξεχωριστό αρχείο (cache του browser)
+// και ο κώδικας τις βρίσκει ως global. Η σελίδα πρέπει να έχει το αντίστοιχο <script src>.
+export const EXTERNALS = { 'vendor/astronomy': 'globalThis.Astronomy' };
+
 export function bundle(srcRoot, entry, call) {
   const order = [];
   const seen = new Set();
@@ -11,7 +15,10 @@ export function bundle(srcRoot, entry, call) {
     if (seen.has(abs)) return;
     seen.add(abs);
     const code = readFileSync(abs, 'utf8');
-    for (const m of code.matchAll(/^import[^'"]*from\s+['"](.+?)['"];?$/gm)) visit(normalize(join(dirname(abs), m[1])));
+    for (const m of code.matchAll(/^import[^'"]*from\s+['"](.+?)['"];?$/gm)) {
+      const dep = normalize(join(dirname(abs), m[1]));
+      if (!(key(dep) in EXTERNALS)) visit(dep);
+    }
     order.push({ abs, code });
   };
   visit(join(srcRoot, entry));
@@ -19,7 +26,8 @@ export function bundle(srcRoot, entry, call) {
   const modules = order.map(({ abs, code }) => {
     const exports = [];
     let body = code.replace(/^import\s+(.+?)\s+from\s+['"](.+?)['"];?$/gm, (_, what, from) => {
-      const dep = `__m[${JSON.stringify(key(normalize(join(dirname(abs), from))))}]`;
+      const k = key(normalize(join(dirname(abs), from)));
+      const dep = k in EXTERNALS ? EXTERNALS[k] : `__m[${JSON.stringify(k)}]`;
       if (what.startsWith('* as ')) return `const ${what.slice(5)} = ${dep};`;
       if (what.startsWith('{')) return `const ${what.replace(/\s+as\s+/g, ': ')} = ${dep};`;
       return `const ${what} = ${dep}.default;`;

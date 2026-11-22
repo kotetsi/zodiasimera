@@ -49,6 +49,7 @@ const pages = [
   P.privacyPage(),
   P.termsPage(),
   P.contactPage(),
+  P.searchPage(),
   P.guideNatalPage(),
   P.natalPage(bundle(join(ROOT, 'src'), 'natal-ui.js', "__m['natal-ui'].startNatalPage('../');")),
   P.dailyPage(bundle(join(ROOT, 'src'), 'daily-ui.js', "__m['daily-ui'].startDailyPage('../');")),
@@ -96,7 +97,8 @@ for (const pg of pages) {
 
 // Χωρίς domain δεν φτιάχνουμε sitemap (χρειάζεται απόλυτα URL)
 if (config.siteUrl) {
-  const urls = pages.map((p) => `<url><loc>${config.siteUrl}/${p.path.replace(/index\.html$/, '')}</loc>${p.lastmod ? `<lastmod>${p.lastmod}</lastmod>` : ''}</url>`).join('');
+  // Σελίδες noindex (π.χ. αναζήτηση) δεν μπαίνουν στο sitemap
+  const urls = pages.filter((p) => !p.noindex).map((p) => `<url><loc>${config.siteUrl}/${p.path.replace(/index\.html$/, '')}</loc>${p.lastmod ? `<lastmod>${p.lastmod}</lastmod>` : ''}</url>`).join('');
   writeFileSync(join(OUT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`);
   writeFileSync(join(OUT, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${config.siteUrl}/sitemap.xml\n`);
 }

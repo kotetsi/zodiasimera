@@ -12,7 +12,7 @@ const WD = ['Κυριακή', 'Δευτέρα', 'Τρίτη', 'Τετάρτη', 
 const isoDate = (iso) => { const [y, m, d] = iso.split('-').map(Number); return athensTime(y, m, d, 12); };
 const dayLabel = (iso) => fmtDate(isoDate(iso), { weekday: 'short', day: 'numeric', month: 'short' });
 const when = (d) => fmtDate(d, { weekday: 'long', day: 'numeric', month: 'long' });
-const dots = (n) => `<span class="dots" aria-label="${n} από 5">${[1, 2, 3, 4, 5].map((k) => `<i class="${k <= n ? 'on' : ''}"></i>`).join('')}</span>`;
+const dots = (n) => `<span class="dots" role="img" aria-label="${n} από 5">${[1, 2, 3, 4, 5].map((k) => `<i class="${k <= n ? 'on' : ''}"></i>`).join('')}</span>`;
 const fem = (b) => b === 'venus' || b === 'moon';
 const MOVERS = ['sun', 'mercury', 'venus', 'mars', 'jupiter', 'saturn'];
 const RETRO = ['mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto'];
