@@ -6,7 +6,7 @@
 |---|---|---|---|
 | YouTube | @zodia.simera (UCvnYfNcliUEmw9HmXdAL_rg) | https://studio.youtube.com/channel/UCvnYfNcliUEmw9HmXdAL_rg/videos/upload?d=ud | Short, Public, not made for kids |
 | Facebook | Σελίδα «Ζώδια Σήμερα» (profile.php?id=61596025154831) | Reel από τη σελίδα | ΟΧΙ το facebook.com/zodiasimera «Όλα για τα Ζώδια» |
-| Instagram |  | instagram.com → Δημιουργία → Reel | Επαγγελματικός λογαριασμός, συνδεδεμένος με τη σελίδα Facebook |
+| Instagram | [@zodia_simera](https://www.instagram.com/zodia_simera/) | instagram.com → Δημιουργία → Reel | Επαγγελματικός λογαριασμός, συνδεδεμένος με τη σελίδα Facebook |
 | TikTok |  | https://www.tiktok.com/tiktokstudio/upload | |
 | Threads |  | threads.net → νέα δημοσίευση με βίντεο | Από τον λογαριασμό Instagram |
 | Pinterest | zodiasimera (pinterest.com/zodiasimera, email ntsiblakos+zodia@gmail.com) | https://www.pinterest.com/pin-creation-tool/ | Πίνακας «Ζώδια σήμερα», link στο https://zodiasimera.com |
