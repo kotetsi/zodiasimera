@@ -10,7 +10,7 @@ import { luckFor, luckHtml } from './luck.js';
 const cap = (x) => x[0].toUpperCase() + x.slice(1);
 const dm = (iso) => { const [, m, d] = iso.split('-').map(Number); return `${d}/${m}`; };
 const dayMonth = (iso) => { const [y, m, d] = iso.split('-').map(Number); return fmtDate(athensTime(y, m, d, 12), { day: 'numeric', month: 'long' }); };
-const dots = (n) => `<span class="dots" aria-label="${n} από 5">${[1, 2, 3, 4, 5].map((i) => `<i class="${i <= n ? 'on' : ''}"></i>`).join('')}</span>`;
+const dots = (n) => `<span class="dots" role="img" aria-label="${n} από 5">${[1, 2, 3, 4, 5].map((i) => `<i class="${i <= n ? 'on' : ''}"></i>`).join('')}</span>`;
 const ratingsHtml = (r) => `<div class="ratings"><span class="rating r-love">Αγάπη ${dots(r.love)}</span><span class="rating r-work">Δουλειά ${dots(r.work)}</span><span class="rating r-mood">Διάθεση ${dots(r.mood)}</span></div>`;
 const fem = (b) => b === 'venus' || b === 'moon';
 export const dayPath = (iso) => `zodia-simera/${iso}/index.html`;

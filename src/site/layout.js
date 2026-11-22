@@ -8,15 +8,24 @@ export const glyph = (g) => `<span class="g">${g}︎</span>`;
 
 export const CSS = `
 /* Ζωντανή, νεανική παλέτα: ματζέντα και βιολετί για τόνο, κίτρινο ήλιου, χρώμα ανά στοιχείο ζωδίου (φωτιά, γη, αέρας, νερό) */
+/* Γραμματοσειρές στο ίδιο το site (OFL, από github.com/google/fonts), υποσύνολο Λατινικά + Ελληνικά.
+   Οι «Fallback» έχουν τις διαστάσεις της κανονικής, ώστε όταν φορτώσει να μη μετακινηθεί το κείμενο. */
+@font-face { font-family: 'Commissioner'; src: url(fonts/commissioner.woff2) format('woff2'); font-weight: 400 700; font-display: swap; }
+@font-face { font-family: 'Comfortaa'; src: url(fonts/comfortaa.woff2) format('woff2'); font-weight: 500 700; font-display: swap; }
+@font-face { font-family: 'Noto Sans Symbols'; src: url(fonts/noto-sans-symbols.woff2) format('woff2'); font-display: swap; }
+@font-face { font-family: 'Commissioner Fallback'; src: local('Arial'), local('Liberation Sans'); size-adjust: 102.52%; ascent-override: 99.2%; descent-override: 20.09%; line-gap-override: 0%; }
+@font-face { font-family: 'Commissioner Fallback Roboto'; src: local('Roboto'); size-adjust: 99.11%; ascent-override: 102.62%; descent-override: 20.79%; line-gap-override: 0%; }
+@font-face { font-family: 'Comfortaa Fallback'; src: local('Arial'), local('Liberation Sans'); size-adjust: 120.76%; ascent-override: 72.96%; descent-override: 19.38%; line-gap-override: 0%; }
+@font-face { font-family: 'Comfortaa Fallback Roboto'; src: local('Roboto'); size-adjust: 116.74%; ascent-override: 75.47%; descent-override: 20.04%; line-gap-override: 0%; }
 :root {
   --paper: #fbf8ff; --surface: #ffffff; --ink: #1d1640; --muted: #655d8c; --line: #e8e2f6;
-  --brass: #d81b73; --brass-soft: #ffe2ef; --violet: #6236ff; --violet-soft: #ece6ff; --sun: #ffb703;
+  --brass: #c71a6a; --brass-soft: #ffe2ef; --violet: #6236ff; --violet-soft: #ece6ff; --sun: #ffb703;
   --chip: #f2edff; --danger: #c8264b;
   --fire: #f0441c; --fire-soft: #ffe7df; --earth: #12925c; --earth-soft: #daf5e7;
   --air: #b77900; --air-soft: #fff0c2; --water: #1f6fff; --water-soft: #e0ebff;
   --night: #241763; --night-2: #3a1f8f;
-  --display: 'Comfortaa', 'Commissioner', system-ui, sans-serif;
-  --body: 'Commissioner', 'Segoe UI', system-ui, sans-serif;
+  --display: 'Comfortaa', 'Comfortaa Fallback', 'Comfortaa Fallback Roboto', 'Commissioner', system-ui, sans-serif;
+  --body: 'Commissioner', 'Commissioner Fallback', 'Commissioner Fallback Roboto', system-ui, sans-serif;
   --sym: 'Noto Sans Symbols', 'Segoe UI Symbol', 'Apple Symbols', sans-serif;
   --step-0: 1rem; --step-1: 1.2rem; --step-2: 1.5rem; --step-3: 2rem; --step-4: 2.75rem;
 }
@@ -411,13 +420,13 @@ function consentScripts(root) {
     } } },
   };
   return `<link rel="stylesheet" href="${root}assets/cookieconsent.css">
-<script src="${root}assets/cookieconsent.umd.js"></script>
-<script>(function(){if(!window.CookieConsent)return;var cfg=${JSON.stringify(cfg).replace(/</g, '\\u003c')};
+<script defer src="${root}assets/cookieconsent.umd.js"></script>
+<script>window.addEventListener('DOMContentLoaded',function(){if(!window.CookieConsent)return;var cfg=${JSON.stringify(cfg).replace(/</g, '\\u003c')};
 function upd(){if(!window.gtag)return;var a=CookieConsent.acceptedCategory('analytics')?'granted':'denied',d=CookieConsent.acceptedCategory('ads')?'granted':'denied';gtag('consent','update',{analytics_storage:a,ad_storage:d,ad_user_data:d,ad_personalization:d})}
 cfg.onConsent=upd;cfg.onChange=upd;cfg.categories.necessary={enabled:true,readOnly:true};
 ${config.gaId ? "if(cfg.categories.analytics)cfg.categories.analytics.autoClear={cookies:[{name:/^_ga/},{name:'_gid'}]};" : ''}
 var old=null;try{old=localStorage.getItem('zs-consent')}catch(e){}if(old)cfg.autoShow=false;
-CookieConsent.run(cfg).then(function(){if(old&&!CookieConsent.validConsent()){CookieConsent.acceptCategory(old==='yes'?['analytics']:[]);}try{localStorage.removeItem('zs-consent')}catch(e){}if(!CookieConsent.validConsent())CookieConsent.show()});})();</script>`;
+CookieConsent.run(cfg).then(function(){if(old&&!CookieConsent.validConsent()){CookieConsent.acceptCategory(old==='yes'?['analytics']:[]);}try{localStorage.removeItem('zs-consent')}catch(e){}if(!CookieConsent.validConsent())CookieConsent.show()});});</script>`;
 }
 
 export function page({ path, title, titleExact = false, description, content, jsonLd, image, ogType = 'website', noindex = false, searchable = !noindex }) {
@@ -447,8 +456,7 @@ export function page({ path, title, titleExact = false, description, content, js
     config.siteUrl ? `<link rel="icon" href="${config.siteUrl}/favicon.svg" type="image/svg+xml">` : '',
     config.siteUrl ? `<link rel="alternate" type="application/rss+xml" title="${esc(config.siteName)}" href="${config.siteUrl}/rss/zodia.xml">` : '',
     config.gscVerification ? `<meta name="google-site-verification" content="${esc(config.gscVerification)}">` : '',
-    '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>',
-    '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;600;700&family=Commissioner:wght@400;500;600;700&family=Noto+Sans+Symbols&display=swap">',
+    `<link rel="preload" href="${root}assets/fonts/commissioner.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="${root}assets/fonts/comfortaa.woff2" as="font" type="font/woff2" crossorigin>`,
     config.adsenseClient ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${esc(config.adsenseClient)}" crossorigin="anonymous"></script>` : '',
     // Google Analytics με Consent Mode: τίποτα δεν αποθηκεύεται πριν ο επισκέπτης πατήσει «Αποδοχή»
     config.gaId ? `<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
@@ -472,7 +480,7 @@ gtag('js',new Date());gtag('config','${esc(config.gaId)}');</script><script asyn
     return `<details class="nav-group"><summary${active ? ' class="is-current"' : ''}>${label}</summary><div class="nav-menu">${indices.map(i => link(items[i])).join('')}</div></details>`;
   }).join('') + link(['eshop/index.html', 'E-shop']) + `<a class="nav-search" href="${root}anazitisi/index.html"${path === 'anazitisi/index.html' ? ' aria-current="page"' : ''}>Αναζήτηση</a>`;
   const body = `<div class="wrap">
-<header class="site"><a class="brand" href="${root}index.html">${glyph('☉')}${esc(config.siteName)}</a><nav class="main" aria-label="Κύριο μενού">${nav}</nav></header>
+<header class="site"><a class="brand" href="${root}index.html"><span aria-hidden="true">${glyph('☉')}</span>${esc(config.siteName)}</a><nav class="main" aria-label="Κύριο μενού">${nav}</nav></header>
 <main${searchable ? ' data-pagefind-body' : ''}>${content}</main>
 <footer class="site"><p>${esc(config.siteName)} · Οι θέσεις των πλανητών υπολογίζονται καθημερινά για ώρα Αθήνας. Οι προβλέψεις είναι για ψυχαγωγικούς σκοπούς.</p>
 <p class="footer-links"><a href="${root}sxetika/index.html">Σχετικά</a><a href="${root}epikoinonia/index.html">Επικοινωνία</a><a href="${root}apporito/index.html">Πολιτική απορρήτου</a><a href="${root}oroi/index.html">Όροι χρήσης</a><a href="${root}arxeio/index.html">Αρχείο ετών</a>${config.gaId || config.adsenseClient ? '<button type="button" class="linkish" data-cc="show-preferencesModal">Ρυθμίσεις cookies</button>' : ''}</p>

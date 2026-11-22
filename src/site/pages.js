@@ -21,7 +21,7 @@ const ALL = ['sun', 'moon', ...PLANETS, 'node'];
 let HAS_PROFILES = false;
 export const setProfilesAvailable = (v) => { HAS_PROFILES = v; };
 const fmtWhen = (d) => `${fmtDate(d, { weekday: 'short', day: 'numeric', month: 'short' })}, ${fmtTime(d)}`;
-const dots = (n) => `<span class="dots" aria-label="${n} από 5">${[1, 2, 3, 4, 5].map((i) => `<i class="${i <= n ? 'on' : ''}"></i>`).join('')}</span>`;
+const dots = (n) => `<span class="dots" role="img" aria-label="${n} από 5">${[1, 2, 3, 4, 5].map((i) => `<i class="${i <= n ? 'on' : ''}"></i>`).join('')}</span>`;
 const retroPill = (b) => (b.retro ? ' <span class="pill" title="Ανάδρομος">R</span>' : '');
 const signLink = (root, s) => `${root}zodia/${s.slug}/index.html`;
 const pairSlug = (i, j) => (i <= j ? `${SIGNS[i].slug}-${SIGNS[j].slug}` : `${SIGNS[j].slug}-${SIGNS[i].slug}`);
