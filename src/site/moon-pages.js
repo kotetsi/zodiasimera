@@ -6,7 +6,13 @@ import { FULL_MOON_SIGN, NEW_MOON_SIGN_SHORT } from '../content/moon-texts.js';
 import { eclipses, houseOf } from '../forecast.js';
 import { athensTime, fmtDate, fmtTime } from '../horoscope.js';
 import { fmtDeg } from '../chart-svg.js';
-import { page, esc, glyph, adSlot, articleLd } from './layout.js';
+import { page, esc, glyph, adSlot, articleLd, ogImage } from './layout.js';
+import { MOON_EDITORIAL } from '../content/moon-editorial.js';
+import { buildDate } from './seo.js';
+
+// Υπερπανσέληνος: Πανσέληνος σε απόσταση κάτω από 362.500 km (δεν υπάρχει ενιαίος επίσημος ορισμός)
+export const SUPERMOON_KM = 362500;
+const km = (n) => Math.round(n).toLocaleString('el-GR');
 
 const MONTHS_GEN = ['Ιανουαρίου', 'Φεβρουαρίου', 'Μαρτίου', 'Απριλίου', 'Μαΐου', 'Ιουνίου', 'Ιουλίου', 'Αυγούστου', 'Σεπτεμβρίου', 'Οκτωβρίου', 'Νοεμβρίου', 'Δεκεμβρίου'];
 const MONTH_SLUG = ['ianouariou', 'fevrouariou', 'martiou', 'apriliou', 'maiou', 'iouniou', 'iouliou', 'avgoustou', 'septemvriou', 'oktovriou', 'noemvriou', 'dekemvriou'];
@@ -26,6 +32,13 @@ export function moonYears(years) {
     count[k] = (count[k] || 0) + 1;
     f.y = y; f.m = m; f.blue = count[k] === 2;
     f.slug = `panselinos-${MONTH_SLUG[m]}-${y}${f.blue ? '-2' : ''}`;
+    f.dist = E.moonDistanceKm(f.date);
+    f.super = f.dist < SUPERMOON_KM;
+  }
+  // Η πιο κοντινή Πανσέληνος κάθε έτους που καλύπτεται ολόκληρο
+  for (const y of years) {
+    const ofYear = full.filter((f) => f.y === y);
+    if (ofYear.length) ofYear.reduce((a, b) => (b.dist < a.dist ? b : a)).closest = true;
   }
   return { years, all, full };
 }
@@ -37,11 +50,18 @@ export function fullMoonPage(my, k) {
   const path = fullPath(f);
   const root = '../../';
   const prev = my.full[k - 1], next = my.full[k + 1];
-  const title = `Πανσέληνος ${MONTHS_GEN[f.m]} ${f.y}${f.blue ? ' (Μπλε Φεγγάρι)' : ''}`;
+  const title = `${f.super ? 'Υπερπανσέληνος' : 'Πανσέληνος'} ${MONTHS_GEN[f.m]} ${f.y}${f.blue ? ' (Μπλε Φεγγάρι)' : ''}`;
+  const ed = MOON_EDITORIAL[f.slug];
+  const edDate = ed && ed.date <= buildDate ? ed.date : undefined;
+  const image = ed && ed.og ? ogImage(f.slug) : undefined;
+  const superNote = f.super ? ` Είναι <strong>υπερπανσέληνος</strong>: η Σελήνη απέχει ${km(f.dist)} km, πιο κοντά από το συνηθισμένο${f.closest ? `, και είναι η πιο κοντινή Πανσέληνος του ${f.y}` : ''}, οπότε φαίνεται λίγο μεγαλύτερη και φωτεινότερη.` : '';
+  const edHtml = ed ? ed.sections.map((x) => `<section class="stack prose"><h2>${esc(x.h)}</h2>${x.html}</section>`).join('') : '';
+  const faqHtml = ed && ed.faq ? `<section class="stack-lg"><h2>Συχνές ερωτήσεις</h2>${ed.faq.map(([q, a]) => `<details class="panel"><summary><strong>${esc(q)}</strong></summary><p>${esc(a)}</p></details>`).join('')}</section>` : '';
   const per = SIGNS.map((s, i) => `<div class="stack"><h3>${glyph(s.symbol)} ${s.name}</h3><p>${esc(FULL_MOON_HOUSE[houseOf(i, f.sign)])}</p></div>`).join('');
   const content = `
 <section class="stack"><p class="eyebrow">Ημερολόγιο Σελήνης</p><h1>${title}</h1>
-<p class="lede">Η ${f.blue ? 'δεύτερη ' : ''}Πανσέληνος ${MONTHS_GEN[f.m]} πέφτει ${/^(Κυριακή|Δευτέρα|Τρίτη|Τετάρτη|Πέμπτη|Παρασκευή)/.test(long(f.date)) ? 'την' : 'το'} ${esc(long(f.date))}, στις ${fmtTime(f.date)} ώρα Ελλάδας, ${SIGNS[f.sign].inSign} ${glyph(SIGNS[f.sign].symbol)} (${fmtDeg(f.deg)}).${f.eclipse ? ' Είναι ταυτόχρονα <strong>έκλειψη Σελήνης</strong>.' : ''}${f.blue ? ' Επειδή είναι η δεύτερη Πανσέληνος μέσα στον ίδιο μήνα, ονομάζεται «Μπλε Φεγγάρι».' : ''}</p></section>
+<p class="lede">Η ${f.blue ? 'δεύτερη ' : ''}Πανσέληνος ${MONTHS_GEN[f.m]} ${f.y} πέφτει ${/^(Κυριακή|Δευτέρα|Τρίτη|Τετάρτη|Πέμπτη|Παρασκευή)/.test(long(f.date)) ? 'την' : 'το'} ${esc(long(f.date))}, στις ${fmtTime(f.date)} ώρα Ελλάδας, ${SIGNS[f.sign].inSign} ${glyph(SIGNS[f.sign].symbol)} (${fmtDeg(f.deg)}).${f.eclipse ? ' Είναι ταυτόχρονα <strong>έκλειψη Σελήνης</strong>.' : ''}${f.blue ? ' Επειδή είναι η δεύτερη Πανσέληνος μέσα στον ίδιο μήνα, ονομάζεται «Μπλε Φεγγάρι».' : ''}${superNote}</p></section>
+${edHtml}
 <section class="split">
   <div class="panel stack el-${SIGNS[f.sign].element}"><h2>Τι σημαίνει</h2><p>${esc(FULL_MOON_SIGN[f.sign])}</p>${f.eclipse ? '<p class="note">Οι εκλείψεις θεωρούνται πιο δυνατές από μια απλή Πανσέληνο: φέρνουν ολοκληρώσεις και αλλαγές που φαίνονται και τους επόμενους μήνες.</p>' : ''}</div>
   <div class="stack"><h3>Πότε να τη δεις</h3><p>Η Σελήνη είναι γεμάτη από το βράδυ της παραμονής έως το βράδυ της επόμενης μέρας. Ανατέλλει περίπου την ώρα που δύει ο ήλιος και φαίνεται όλη τη νύχτα.</p>
@@ -49,12 +69,13 @@ export function fullMoonPage(my, k) {
 </section>
 ${adSlot()}
 <section class="stack-lg"><h2>Τι φέρνει σε κάθε ζώδιο</h2><div class="readings">${per}</div></section>
+${faqHtml}
 <nav class="chips" aria-label="Άλλες Πανσέληνοι">${prev ? `<a class="chip" href="${root}${fullPath(prev)}">← ${MONTHS_GEN[prev.m]} ${prev.y}</a>` : ''}${next ? `<a class="chip" href="${root}${fullPath(next)}">${MONTHS_GEN[next.m]} ${next.y} →</a>` : ''}</nav>`;
   return { path, ...page({
     path, title: `${title}: ημερομηνία, ώρα και τι σημαίνει για κάθε ζώδιο`,
-    description: `${title}: ${long(f.date)}, ${fmtTime(f.date)} ώρα Ελλάδας, ${SIGNS[f.sign].inSign}.${f.eclipse ? ' Έκλειψη Σελήνης.' : ''} Τι σημαίνει και τι φέρνει σε κάθε ζώδιο.`,
-    content,
-    jsonLd: articleLd({ path, headline: `${title}: ημερομηνία, ώρα και τι σημαίνει για κάθε ζώδιο`, description: `${title}: ${long(f.date)}, ${fmtTime(f.date)} ώρα Ελλάδας, ${SIGNS[f.sign].inSign}.`, }),
+    description: `${title}: ${long(f.date)}, ${fmtTime(f.date)} ώρα Ελλάδας, ${SIGNS[f.sign].inSign}.${f.eclipse ? ' Έκλειψη Σελήνης.' : ''}${f.closest && f.super ? ' Η πιο κοντινή της χρονιάς.' : ''} Τι σημαίνει και τι φέρνει σε κάθε ζώδιο.`,
+    content, image, ogType: ed ? 'article' : 'website',
+    jsonLd: articleLd({ path, headline: `${title}: ημερομηνία, ώρα και τι σημαίνει για κάθε ζώδιο`, description: `${title}: ${long(f.date)}, ${fmtTime(f.date)} ώρα Ελλάδας, ${SIGNS[f.sign].inSign}.`, published: edDate, modified: edDate, image }),
   }) };
 }
 
@@ -66,7 +87,7 @@ export function fullMoonIndexPage(my) {
       const f = p.kind === 'full' ? my.full.find((x) => x.date === p.date) : null;
       const what = p.kind === 'full' ? (p.eclipse ? 'Πανσέληνος · έκλειψη Σελήνης' : 'Πανσέληνος') : (p.eclipse ? 'Νέα Σελήνη · έκλειψη Ηλίου' : 'Νέα Σελήνη');
       const means = p.kind === 'full' ? '' : `<span class="muted"> · ${NEW_MOON_SIGN_SHORT[p.sign]}</span>`;
-      return `<tr${p.kind === 'new' ? ' class="muted-row"' : ''}><td class="num" style="white-space:nowrap">${fmtDate(p.date, { weekday: 'short', day: 'numeric', month: 'long' })}</td><td class="num">${fmtTime(p.date)}</td><td>${f ? `<a href="${root}${fullPath(f)}">${what}</a>` : what}${f && f.blue ? ' (Μπλε Φεγγάρι)' : ''}</td><td>${glyph(SIGNS[p.sign].symbol)} ${SIGNS[p.sign].name}${means}</td></tr>`;
+      return `<tr${p.kind === 'new' ? ' class="muted-row"' : ''}><td class="num" style="white-space:nowrap">${fmtDate(p.date, { weekday: 'short', day: 'numeric', month: 'long' })}</td><td class="num">${fmtTime(p.date)}</td><td>${f ? `<a href="${root}${fullPath(f)}">${what}</a>` : what}${f && f.blue ? ' (Μπλε Φεγγάρι)' : ''}${f && f.super ? ' · υπερπανσέληνος' : ''}</td><td>${glyph(SIGNS[p.sign].symbol)} ${SIGNS[p.sign].name}${means}</td></tr>`;
     }).join('');
     return `<section class="stack-lg"><h2>Πανσέληνοι και Νέες Σελήνες ${y}</h2><div class="table-wrap"><table><thead><tr><th>Ημερομηνία</th><th>Ώρα</th><th>Φάση</th><th>Ζώδιο</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
   }).join(adSlot());
