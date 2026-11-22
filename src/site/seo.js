@@ -70,8 +70,8 @@ export function metadata(path, title, description) {
     description = 'Πανσέληνοι και Νέες Σελήνες με ημερομηνίες, ώρες Ελλάδας και ζώδιο. Δες τα επόμενα γεγονότα και το αρχείο προηγούμενων ετών.';
   } else if (path.startsWith('panselinos/')) {
     title = title.split(':')[0].replace(' (Μπλε Φεγγάρι)', ': Μπλε Φεγγάρι');
-    if (!title.includes('Μπλε Φεγγάρι')) title += ': Ημερομηνία και ώρα';
-    description = description.split(' Τι σημαίνει')[0] + ' Αστρολογικές ερμηνείες για τα 12 ζώδια.';
+    if (!title.includes('Μπλε Φεγγάρι')) title += title.startsWith('Υπερπανσέληνος') ? ': Ημερομηνία, ώρα, ζώδια' : ': Ημερομηνία και ώρα';
+    description = description.split(' Τι σημαίνει')[0] + (description.includes('πιο κοντινή') ? ' Τι φέρνει στα 12 ζώδια.' : ' Αστρολογικές ερμηνείες για τα 12 ζώδια.');
   } else if (path === 'evdomadiaia/index.html') {
     title = `Εβδομαδιαίες προβλέψεις ζωδίων ${weekLabel()}`;
     description = `Εβδομαδιαίες προβλέψεις ${weekLabel()} για τα 12 ζώδια. Έρωτας, δουλειά και τα σημαντικά αστρολογικά γεγονότα της εβδομάδας.`;

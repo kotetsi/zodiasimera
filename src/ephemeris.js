@@ -160,3 +160,8 @@ export function aspectsBetween(pos, bodies, orbScale = 1) {
   }
   return out.sort((x, y) => x.orb - y.orb);
 }
+
+// Απόσταση Γης–Σελήνης σε km (για υπερπανσελήνους)
+export function moonDistanceKm(date) {
+  return Astro.GeoMoon(Astro.MakeTime(date)).Length() * Astro.KM_PER_AU;
+}
