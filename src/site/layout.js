@@ -72,6 +72,17 @@ nav.main { display: flex; flex-wrap: wrap; gap: 6px; font-size: .9rem; }
 nav.main a { text-decoration: none; color: var(--muted); padding: 4px 11px; border-radius: 999px; font-weight: 500; }
 nav.main a:hover { color: var(--violet); background: var(--violet-soft); }
 nav.main a[aria-current] { color: #fff; background: var(--violet); }
+#cc-main { --cc-font-family: var(--body); --cc-bg: var(--surface); --cc-primary-color: var(--ink); --cc-secondary-color: var(--muted);
+  --cc-btn-primary-bg: var(--violet); --cc-btn-primary-color: #fff; --cc-btn-primary-border-color: var(--violet);
+  --cc-btn-primary-hover-bg: var(--brass); --cc-btn-primary-hover-border-color: var(--brass); --cc-btn-primary-hover-color: #fff;
+  --cc-btn-secondary-bg: var(--chip); --cc-btn-secondary-color: var(--ink); --cc-btn-secondary-border-color: var(--line);
+  --cc-btn-secondary-hover-bg: var(--violet-soft); --cc-btn-secondary-hover-color: var(--ink); --cc-btn-secondary-hover-border-color: var(--violet);
+  --cc-separator-border-color: var(--line); --cc-toggle-on-bg: var(--violet); --cc-toggle-readonly-bg: var(--line);
+  --cc-cookie-category-block-bg: var(--paper); --cc-cookie-category-block-border: var(--line); --cc-cookie-category-block-hover-bg: var(--chip);
+  --cc-cookie-category-block-hover-border: var(--line); --cc-cookie-category-expanded-block-bg: var(--paper); --cc-overlay-bg: rgba(10, 6, 30, .6);
+  --cc-footer-bg: var(--paper); --cc-footer-color: var(--muted); --cc-footer-border-color: var(--line); --cc-modal-border-radius: 16px; --cc-btn-border-radius: 999px; }
+.zs-search { --pagefind-ui-primary: var(--violet); --pagefind-ui-text: var(--ink); --pagefind-ui-background: var(--surface);
+  --pagefind-ui-border: var(--line); --pagefind-ui-tag: var(--chip); --pagefind-ui-font: var(--body); --pagefind-ui-border-radius: 12px; }
 main { padding-block: 28px 48px; display: grid; gap: 40px; }
 h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 1.2; letter-spacing: -.01em; text-wrap: balance; margin: 0; }
 h1 { font-size: var(--step-4); }
@@ -172,14 +183,7 @@ details summary { cursor: pointer; color: var(--muted); }
 .eph sup { font-size: .65em; font-weight: 600; margin-left: 1px; }
 .month-nav { display: flex; justify-content: space-between; gap: 12px; font-weight: 500; }
 .chip[aria-current] { background: var(--violet); color: #fff; }
-.consent { position: fixed; z-index: 20; left: 0; right: 0; bottom: 0; margin: 0 auto; max-width: 44rem;
-  display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; background: var(--surface); color: var(--ink);
-  border: 1px solid var(--line); border-radius: 18px 18px 0 0; box-shadow: 0 -8px 30px -12px rgba(30,10,80,.35);
-  padding: 16px max(16px, env(safe-area-inset-right, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); font-size: .9rem; }
-[hidden], .consent[hidden] { display: none !important; }
-.consent p { flex: 1 1 18rem; }
-.consent-btns { display: flex; gap: 8px; }
-.consent .btn { padding: 9px 18px; font-size: .9rem; }
+[hidden] { display: none !important; }
 .footer-links { display: flex; flex-wrap: wrap; gap: 6px 16px; }
 .linkish { font: inherit; color: inherit; background: none; border: 0; padding: 0; text-decoration: underline; text-decoration-color: var(--brass); text-underline-offset: 3px; cursor: pointer; }
 .legal h2 { font-size: var(--step-2); margin-top: 8px; }
@@ -372,7 +376,51 @@ export function crumbs(items, root) {
   return `<nav class="crumbs" aria-label="Διαδρομή">${items.map(([name, path], k) => k === items.length - 1 ? `<span aria-current="page">${esc(name)}</span>` : `<a href="${root}${path}">${esc(name)}</a>`).join(' <span aria-hidden="true">›</span> ')}</nav>`;
 }
 
-export function page({ path, title, titleExact = false, description, content, jsonLd, image, ogType = 'website', noindex = false }) {
+// Συγκατάθεση cookies με το CookieConsent v3 (Orest Bida, MIT, https://github.com/orestbida/cookieconsent).
+// Κατηγορίες: απαραίτητα (πάντα), μέτρηση (Google Analytics) και, μόνο όταν υπάρχει AdSense, διαφήμιση.
+// Ενημερώνει το Google Consent Mode v2. Όσοι είχαν απαντήσει στην παλιά μπάρα (localStorage «zs-consent»)
+// κρατούν την επιλογή τους χωρίς να ξαναρωτηθούν.
+function consentScripts(root) {
+  if (!config.gaId && !config.adsenseClient) return '';
+  const ads = !!config.adsenseClient;
+  const categories = { necessary: { enabled: true, readOnly: true } };
+  if (config.gaId) categories.analytics = {};
+  if (ads) categories.ads = {};
+  const sections = [
+    { title: 'Πώς χρησιμοποιούμε τα cookies', description: `Η ημερομηνία, η ώρα και ο τόπος γέννησης που βάζεις στα εργαλεία υπολογίζονται μόνο στον browser σου και δεν στέλνονται πουθενά. Δες την <a href="${root}apporito/index.html">πολιτική απορρήτου</a>.` },
+    { title: 'Απαραίτητα', description: 'Θυμούνται μόνο την επιλογή σου για τα cookies. Δεν απενεργοποιούνται.', linkedCategory: 'necessary' },
+  ];
+  if (config.gaId) sections.push({ title: 'Μέτρηση επισκεψιμότητας', description: 'Google Analytics: ποιες σελίδες διαβάζονται, από ποια χώρα και συσκευή. Μας βοηθά να βελτιώνουμε το site.', linkedCategory: 'analytics' });
+  if (ads) sections.push({ title: 'Διαφήμιση', description: 'Google AdSense: διαφημίσεις που κρατούν το site δωρεάν, προσαρμοσμένες στα ενδιαφέροντά σου μόνο αν το επιτρέψεις.', linkedCategory: 'ads' });
+  const cfg = {
+    revision: 1,
+    cookie: { name: 'cc_cookie', expiresAfterDays: 182 },
+    guiOptions: { consentModal: { layout: 'box inline', position: 'bottom center', equalWeightButtons: true }, preferencesModal: { layout: 'box', equalWeightButtons: true } },
+    categories,
+    language: { default: 'el', translations: { el: {
+      consentModal: {
+        title: 'Cookies',
+        description: `Χρησιμοποιούμε cookies ${ads ? 'για μέτρηση επισκεψιμότητας και διαφήμιση' : 'του Google Analytics για να μετράμε την επισκεψιμότητα'}, μόνο αν συμφωνήσεις. Τα στοιχεία γέννησης που βάζεις στα εργαλεία δεν στέλνονται πουθενά.`,
+        acceptAllBtn: 'Αποδοχή όλων', acceptNecessaryBtn: 'Απόρριψη', showPreferencesBtn: 'Ρυθμίσεις',
+        footer: `<a href="${root}apporito/index.html">Πολιτική απορρήτου</a>`,
+      },
+      preferencesModal: {
+        title: 'Ρυθμίσεις cookies', acceptAllBtn: 'Αποδοχή όλων', acceptNecessaryBtn: 'Απόρριψη όλων', savePreferencesBtn: 'Αποθήκευση επιλογών', closeIconLabel: 'Κλείσιμο',
+        sections,
+      },
+    } } },
+  };
+  return `<link rel="stylesheet" href="${root}assets/cookieconsent.css">
+<script src="${root}assets/cookieconsent.umd.js"></script>
+<script>(function(){if(!window.CookieConsent)return;var cfg=${JSON.stringify(cfg).replace(/</g, '\\u003c')};
+function upd(){if(!window.gtag)return;var a=CookieConsent.acceptedCategory('analytics')?'granted':'denied',d=CookieConsent.acceptedCategory('ads')?'granted':'denied';gtag('consent','update',{analytics_storage:a,ad_storage:d,ad_user_data:d,ad_personalization:d})}
+cfg.onConsent=upd;cfg.onChange=upd;cfg.categories.necessary={enabled:true,readOnly:true};
+${config.gaId ? "if(cfg.categories.analytics)cfg.categories.analytics.autoClear={cookies:[{name:/^_ga/},{name:'_gid'}]};" : ''}
+var old=null;try{old=localStorage.getItem('zs-consent')}catch(e){}if(old)cfg.autoShow=false;
+CookieConsent.run(cfg).then(function(){if(old&&!CookieConsent.validConsent()){CookieConsent.acceptCategory(old==='yes'?['analytics']:[]);}try{localStorage.removeItem('zs-consent')}catch(e){}if(!CookieConsent.validConsent())CookieConsent.show()});})();</script>`;
+}
+
+export function page({ path, title, titleExact = false, description, content, jsonLd, image, ogType = 'website', noindex = false, searchable = !noindex }) {
   const depth = path.split('/').length - 1;
   const root = depth ? '../'.repeat(depth) : '';
   const seo = metadata(path, title || config.siteName, description);
@@ -405,7 +453,7 @@ export function page({ path, title, titleExact = false, description, content, js
     // Google Analytics με Consent Mode: τίποτα δεν αποθηκεύεται πριν ο επισκέπτης πατήσει «Αποδοχή»
     config.gaId ? `<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
 gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied'});
-try{if(localStorage.getItem('zs-consent')==='yes')gtag('consent','update',{analytics_storage:'granted'})}catch(e){}
+try{var c=JSON.parse(decodeURIComponent((document.cookie.match(/(?:^|; )cc_cookie=([^;]*)/)||[])[1]||'null'));if(c&&c.categories){var a=c.categories.indexOf('analytics')>-1?'granted':'denied',d=c.categories.indexOf('ads')>-1?'granted':'denied';gtag('consent','update',{analytics_storage:a,ad_storage:d,ad_user_data:d,ad_personalization:d})}}catch(e){}
 gtag('js',new Date());gtag('config','${esc(config.gaId)}');</script><script async src="https://www.googletagmanager.com/gtag/js?id=${esc(config.gaId)}"></script>` : '',
     ...[].concat(jsonLd || []).map((ld) => `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>`),
     `<link rel="stylesheet" href="${root}assets/site.css">`,
@@ -422,19 +470,18 @@ gtag('js',new Date());gtag('config','${esc(config.gaId)}');</script><script asyn
   const nav = link(items[0]) + groups.map(([label, indices]) => {
     const active = indices.some(i => items[i][0] === path);
     return `<details class="nav-group"><summary${active ? ' class="is-current"' : ''}>${label}</summary><div class="nav-menu">${indices.map(i => link(items[i])).join('')}</div></details>`;
-  }).join('') + link(['eshop/index.html', 'E-shop']);
+  }).join('') + link(['eshop/index.html', 'E-shop']) + `<a class="nav-search" href="${root}anazitisi/index.html"${path === 'anazitisi/index.html' ? ' aria-current="page"' : ''}>Αναζήτηση</a>`;
   const body = `<div class="wrap">
 <header class="site"><a class="brand" href="${root}index.html">${glyph('☉')}${esc(config.siteName)}</a><nav class="main" aria-label="Κύριο μενού">${nav}</nav></header>
-<main>${content}</main>
-${config.gaId ? `<div class="consent" id="zs-consent" hidden role="dialog" aria-label="Cookies"><p>Χρησιμοποιούμε cookies του Google Analytics για να μετράμε την επισκεψιμότητα. Η ημερομηνία και η ώρα γέννησης που βάζεις στα εργαλεία μας δεν στέλνονται πουθενά.</p><div class="consent-btns"><button type="button" class="btn-ghost" id="zs-no">Απόρριψη</button><button type="button" class="btn" id="zs-yes">Αποδοχή</button></div></div>
-<script>(function(){var b=document.getElementById('zs-consent'),v=null;try{v=localStorage.getItem('zs-consent')}catch(e){}if(!v)b.hidden=false;function set(x){try{localStorage.setItem('zs-consent',x)}catch(e){}b.hidden=true;if(x==='yes'&&window.gtag)gtag('consent','update',{analytics_storage:'granted'})}document.getElementById('zs-yes').onclick=function(){set('yes')};document.getElementById('zs-no').onclick=function(){set('no')};document.addEventListener('click',function(e){if(e.target&&e.target.id==='zs-reopen')b.hidden=false});})();</script>` : ''}
+<main${searchable ? ' data-pagefind-body' : ''}>${content}</main>
 <footer class="site"><p>${esc(config.siteName)} · Οι θέσεις των πλανητών υπολογίζονται καθημερινά για ώρα Αθήνας. Οι προβλέψεις είναι για ψυχαγωγικούς σκοπούς.</p>
-<p class="footer-links"><a href="${root}sxetika/index.html">Σχετικά</a><a href="${root}epikoinonia/index.html">Επικοινωνία</a><a href="${root}apporito/index.html">Πολιτική απορρήτου</a><a href="${root}oroi/index.html">Όροι χρήσης</a><a href="${root}arxeio/index.html">Αρχείο ετών</a>${config.gaId ? '<button type="button" class="linkish" id="zs-reopen">Ρυθμίσεις cookies</button>' : ''}</p>
+<p class="footer-links"><a href="${root}sxetika/index.html">Σχετικά</a><a href="${root}epikoinonia/index.html">Επικοινωνία</a><a href="${root}apporito/index.html">Πολιτική απορρήτου</a><a href="${root}oroi/index.html">Όροι χρήσης</a><a href="${root}arxeio/index.html">Αρχείο ετών</a>${config.gaId || config.adsenseClient ? '<button type="button" class="linkish" data-cc="show-preferencesModal">Ρυθμίσεις cookies</button>' : ''}</p>
 <p>© ${buildDate.slice(0, 4)} ${esc(config.company.name)}</p></footer>
+${consentScripts(root)}
 <script>document.addEventListener('toggle',function(e){if(e.target.matches('details.nav-group[open]'))document.querySelectorAll('details.nav-group[open]').forEach(function(d){if(d!==e.target)d.open=false})},true);document.addEventListener('click',function(e){document.querySelectorAll('details.nav-group[open]').forEach(function(d){if(!d.contains(e.target))d.open=false});document.querySelectorAll('details.whatis[open]').forEach(function(d){if(!d.contains(e.target))d.open=false})});document.addEventListener('keydown',function(e){if(e.key==='Escape')document.querySelectorAll('details.whatis[open],details.nav-group[open]').forEach(function(d){d.open=false})});</script>
 </div>`;
   const daily = ['index.html', 'zodia-avrio/index.html', 'ouranos/index.html', 'selini/index.html', 'anadromoi/index.html', 'taro/index.html'].includes(path) || /^zodia\/[^/]+\/index\.html$/.test(path);
-  return { head, body, root, ...(daily ? { lastmod: buildDate } : {}) };
+  return { head, body, root, ...(noindex ? { noindex: true } : {}), ...(daily ? { lastmod: buildDate } : {}) };
 }
 
 // Καθαρά URL: κάθε link σε «…/index.html» γίνεται «…/», ώστε να ταιριάζει με το canonical

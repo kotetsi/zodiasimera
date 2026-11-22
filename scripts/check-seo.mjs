@@ -67,8 +67,10 @@ for (const iso of dates) {
   }
   const sitemap = readFileSync(new URL('sitemap.xml', dist), 'utf8');
   const locations = [...sitemap.matchAll(/<loc>https:\/\/zodiasimera\.com\/([^<]*)<\/loc>/g)].map(m => `${m[1]}index.html`);
-  assert.equal(locations.length, paths.size);
-  assert.equal(new Set(locations).size, paths.size);
+  const noindex = new Set(files.filter(f => /<meta name="robots" content="noindex/.test(readFileSync(f, 'utf8'))).map(f => relative(distPath, f).replaceAll('\\', '/')));
+  assert.equal(locations.length, paths.size - noindex.size);
+  assert.equal(new Set(locations).size, locations.length);
+  for (const p of noindex) assert(!locations.includes(p), `noindex page in sitemap: ${p}`);
   for (const p of locations) assert(paths.has(p), `Sitemap URL ${p}`);
   for (const m of sitemap.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)) assert(m[1] <= iso, `Future sitemap date ${m[1]}`);
   assert(!/<lastmod>/.test(sitemap.match(/<url><loc>https:\/\/zodiasimera.com\/oroi\/<\/loc>[\s\S]*?<\/url>/)?.[0] || ''), 'Static terms must not claim daily updates');

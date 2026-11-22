@@ -25,6 +25,8 @@ jobs:
         with:
           node-version: 22
       - run: node src/build.js
+      # Ευρετήριο αναζήτησης (Pagefind, https://pagefind.app) για τη σελίδα /anazitisi/
+      - run: npx -y pagefind@1.4.0 --site dist
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
