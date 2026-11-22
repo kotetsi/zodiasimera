@@ -1,4 +1,6 @@
 import * as E from '../ephemeris.js';
+import { LOVE_GUIDES } from '../content/love-guides.js';
+import { buildDate } from './seo.js';
 import { SIGNS, BODY_NAMES, ASPECT_NAMES, ELEMENTS, MODALITIES, PHASE_NAMES } from '../content/signs.js';
 import * as C from '../content/compatibility-texts.js';
 import { ASC_SIGN } from '../content/natal-texts.js';
@@ -796,11 +798,16 @@ ${adSlot()}${common}${faq}`;
     for (const [k, who, art] of [['gynaika', P.woman, 'Η γυναίκα'], ['antras', P.man, 'Ο άντρας']]) {
       const path = `zodia/${s.slug}/${k}/index.html`;
       const pr = k === 'gynaika' ? 'την' : 'τον';
+      const guide = LOVE_GUIDES[`${s.slug}/${k}`];
+      const guideDate = guide && guide.date <= buildDate ? guide.date : undefined;
       const content = `${hero(`${art} ${one}`, `${s.dates} · ${ELEMENTS[s.element].name} · Κυβερνήτης: ${BODY_NAMES[s.ruler].short}`)}${tabs(k)}
 <section class="reading">${P_(who.intro)}<h2>Στον έρωτα</h2>${P_(who.love)}<h2>Στη δουλειά</h2>${P_(who.work)}<h2>Πώς να ${pr} πλησιάσεις</h2>${P_(who.approach)}</section>
+${guide ? guide.sections.map((x) => `<section class="stack prose"><h2>${esc(x.h)}</h2>${x.html}</section>`).join('') : ''}
 <section class="split"><div class="stack"><h3>Δυνατά σημεία</h3><ul class="plain">${s.strengths.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div><div class="stack"><h3>Προκλήσεις</h3><ul class="plain">${s.challenges.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div></section>
-${adSlot()}${common}`;
-      out.push({ path, ...page({ path, title: `${art} ${one}: χαρακτήρας, έρωτας και πώς να ${pr} κατακτήσεις`, description: `${art} ${one}: ${who.intro.split('. ')[0]}. Στον έρωτα, στη δουλειά και πώς να ${pr} πλησιάσεις.`.slice(0, 300), content }) });
+${adSlot()}${common}${guide && guide.faq ? `<section class="stack"><h2>Συχνές ερωτήσεις</h2>${guide.faq.map(([q, a]) => `<details class="faq"><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}</section>` : ''}`;
+      const title = guide ? guide.title : `${art} ${one}: χαρακτήρας, έρωτας και πώς να ${pr} κατακτήσεις`;
+      const description = guide ? guide.description : `${art} ${one}: ${who.intro.split('. ')[0]}. Στον έρωτα, στη δουλειά και πώς να ${pr} πλησιάσεις.`.slice(0, 300);
+      out.push({ path, ...page({ path, title, description, content, ...(guide ? { ogType: 'article', jsonLd: articleLd({ path, headline: title, description, published: guideDate, modified: guideDate, image: ogImage(s.slug) }) } : {}) }) });
     }
   });
   return out;
