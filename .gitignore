@@ -1,3 +1,4 @@
 dist/
 preview-index.html
 node_modules/
+*.mp4
