@@ -259,7 +259,7 @@ export function skyPage(sky) {
 <section class="stack"><p class="eyebrow">${esc(fmtIsoLong(sky.iso))} · 12:00 ώρα Αθήνας</p><h1>Οι θέσεις των πλανητών σήμερα</h1>
 <p class="lede">Τροπικός ζωδιακός, γεωκεντρικές θέσεις. Η ημερήσια κίνηση δείχνει πόσες μοίρες διανύει κάθε σώμα σε 24 ώρες· όταν είναι αρνητική, ο πλανήτης είναι ανάδρομος.</p></section>
 <section class="split">
-  <div class="table-wrap"><table><thead><tr><th>Σώμα</th><th>Ζώδιο</th><th>Μοίρες</th><th>Κίνηση/ημέρα</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+  <div class="table-wrap"><table><thead><tr><th>Σώμα</th><th>Ζώδιο</th><th>Μοίρες</th><th>Κίνηση/ημέρα</th><th><span class="sr-only">Κατεύθυνση</span></th></tr></thead><tbody>${rows}</tbody></table></div>
   ${wheelSvg(sky.pos)}
 </section>
 ${adSlot()}

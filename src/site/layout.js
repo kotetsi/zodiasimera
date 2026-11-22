@@ -77,6 +77,8 @@ nav.main { align-items: flex-start; }
 .nav-group summary:focus-visible, a:focus-visible, button:focus-visible { outline: 3px solid var(--violet); outline-offset: 3px; }
 @media (max-width: 640px) { nav.main { width: 100%; } .nav-group { flex: 1 1 44%; } .nav-menu { position: static; width: 100%; max-width: none; } }
 .brand .g { font-size: .8em; margin-right: .2em; color: var(--sun); }
+.brand-sun { width: .8em; height: .8em; margin-right: .25em; color: var(--sun); vertical-align: -.02em; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 nav.main { display: flex; flex-wrap: wrap; gap: 6px; font-size: .9rem; }
 nav.main a { text-decoration: none; color: var(--muted); padding: 4px 11px; border-radius: 999px; font-weight: 500; }
 nav.main a:hover { color: var(--violet); background: var(--violet-soft); }
@@ -480,7 +482,7 @@ gtag('js',new Date());gtag('config','${esc(config.gaId)}');</script><script asyn
     return `<details class="nav-group"><summary${active ? ' class="is-current"' : ''}>${label}</summary><div class="nav-menu">${indices.map(i => link(items[i])).join('')}</div></details>`;
   }).join('') + link(['eshop/index.html', 'E-shop']) + `<a class="nav-search" href="${root}anazitisi/index.html"${path === 'anazitisi/index.html' ? ' aria-current="page"' : ''}>Αναζήτηση</a>`;
   const body = `<div class="wrap">
-<header class="site"><a class="brand" href="${root}index.html"><span aria-hidden="true">${glyph('☉')}</span>${esc(config.siteName)}</a><nav class="main" aria-label="Κύριο μενού">${nav}</nav></header>
+<header class="site"><a class="brand" href="${root}index.html"><svg class="brand-sun" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.6"/><circle cx="12" cy="12" r="2.6" fill="currentColor"/></svg>${esc(config.siteName)}</a><nav class="main" aria-label="Κύριο μενού">${nav}</nav></header>
 <main${searchable ? ' data-pagefind-body' : ''}>${content}</main>
 <footer class="site"><p>${esc(config.siteName)} · Οι θέσεις των πλανητών υπολογίζονται καθημερινά για ώρα Αθήνας. Οι προβλέψεις είναι για ψυχαγωγικούς σκοπούς.</p>
 <p class="footer-links"><a href="${root}sxetika/index.html">Σχετικά</a><a href="${root}epikoinonia/index.html">Επικοινωνία</a><a href="${root}apporito/index.html">Πολιτική απορρήτου</a><a href="${root}oroi/index.html">Όροι χρήσης</a><a href="${root}arxeio/index.html">Αρχείο ετών</a>${config.gaId || config.adsenseClient ? '<button type="button" class="linkish" data-cc="show-preferencesModal">Ρυθμίσεις cookies</button>' : ''}</p>
